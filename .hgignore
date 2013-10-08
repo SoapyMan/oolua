@@ -3,6 +3,7 @@ bin
 obj
 .DS_Store
 ipch
+build_logs
 
 Makefile
 *.make
