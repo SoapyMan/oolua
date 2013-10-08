@@ -12,6 +12,7 @@ Makefile
 *.vcxproj.user
 *.vcproj
 *.sdf
+*.opensdf
 *.suo
 *.xcodeproj
 *.cbp
