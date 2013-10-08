@@ -2,12 +2,17 @@ syntax: glob
 bin
 obj
 .DS_Store
+ipch
 
 Makefile
 *.make
 *.sln
 *.vcxproj
+*.vcxproj.filters
+*.vcxproj.user
 *.vcproj
+*.sdf
+*.suo
 *.xcodeproj
 *.cbp
 *.workspace
