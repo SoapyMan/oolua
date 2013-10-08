@@ -26,7 +26,7 @@
 				__pragma(warning(push)) \
 				__pragma(warning(disable : 4127)) \
 				CPPUNIT_ASSERT_THROW_MESSAGE(CPPUNIT_NS::AdditionalMessage() \
-												, expression, \
+												, expression \
 												, ExceptionType) \
 				__pragma(warning(pop))
 #			endif
