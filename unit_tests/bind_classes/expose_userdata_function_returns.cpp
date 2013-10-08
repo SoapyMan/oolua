@@ -53,3 +53,11 @@ OOLUA_EXPORT_FUNCTIONS(UserDataFunctionReturnLuaMaybeNullTraits
 						, ptrConst
 						, constPtrConst)
 OOLUA_EXPORT_FUNCTIONS_CONST(UserDataFunctionReturnLuaMaybeNullTraits)
+
+OOLUA_EXPORT_FUNCTIONS(LightUserDataFunctionReturnTraits
+						, value)
+OOLUA_EXPORT_FUNCTIONS_CONST(LightUserDataFunctionReturnTraits)
+
+OOLUA_EXPORT_FUNCTIONS(CastLightUserDataFunctionReturnTraits
+						, ptr)
+OOLUA_EXPORT_FUNCTIONS_CONST(CastLightUserDataFunctionReturnTraits)

@@ -1,6 +1,6 @@
 /** 
 	\file export_func_to_lua.h
-	\date Tue Oct  1 18:59:25 2013
+	\date Mon Oct  7 23:41:41 2013
 	\details 
 	Configurable values as set when generating this file
 	\li class_functions 15 - Maximum amount of class functions that can be registered for each proxied type	(Default 15)

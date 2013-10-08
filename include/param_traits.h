@@ -25,6 +25,11 @@
 struct lua_State;
 namespace OOLUA
 {
+/*
+	TODO pull_type is really an incorrect name for return types
+	yet it has this name to be the same as input parameters.
+	Consider changing the name of both to something more suitable.
+*/
 
 /** \addtogroup OOLuaTraits Traits
 @{
@@ -84,6 +89,27 @@ for parameters contain as part of their name "out", "in" or a combination.
 		undefined.
 	*/
 	template<typename T>struct lua_out_p;
+
+	/** \struct light_p
+		\brief Input parameter trait
+		\details
+		The calling Lua procedure supplies a LUA_TLIGHTUSERDATA which will be cast to the
+		requested T type. If T is not the correct type for the light userdata then
+		the casting is undefined.
+		A light userdata is never owned by Lua
+	 */
+	template<typename T>struct light_p;
+
+	/** \struct light_return
+		\brief Return trait for a light userdata type
+		\details
+		The type returned from the function is a not a OOLUA::Proxy_class type yet either
+		a void pointer or a pointer of another type. When the function returns it will push
+		a LUA_TLIGHTUSERDATA to the stack.
+		A light userdata us never owned by Lua.
+		This is only valid for function return types.
+	*/
+	template<typename T>struct light_return;
 
 	/** \struct lua_return
 		\brief Return trait for a type which will be owned by Lua
@@ -357,6 +383,20 @@ for parameters contain as part of their name "out", "in" or a combination.
 	};
 
 	template<typename T>
+	struct light_p
+	{
+		typedef T type;
+		typedef void* raw;
+		typedef void* pull_type;
+		enum { in = 1 };
+		enum { out = 0 };
+		enum { owner = No_change };
+		enum { is_by_value = 0 };
+		enum { is_constant = 0 };
+		enum { is_integral = 1 };
+	};
+
+	template<typename T>
 	struct ref_to_const_ptr
 	{
 		enum{value = 0};
@@ -414,6 +454,21 @@ for parameters contain as part of their name "out", "in" or a combination.
 		typedef char type_can_not_be_integral [is_integral ? -1 : 1 ];
 		typedef char type_can_not_be_just_a_reference_to_type [	LVD::is_same<raw&, type>::value ? -1 : 1];
 		typedef char type_can_not_be_just_a_const_reference_to_type [ LVD::is_same<raw const&, type>::value ? -1 : 1];
+	};
+
+
+	template<typename T>
+	struct light_return
+	{
+		typedef T type;
+		typedef void* raw;
+		typedef void* pull_type;
+		enum { in = 0 };
+		enum { out = 1 };
+		enum { owner = No_change };
+		enum { is_by_value = 0 };
+		enum { is_constant = 0 };
+		enum { is_integral = 1 };
 	};
 
 	template<typename T>
@@ -572,6 +627,12 @@ for parameters contain as part of their name "out", "in" or a combination.
 			enum {value = 1};
 		};
 
+		template<typename T>
+		struct has_param_traits< light_p<T> >
+		{
+			enum {value = 1};
+		};
+
 		///////////////////////////////////////////////////////////////////////////////
 		///  @struct param_type_typedef
 		///  Typedefs the raw underlying type weather it is already a raw type or
@@ -580,30 +641,13 @@ for parameters contain as part of their name "out", "in" or a combination.
 		template<typename T, bool True>
 		struct param_type_typedef
 		{
-			typedef typename T::type type;
-			typedef typename T::pull_type pull_type;
-			typedef typename T::raw raw;
-			enum { in = T::in};
-			enum { out = T::out};
-			enum { owner = T::owner};
-			enum { is_by_value = T::is_by_value };
-			enum { is_constant = T::is_constant };
-			enum { is_integral = T::is_integral };
+			typedef T traits;
 		};
 
 		template<typename T>
 		struct param_type_typedef<T, false>
 		{
-			typedef in_p<T> in_param;
-			typedef typename in_param::type type;
-			typedef typename in_param::pull_type pull_type;
-			typedef typename in_param::raw raw;
-			enum { in = 1};
-			enum { out = 0};
-			enum { owner = No_change};
-			enum { is_by_value = in_param::is_by_value };
-			enum { is_constant = in_param::is_constant };
-			enum { is_integral = in_param::is_integral };
+			typedef in_p<T> traits;
 		};
 
 		///////////////////////////////////////////////////////////////////////////////
@@ -614,17 +658,17 @@ for parameters contain as part of their name "out", "in" or a combination.
 		template<typename T>
 		struct param_type
 		{
-			typedef param_type_typedef<T, has_param_traits<T>::value> p_type;
-			typedef typename p_type::type  type;
-			typedef typename p_type::pull_type pull_type;
-			typedef typename p_type::raw raw;
+			typedef typename param_type_typedef<T, has_param_traits<T>::value>::traits traits;
+			typedef typename traits::type  type;
+			typedef typename traits::pull_type pull_type;
+			typedef typename traits::raw raw;
 
-			enum { in = p_type::in };
-			enum { out = p_type::out };
-			enum { owner = p_type::owner };
-			enum { is_by_value = p_type::is_by_value };
-			enum { is_constant = p_type::is_constant };
-			enum { is_integral = p_type::is_integral };
+			enum { in = traits::in };
+			enum { out = traits::out };
+			enum { owner = traits::owner };
+			enum { is_by_value = traits::is_by_value };
+			enum { is_constant = traits::is_constant };
+			enum { is_integral = traits::is_integral };
 		};
 
 		template<typename T>
@@ -655,10 +699,6 @@ for parameters contain as part of their name "out", "in" or a combination.
 			enum { is_integral = 1 };
 		};
 
-
-
-
-
 		template<typename T, bool True>
 		struct return_type_typedef
 		{
@@ -681,6 +721,12 @@ for parameters contain as part of their name "out", "in" or a combination.
 
 		template<typename T>
 		struct has_return_traits< lua_return<T> >
+		{
+			enum {value = 1};
+		};
+
+		template<typename T>
+		struct has_return_traits< light_return<T> >
 		{
 			enum {value = 1};
 		};
@@ -885,7 +931,7 @@ namespace OOLUA
 		enum LUA
 		{
 			BOOLEAN = 1,
-
+			LIGHTUSERDATA = 2,
 			NUMBER = 3,
 			STRING = 4,
 			TABLE = 5,
@@ -906,6 +952,18 @@ namespace OOLUA
 		//Used for constructors to check parameters on the stack
 		template<typename Cpp_type, int Lua_type>
 		struct lua_type_is_cpp_type;
+
+		/*
+		Specialisation
+		This is required as Type_enum_defaults will strip the pointer and then can_convert_to_int
+		uses the resulting type with a reference applied. This means it will try to use
+		void& which is illegal.
+		*/
+		template<>
+		struct lua_type_is_cpp_type<void*, NUMBER>
+		{
+			enum {value = 0 };
+		};
 
 		template<typename Cpp_type>
 		struct lua_type_is_cpp_type<Cpp_type, NUMBER>
@@ -946,6 +1004,12 @@ namespace OOLUA
 			>::type Table_types;
 			enum {value = TYPELIST::IndexOf<Table_types, Cpp_type>::value == -1 ? 0 : 1};
 		};
+		template<typename Cpp_type>
+		struct lua_type_is_cpp_type<Cpp_type, LIGHTUSERDATA>
+		{
+			enum {value = LVD::is_same<void*, Cpp_type>::value};
+		};
+
 	} // namespace INTERNAL // NOLINT
 	/**\endcond*/
 } // namespace OOLUA

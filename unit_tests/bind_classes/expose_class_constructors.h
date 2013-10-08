@@ -62,4 +62,24 @@ OOLUA_PROXY(ConstructorThrowsStdException)
 	)
 OOLUA_PROXY_END
 
+OOLUA_PROXY(LightVoidUserDataConstructor)
+	OOLUA_TAGS(
+		No_default_constructor
+	)
+	OOLUA_CTORS(
+		OOLUA_CTOR(light_p<void*>)
+	)
+	OOLUA_MEM_FUNC_CONST(light_return<void*>, get_ptr)
+OOLUA_PROXY_END
+
+OOLUA_PROXY(LightNoneVoidUserDataConstructor)
+	OOLUA_TAGS(
+		No_default_constructor
+	)
+	OOLUA_CTORS(
+		OOLUA_CTOR(light_p<InvalidStub*>)
+	)
+	OOLUA_MEM_FUNC_CONST(light_return<InvalidStub*>, get_ptr)
+OOLUA_PROXY_END
+
 #endif

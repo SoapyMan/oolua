@@ -31,10 +31,10 @@
 		\li LuaJIT 1.1.8 and 2.0 http://www.luajit.org/
 
 	\section OOLuaLinks Links
-		\li Project Home  http://oolua.org TODO add main page
-		\li Library documentation http://docs.oolua.org
-		\li Issue tracker http://code.google.com/p/oolua/issues/list TODO update this
-		\li Mailing list http://www.freelists.org/list/oolua
+		\li Project Home  http://oolua.org
+		\li Library documentation http://oolua.org/docs
+		\li Issue tracker http://oolua.org/issues
+		\li Mailing list http://oolua.org/mailinglist
 		\li Twitter http://twitter.com/OOLua
 
 	\section OOLuaLicence Licence

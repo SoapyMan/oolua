@@ -19,7 +19,7 @@
 
 namespace OOLUA
 {
-
+	bool push(lua_State* const vm, void* lightud);
 	bool push(lua_State* const vm, bool const& value);
 	bool push(lua_State* const vm, char const * const& value);
 	bool push(lua_State* const vm, char * const& value);
@@ -33,6 +33,7 @@ namespace OOLUA
 	bool pull(lua_State* const vm, std::string& value);
 //#endif
 	//cpp called
+	bool pull(lua_State* const vm, void*& value);
 	bool pull(lua_State* const vm, bool& value);
 	bool pull(lua_State* const vm, double& value);
 	bool pull(lua_State* const vm, float& value);
@@ -56,6 +57,7 @@ namespace OOLUA
 
 			void pull_error(lua_State* vm, int idx, char const* when_pulling_this_type);
 
+			void get(lua_State* const vm, int idx, void*& value);
 			void get(lua_State* const vm, int idx, bool& value);
 			void get(lua_State* const vm, int idx, char const*& value);
 			void get(lua_State* const vm, int idx, char *& value);

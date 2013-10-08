@@ -71,6 +71,8 @@ MSC_POP_COMPILER_WARNING_OOLUA
 							return 1;
 						}
 						return 0;
+					case LUA_TLIGHTUSERDATA:
+						return lua_type_is_cpp_type<typename ParamWithTraits::raw, LUA_TLIGHTUSERDATA>::value && ++index ? 1 : 0;
 					default:
 						return 0;
 						break;

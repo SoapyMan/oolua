@@ -4,7 +4,6 @@
 #include "oolua.h"
 #include "cpp_userdata_function_params.h"
 
-
 /**[ExposeOutParamsUserData]*/
 OOLUA_PROXY(HasIntMember)
 OOLUA_PROXY_END
@@ -42,5 +41,15 @@ OOLUA_PROXY(InOutParamUserData)
 	OOLUA_TAGS(Abstract)
 OOLUA_PROXY_END
 /**[ExposeOutParamsUserData]*/
+
+OOLUA_PROXY(LightParamUserData)
+	OOLUA_TAGS(Abstract)
+	OOLUA_MEM_FUNC(void, value, light_p<void*>)
+OOLUA_PROXY_END
+
+OOLUA_PROXY(LightNoneVoidParamUserData)
+	OOLUA_TAGS(Abstract)
+	OOLUA_MEM_FUNC(void, ptr, light_p<InvalidStub*>)
+OOLUA_PROXY_END
 
 #endif

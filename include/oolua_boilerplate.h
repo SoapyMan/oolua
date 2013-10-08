@@ -1,6 +1,6 @@
 /** 
 	\file oolua_boilerplate.h
-	\date Tue Oct  1 18:59:25 2013
+	\date Mon Oct  7 23:41:41 2013
 	\details 
 	Configurable values as set when generating this file
 	\li constructor_params 5 - Maximum amount of parameters for a constructor of a proxied type	(Default 5)
@@ -27,7 +27,7 @@
 #define OOLUA_BACK_INTERNAL_NUM(NUM) \
 MSC_PUSH_DISABLE_CONDITIONAL_CONSTANT_OOLUA \
 	if( P ## NUM ## _::out ) \
-		OOLUA::INTERNAL::Member_func_helper<P ## NUM ##_, P ## NUM ##_::owner>::push2lua(vm, p ## NUM); \
+		OOLUA::INTERNAL::Member_func_helper<P ## NUM ##_::traits, P ## NUM ##_::owner>::push2lua(vm, p ## NUM); \
 MSC_POP_COMPILER_WARNING_OOLUA
 #define OOLUA_BACK_INTERNAL_0
 #define OOLUA_BACK_INTERNAL_1 OOLUA_BACK_INTERNAL_NUM(1)
@@ -49,7 +49,7 @@ Functions proxied using the following macro may have traits
 	P ## NUM ##_::pull_type p ## NUM; \
 	MSC_PUSH_DISABLE_CONDITIONAL_CONSTANT_OOLUA \
 	if( P ## NUM ##_::in ) \
-		OOLUA::INTERNAL::Member_func_helper<P ## NUM ##_, P ## NUM ##_::owner>::get(rolling_param_index, vm, p ## NUM); \
+		OOLUA::INTERNAL::Member_func_helper<P ## NUM ##_::traits, P ## NUM ##_::owner>::get(rolling_param_index, vm, p ## NUM); \
 	MSC_POP_COMPILER_WARNING_OOLUA
 
 #define OOLUA_PARAMS_INTERNAL_0(StackIndex)
@@ -175,7 +175,7 @@ parameters.
 
 #define OOLUA_CONSTRUCTOR_PARAM_NUM(NUM) \
 	typename P##NUM::pull_type p##NUM; \
-	Member_func_helper<P##NUM, P##NUM::owner>::get(index, vm, p##NUM); \
+	Member_func_helper<typename P##NUM::traits, P##NUM::owner>::get(index, vm, p##NUM); \
 	Converter<typename P##NUM::pull_type, typename P##NUM::type> p##NUM##_(p##NUM);
 #define OOLUA_CONSTRUCTOR_PARAM_1 OOLUA_CONSTRUCTOR_PARAM_NUM(1)
 #define OOLUA_CONSTRUCTOR_PARAM_2 OOLUA_CONSTRUCTOR_PARAM_1  OOLUA_CONSTRUCTOR_PARAM_NUM(2)

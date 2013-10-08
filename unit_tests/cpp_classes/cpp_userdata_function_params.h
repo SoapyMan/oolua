@@ -29,6 +29,15 @@ typedef MockFunctionParamType<oolua_test_userdata_in_out_traits, HasIntMember> I
 struct oolua_test_userdata_ownership_traits{};
 typedef FunctionParamType<oolua_test_userdata_in_out_traits, Stub1> OwnershipParamUserData;
 typedef MockFunctionParamType<oolua_test_userdata_in_out_traits, Stub1> OwnershipParamUserDataMock;
+
+struct oolua_test_userdata_light_in_traits{};
+typedef FunctionParamType<oolua_test_userdata_light_in_traits, void*> LightParamUserData;
+typedef MockFunctionParamType<oolua_test_userdata_light_in_traits, void*> LightParamUserDataMock;
+
+typedef FunctionParamType<oolua_test_userdata_light_in_traits, InvalidStub> LightNoneVoidParamUserData;
+typedef MockFunctionParamType<oolua_test_userdata_light_in_traits, InvalidStub> LightNoneVoidParamUserDataMock;
+
+
 /**[CppOutParamsUserData]*/
 
 #endif

@@ -1,0 +1,14 @@
+syntax: glob
+bin
+obj
+.DS_Store
+
+Makefile
+*.make
+*.sln
+*.vcxproj
+*.vcproj
+*.xcodeproj
+*.cbp
+*.workspace
+

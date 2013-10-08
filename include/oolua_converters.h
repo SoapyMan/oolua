@@ -329,7 +329,7 @@ namespace OOLUA
 
 
 		///////////////////////////////////////////////////////////////////////////////
-		///  Specialisation for C style strings
+		/// Specialisation for C style strings
 		///	This removes const.
 		///	The cast has to happen somewhere if a function want to take a none
 		///	modifiable string as char* tut tut but it happerns.
@@ -345,6 +345,47 @@ namespace OOLUA
 			Converter& operator =(Converter const &);
 			Converter(Converter const &);
 			char * m_t;
+		};
+
+		///////////////////////////////////////////////////////////////////////////////
+		/// Specialisation for light user data
+		/// Casts from a void pointer to Real which is a pointer
+		///	The cast has to happen somewhere if a light user data type is not a void
+		/// pointer.
+		///////////////////////////////////////////////////////////////////////////////
+		template<typename Real>
+		struct Converter<void*, Real>
+		{
+			Converter(void* t)
+				: m_t(static_cast<Real>(t))
+			{}
+			operator Real&()
+			{
+				return m_t;
+			}
+			Converter& operator =(Converter const &);
+			Converter(Converter const &);
+			Real m_t;
+		};
+
+		///////////////////////////////////////////////////////////////////////////////
+		/// Specialisation for light user data
+		///	This specialisation is required because otherwise there would be
+		/// ambiguity over which instance to use,
+		///////////////////////////////////////////////////////////////////////////////
+		template<>
+		struct Converter<void*, void*>
+		{
+			Converter(void*& t)
+				: m_t(t)
+			{}
+			operator void*&()
+			{
+				return m_t;
+			}
+			Converter& operator =(Converter const &);
+			Converter(Converter const &);
+			void*& m_t;
 		};
 
 	} // namespace INTERNAL //NOLINT

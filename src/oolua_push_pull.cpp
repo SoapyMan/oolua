@@ -79,6 +79,11 @@ namespace OOLUA
 
 	} // namespace INTERNAL //NOLINT
 
+	bool push(lua_State* const vm, void * lightud)
+	{
+		lua_pushlightuserdata(vm, lightud);
+		return true;
+	}
 
 	bool push(lua_State* const vm, bool const& value)
 	{
@@ -133,6 +138,13 @@ namespace OOLUA
 	{
 		assert(vm);
 		return value.push_on_stack(vm);
+	}
+
+	bool pull(lua_State* const vm, void*& value)
+	{
+		if( !INTERNAL::cpp_runtime_type_check_of_top(vm, LUA_TLIGHTUSERDATA, "light userdata") ) return false;
+		value = lua_touserdata(vm, -1);
+		return true;
 	}
 
 	bool pull(lua_State* const vm, bool& value)
@@ -204,6 +216,14 @@ namespace OOLUA
 				luaL_error(vm, "trying to pull %s when %s is on stack"
 							, when_pulling_this_type
 							, lua_typename(vm, lua_type(vm, idx)) );
+			}
+
+			void get(lua_State* const vm, int idx, void*& value)
+			{
+#if OOLUA_RUNTIME_CHECKS_ENABLED  == 1
+				if( lua_type(vm, idx) != LUA_TLIGHTUSERDATA )pull_error(vm, idx, "light userdata");
+#endif
+				value = lua_touserdata(vm, idx);
 			}
 
 			void get(lua_State* const vm, int idx, bool& value)

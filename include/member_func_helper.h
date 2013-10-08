@@ -67,6 +67,39 @@ namespace OOLUA
 		template<typename TypeWithTraits, int owner>struct Member_func_helper;
 
 		/*
+		Specialisation for the light_return type.
+		*/
+		template<typename LightUdType>
+		struct Member_func_helper<light_return<LightUdType>, No_change>
+		{
+			static void push2lua(lua_State* vm, LightUdType ptr)
+			{
+				OOLUA::push(vm, static_cast<void*>(ptr));
+			}
+		};
+
+		/*
+		Specialisation for the light_p parameter type.
+		*/
+		template<typename LightUdType>
+		struct Member_func_helper<light_p<LightUdType>, No_change>
+		{
+			static void get(lua_State* const vm, int idx, void*& value)
+			{
+				OOLUA::INTERNAL::LUA_CALLED::get(vm, idx, value);
+			}
+			static void get(int& idx, lua_State* const vm, void*& value)
+			{
+				get(vm, idx, value);
+				++idx;
+			}
+			static void push2lua(lua_State* /*vm*/, void* /*ptr*/) // NOLINT(readability/casting)
+			{
+				assert(0 && "this function should not be called");
+			}
+		};
+
+		/*
 		Specialisation for the maybe_null type.
 		If NULL it pushes nil to the stack else calls the normal helper static function.
 		*/
@@ -116,13 +149,13 @@ namespace OOLUA
 
 			static void get(lua_State* const vm, int /*idx*/, lua_State*& vm1)
 			{
-				typedef char type_has_to_be_calling_lua_state[LVD::is_same<param_type<calling_lua_state>, TypeWithTraits>::value ? 1 : -1];
+				typedef char type_has_to_be_calling_lua_state[LVD::is_same<in_p<calling_lua_state>, TypeWithTraits>::value ? 1 : -1];
 				vm1 = vm;
 			}
 
 			static void get(int& /*idx*/, lua_State* const vm, lua_State*& vm1)
 			{
-				typedef char type_has_to_be_calling_lua_state[LVD::is_same<param_type<calling_lua_state>, TypeWithTraits>::value ? 1 : -1];
+				typedef char type_has_to_be_calling_lua_state[LVD::is_same<in_p<calling_lua_state>, TypeWithTraits>::value ? 1 : -1];
 				vm1 = vm;
 			}
 

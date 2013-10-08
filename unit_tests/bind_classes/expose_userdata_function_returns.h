@@ -57,4 +57,15 @@ OOLUA_PROXY(UserDataFunctionReturnLuaMaybeNullTraits)
 	OOLUA_MEM_FUNC(lua_maybe_null<Stub1 const*const>, constPtrConst)
 OOLUA_PROXY_END
 
+
+OOLUA_PROXY(LightUserDataFunctionReturnTraits)
+	OOLUA_TAGS(Abstract)
+	OOLUA_MEM_FUNC(light_return<void*>, value)
+OOLUA_PROXY_END
+
+OOLUA_PROXY(CastLightUserDataFunctionReturnTraits)
+	OOLUA_TAGS(Abstract)
+	OOLUA_MEM_FUNC(light_return<InvalidStub*>, ptr)
+OOLUA_PROXY_END
+
 #endif

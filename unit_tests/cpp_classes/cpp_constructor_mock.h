@@ -220,4 +220,29 @@ struct ConstructorThrowsStdException
 	ConstructorThrowsStdException(int);// NOLINT
 };
 
+struct LightVoidUserDataConstructor
+{
+	LightVoidUserDataConstructor(void* ptr)
+		: m_ptr(ptr)
+	{}
+	void* get_ptr() const
+	{
+		return m_ptr;
+	}
+private:
+	void* m_ptr;
+};
+
+struct LightNoneVoidUserDataConstructor
+{
+	LightNoneVoidUserDataConstructor(InvalidStub* ptr)
+		: m_ptr(ptr)
+	{}
+	InvalidStub* get_ptr() const
+	{
+		return m_ptr;
+	}
+private:
+	InvalidStub* m_ptr;
+};
 #endif

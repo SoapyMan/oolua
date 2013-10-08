@@ -29,6 +29,7 @@ namespace OOLUA
 		indicate success and failure.
 		\see OOLuaErrorReporting
 	*/
+	bool push(lua_State* const vm, void* lightud);
 	bool push(lua_State* const vm, bool const& value);
 	bool push(lua_State* const vm, std::string const& value);
 	bool push(lua_State* const vm, char const * const& value);
@@ -55,6 +56,7 @@ namespace OOLUA
 		indicate success and failure.
 		\see OOLuaErrorReporting
 	*/
+	bool pull(lua_State* const vm, void*& value);
 	bool pull(lua_State* const vm, bool& value);
 	bool pull(lua_State* const vm, std::string& value);
 	bool pull(lua_State* const vm, double& value);
@@ -75,6 +77,7 @@ namespace OOLUA
 	{
 		namespace LUA_CALLED
 		{
+			void get(lua_State* const vm, int idx, void*& value);
 			void get(lua_State* const vm, int idx, bool& value);
 			void get(lua_State* const vm, int idx, std::string& value);
 			void get(lua_State* const vm, int idx, double& value);
