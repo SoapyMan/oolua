@@ -1,9 +1,10 @@
 OOLua Cross platform C++ and Lua binding framework
 ===================================================
-Project Home : http://code.google.com/p/oolua/
+Project Home : http://oolua.org
 
-Documentation for OOLua is available in HTML format.
+Offline HTML documentation in OOLua releases is contained in the download.
 Please direct your browser to:
     docs/index.html
     or
     docs.html
+Online HTML Documentation is available at http://oolua.org/docs
