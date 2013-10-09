@@ -32,20 +32,19 @@ namespace OOLUA
 	/** \endcond */
 
 	/**	\struct Lua_ref
-		\brief A typed wrapper for a Lua value
+		\brief A typed wrapper for a Lua reference
 		\details
-		The Lua_ref templated class stores a reference using Lua's
-		reference system luaL_ref and luaL_unref. This class also stores the
-		lua_State for which the reference is valid, so that one from a
-		different Lua universe is difficult to be used incorrectly. A reference
-		from the same Lua universe yet a different lua_State is valid to be used
-		in the universe.
+		The Lua_ref templated class stores a reference using Lua's reference system
+		luaL_ref and luaL_unref, along with a lua_State. The reason this class stores
+		the lua_State is to make it difficult to correctly use the reference with
+		another universe. A reference from the same Lua universe, even if it is from
+		a different lua_State, is valid to be used in the universe.
 		<p>
 		The class takes ownership of any reference passed either to the
 		\ref OOLUA::Lua_ref::Lua_ref(lua_State* const,int const&) "two argument constructor"
 		or the \ref OOLUA::Lua_ref::set_ref "set_ref" function. On going out of scope
 		a \ref OOLUA::Lua_ref::valid "valid" reference is guaranteed to be released,
-		you can also force a release by passing an instance to \ref OOLUA::Lua_ref::swap
+		you may also force a release by passing an instance to \ref OOLUA::Lua_ref::swap
 		"swap" for which \ref OOLUA::Lua_ref::valid "valid" returns false.
 		<p>
 		There are two special values for the reference which Lua provides,
@@ -56,11 +55,11 @@ namespace OOLUA
 				by luaL_ref
 		\tparam ID Lua type as returned by lua_type
 		\note
-			\li Universe A call to luaL_newstate or lua_newstate creates a
+			\li Universe: A call to luaL_newstate or lua_newstate creates a
 		Lua universe and a universe is completely independant of any other
-		universe. lua_newthread and coroutine.create create a lua_State
+		universe. lua_newthread and coroutine.create, create a lua_State
 		in an already existing universe.\n
-		Term first heard in a mailing list post by Mark Hamburg
+		Term first heard in a Lua mailing list post by Mark Hamburg.
 	*/
 	template<int ID>
 	struct Lua_ref
@@ -100,6 +99,10 @@ namespace OOLUA
 		 */
 		Lua_ref(Lua_ref const& rhs) OOLUA_DEFAULT;
 
+		/**
+			\brief
+			Destructor which releases a valid reference.
+		*/
 		~Lua_ref()OOLUA_DEFAULT;
 
 		/**
@@ -133,15 +136,18 @@ namespace OOLUA
 		bool pull(lua_State* const vm) OOLUA_DEFAULT;
 		bool lua_push(lua_State* const vm)const;
 		bool lua_get(lua_State* const vm, int idx);
+		/** \endcond*/
 
 		/**
 			\brief
-			Yes I know this is bad but it makes other things work nicely.
-			Can you just pretend you have never seen it ?
+			Returns the lua_State assocaiated with the Lua reference.
 		*/
 		lua_State* state() const { return m_lua; }
-		/** \endcond*/
 
+		/**
+			\brief
+			Returns the integer Lua reference value.
+		*/
 		int const& ref()const;
 	private:
 		/** \cond INTERNAL Yes I know this is bad \endcond*/

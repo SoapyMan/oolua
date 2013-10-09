@@ -80,7 +80,7 @@
  	\brief OOLua has three types to help interact with Lua types
  	\section OOLuaTypesRef Lua_ref
  		\copydetails OOLUA::Lua_ref
- 		For your convenience there are two predefined typedefs:
+		<p>For your convenience there are two predefined typedefs:
  		\li \ref OOLUA::Lua_func_ref
  		\snippet exchange_lua2cpp.cpp FunctionReferencePull
 
