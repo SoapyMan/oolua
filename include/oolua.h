@@ -35,7 +35,6 @@
 		\li Library documentation http://oolua.org/docs
 		\li Issue tracker http://oolua.org/issues
 		\li Mailing list http://oolua.org/mailinglist
-		\li Twitter http://twitter.com/OOLua
 
 	\section OOLuaLicence Licence
 	OOLua:
