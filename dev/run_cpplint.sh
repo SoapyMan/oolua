@@ -7,13 +7,13 @@ cd ..
 ,-whitespace/line_length\
 ,-whitespace/labels\
 ,-whitespace/newline\
-,-legal/copyright\
 ,-build/header_guard\
 ,-build/include\
 ,-runtime/references\
 ,-runtime/explicit\
 ,-runtime/int\
 ,-runtime/sizeof\
+,-legal/copyright\
  --root=./include ./include/* ./src/* \
 ./unit_tests/cpp_classes/* ./unit_tests/test_classes/* ./unit_tests/bind_classes/* \
 ./unit_tests/string_is_integral/* ./unit_tests/tests_may_fail/* \
@@ -30,5 +30,9 @@ cd ..
 
 # ./unit_tests/cpp_classes/* ./unit_tests/test_classes/* ./unit_tests/bind_classes/* 2> ./build_logs/cpplint.out
 # --root=./include ./include/* ./src/* ./unit_tests/* 2> ./build_logs/cpplint.out
+#,-legal/copyright
 
+grep -v ^Ignoring ./build_logs/cpplint.out > ./build_logs/cpplint.tmpout
+grep -v ^Done ./build_logs/cpplint.tmpout > ./build_logs/cpplint.out
+rm ./build_logs/cpplint.tmpout
 cd dev
