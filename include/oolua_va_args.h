@@ -1,3 +1,27 @@
+/*
+The MIT License
+
+Copyright (c) 2009 - 2013 Liam Devine
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in
+all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+THE SOFTWARE.
+*/
+
 #ifndef OOLUA_VA_ARGS_H_
 #	define OOLUA_VA_ARGS_H_
 
@@ -328,15 +352,13 @@
  	@{
 	\brief Generates code using the minimal information
 	\details
-	Generates a function using the only the name FunctionName/RealClass::FunctionName
-	to resolve the function which is  to be proxied. As with taking the address of any C++
-	function, if there is any ambiguity it will fail to compile, in which case a user
-	should help the compiler by specifying more information via the \ref OOLuaExpressive
-	macros.
-	i.e. The longer the name the more information. \n
-	\note If the optional parmeter is not supplied then FunctionName is used for both
-	parameters
-	\note No \ref OOLuaTraits can be expressed with this group of macros
+	Generates a proxy function using the only the minimal of information which is generally
+	the name of the thing being proxied and possibly a new name for the proxy.
+	As with taking the address of any C++ function, if there is any ambiguity it will fail
+	to compile, in which case a user should help the compiler by specifying more information
+	using the matching, yet longer named \ref OOLuaExpressive DSL entry.\n
+	The longer DSL name requires more information. \n
+	\note No \ref OOLuaTraits can be expressed with this DSL group.
 	*/
 
 	/** \def OOLUA_MFUNC
@@ -355,7 +377,7 @@
 		\hideinitializer
 		\brief Deduce and generate a proxy for a constant member function
 		\details
-		OOLUA_MFUNC_CONST(FunctionName,Optional)
+		OOLUA_MFUNC_CONST(FunctionName, Optional)
 		\param FunctionName Name of the constant function to be proxied
 		\param Optional ProxyFunctionName. Defaults to FunctionName
 		\see \ref OOLuaConfigCppParams "cpp_params"
@@ -394,8 +416,8 @@
 	/** \addtogroup OOLuaExporting Exporting
 	@{
 		\brief Exports member functions
-		\details Defines which member functions will be registered with Lua when the class type
-		is registered. Even when there are no member functions to be exported you still
+		\details Exporting defines which member functions will be registered with Lua when the
+		class type is registered. Even when there are no member functions to be exported you still
 		need to inform OOLua about this. Calling an \ref OOLuaExporting "OOLUA_EXPORT*"
 		procedure in a header file is an error that will fail to compile.
 

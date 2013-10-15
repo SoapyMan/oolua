@@ -1,8 +1,29 @@
+/*
+The MIT License
+
+Copyright (c) 2009 - 2013 Liam Devine
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in
+all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+THE SOFTWARE.
+*/
+
 ///////////////////////////////////////////////////////////////////////////////
 ///  @file member_func_helper.h
-///  @author Liam Devine
-///  \copyright
-///  See licence.txt for more details.
 ///////////////////////////////////////////////////////////////////////////////
 #ifndef MEMBER_FUNC_HELPER_H_
 #	define MEMBER_FUNC_HELPER_H_
@@ -16,9 +37,16 @@
 
 namespace OOLUA
 {
-
+	/** \cond INTERNAL*/
 	namespace
 	{
+		/*
+			Member functions are allowed to do things which are not allowed when using
+			the public API function OOLUA::push:
+				\li Pushing a instance which has a Proxy_class using a value or reference
+					instead of a pointer.
+				\li Pushing an integral type by pointer
+		*/
 		template<typename Raw, typename T, int is_by_value = 0 >
 		struct proxy_maybe_by_ref
 		{
@@ -58,13 +86,21 @@ namespace OOLUA
 			}
 		};
 	} // namespace //NOLINT
+	/** \endcond */
 
-
-
+	/** \cond INTERNAL */
 	namespace INTERNAL
 	{
 
-		template<typename TypeWithTraits, int owner>struct Member_func_helper;
+		/**
+			\brief Handles the pushing and pulling of types for member functions
+			\tparam TypeWithTraits The wanted which is being exchanged with the stack. with
+			traits applied to it.
+			\tparam owner One of OOLUA::Owner entries which indicate which language owns the type
+		*/
+		template<typename TypeWithTraits, int owner>
+		struct Member_func_helper;
+		//TODO change Member_func_helper::push2lua to push
 
 		/*
 		Specialisation for the light_return type.
@@ -242,6 +278,7 @@ namespace OOLUA
 		};
 
 	} // namespace INTERNAL //NOLINT
+	/** \endcond */
 } // namespace OOLUA
 
 #endif

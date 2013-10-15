@@ -9,7 +9,7 @@
 - Added a new Lua module for \ref OOLuaComparison "comparisons" and updated C++ code, now compares with LuaBind,LuaBridge,SLB3 and SWIG
 - Added OOLua version macros \ref OOLUA_VERSION_MAJ \ref OOLUA_VERSION_MIN and \ref OOLUA_VERSION_PATCH
 - Base checking no longer touches the Lua stack
-- C string traits no longer use an std::string temporary
+- C string traits no longer use a std::string temporary
 - Script helper class now has \ref OOLUA::Script::push and \ref OOLUA::Script::pull methods
 - Bug fix. If an abstract class had a base class which was not abstract, then it was possible to call new on the type.
 - Renamed Table::set_value to \ref OOLUA::Table::set
@@ -24,6 +24,9 @@
 - Changed OOLUA_C_FUNCTION, it now requires a lua_State pointer instance identified as "vm" instead of 'l'
 - Added \ref OOLUA::light_p This pulls a light userdata from the stack and casts to the requested type
 - Added \ref OOLUA::light_return This is a function return type which pushes a light userdata onto the stack
+- Removed ability for \ref OOLUA::lua_acquire_ptr to be used on function returns, use OOLUA::lua_return instead
+- Removed ability for \ref OOLUA::cpp_acquire_ptr to be used for function parameters, use \ref OOLUA::cpp_in_p instead
+
 
 \section OOLuaChanges1-4-0 1.4.0
 - Added OOLUA_DEDUCE_FUNC(_CONST) for when there is no ambiguity for a function

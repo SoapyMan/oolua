@@ -5,16 +5,16 @@
 
 
 
-/** [HelloMoonCFuncAndProxy]*/
+/** [HelloMoonCFunc]*/
 void say(char const* input)
 {
 	printf("%s from a standalone function\n", input);
 }
-/** [HelloMoonCFuncAndProxy]*/
+/** [HelloMoonCFunc]*/
 
-/** [HelloMoonCFuncAndProxyMinimalist]*/
+/** [HelloMoonCFuncMinimalistProxy]*/
 OOLUA_CFUNC(say, l_say)
-/** [HelloMoonCFuncAndProxyMinimalist]*/
+/** [HelloMoonCFuncMinimalistProxy]*/
 
 /** [HelloMoonCFuncOverloaded]*/
 void expressive_say(char const* input)
@@ -29,15 +29,15 @@ void expressive_say(int input)
 /** [HelloMoonCFuncOverloaded]*/
 
 /** [HelloMoonCFuncOverloadedCast]*/
-OOLUA_CFUNC( (( void(*)(char const*))expressive_say), expressive_say)
+OOLUA_CFUNC( (( void(*)(char const*))expressive_say), cast_expressive_say)
 /** [HelloMoonCFuncOverloadedCast]*/
 
-/** [HelloMoonCFuncProxyExpressive]*/
+/** [HelloMoonCFuncExpressiveProxy]*/
 int expressive_lsay(lua_State* vm)
 {
-	OOLUA_C_FUNCTION(void, expressive_say, OOLUA::in_p<char const*>)
+	OOLUA_C_FUNCTION(void, expressive_say, char const*)
 }
-/** [HelloMoonCFuncProxyExpressive]*/
+/** [HelloMoonCFuncExpressiveProxy]*/
 
 
 /** [HelloMoonClass]*/
@@ -62,32 +62,43 @@ OOLUA_EXPORT_FUNCTIONS_CONST(Say)
 class Hello_moon : public CppUnit::TestFixture
 {
 	CPPUNIT_TEST_SUITE(Hello_moon);
-	CPPUNIT_TEST(hello_function);
+	CPPUNIT_TEST(hello_minimalist_function);
 	CPPUNIT_TEST(hello_expressive_function);
+	CPPUNIT_TEST(hello_cast_minimalist_function);
 	CPPUNIT_TEST(hello_function_no_registration);
 	CPPUNIT_TEST(hello_class_function);
 	CPPUNIT_TEST(hello_static_class_function);
 	CPPUNIT_TEST_SUITE_END();
 public:
-	/** [HelloMoonCFuncAndProxyMinimalistUsage]*/
-	void hello_function()
+	/** [HelloMoonCFuncMinimalistUsage]*/
+	void hello_minimalist_function()
 	{
 		using namespace OOLUA; //NOLINT(build/namespaces)
 		Script vm;
 		set_global(vm, "say", l_say);
 		run_chunk(vm, "say('Hello Lua')");
 	}
-	/** [HelloMoonCFuncAndProxyMinimalistUsage]*/
+	/** [HelloMoonCFuncMinimalistUsage]*/
 
-	/** [HelloMoonCFuncAndProxyExpressiveUsage]*/
+	/** [HelloMoonCFuncExpressiveUsage]*/
 	void hello_expressive_function()
 	{
 		using namespace OOLUA; //NOLINT(build/namespaces)
 		Script vm;
-		set_global(vm, "say", expressive_say);
+		set_global(vm, "say", expressive_lsay);
 		vm.run_chunk("say('Hello Lua')");
 	}
-	/** [HelloMoonCFuncAndProxyExpressiveUsage]*/
+	/** [HelloMoonCFuncExpressiveUsage]*/
+
+	/** [HelloMoonCFuncCastUsage]*/
+	void hello_cast_minimalist_function()
+	{
+		using namespace OOLUA; //NOLINT(build/namespaces)
+		Script vm;
+		set_global(vm, "say", cast_expressive_say);
+		vm.run_chunk("say('Hello Lua, we are a cast function not')");
+	}
+	/** [HelloMoonCFuncCastUsage]*/
 
 	/** [HelloMoonCFuncAndProxyUsageLua]*/
 	void hello_function_no_registration()

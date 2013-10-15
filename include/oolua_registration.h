@@ -21,6 +21,29 @@
 	SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
+/*
+The MIT License
+
+Copyright (c) 2009 - 2013 Liam Devine
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in
+all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+THE SOFTWARE.
+*/
 
 #ifndef OOLUA_REGISTRATION_H_
 #   define OOLUA_REGISTRATION_H_
@@ -47,8 +70,8 @@ namespace OOLUA
 	/**
 		\brief Registers the class type T with an instance of lua_State
 		\tparam T Class type to register with OOLua
-		\details Registers a class type T with OOLua if there is a Proxy for the type
-		and the type has not already been registered with the instance.
+		\details Registers a class type T with OOLua if there is a Proxy_class
+		for the type and the type has not already been registered with the instance.
 		\todo this should also register base classes is this not happending?
 	*/
 	template<typename T>void register_class(lua_State * vm);
@@ -78,8 +101,8 @@ namespace OOLUA
 	{
 		template<typename T>struct garbage_collect;
 
-		template<typename T, typename B>struct Add_base;
-		template<typename T, typename TL, int index, typename B>struct Register_base;
+		template<typename T, typename B>struct Add_base;//TODO change to Add_base_methods
+		template<typename T, typename TL, int index, typename B>struct Register_base;//TODO change to Register_base_methods
 
 		template<typename T, int HasNoPublicDestructor>struct set_delete_function;
 		template<typename T, bool HasNoPublicDestructor>struct set_owner_function;

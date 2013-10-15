@@ -13,6 +13,20 @@
 	@{
 	@}
 */
+/**
+	\cond INTERNAL
+	\namespace OOLUA::INTERNAL
+	\brief This is an implementation namespace for the library, which is not intended for general
+	usage
+	\endcond INTERNAL
+*/
+/**
+	\cond INTERNAL
+	\namespace OOLUA::INTERNAL::LUA_CALLED
+	\brief This is an implementation namespace for the library which is not intended for general
+	usage
+	\endcond INTERNAL
+*/
 
 /**
 	\addtogroup OOLuaConfig Library Configuration
@@ -25,6 +39,34 @@
 	@}
 */
 
+/**
+	\cond INTERNAL
+	\addtogroup OOLuaDeveloperDocs Developer Docs
+	@{
+		\namespace OOLUA::INTERNAL
+		\brief This is an implementation namespace for the library, which is not intended for general
+		usage
+
+		\namespace OOLUA::INTERNAL::LUA_CALLED
+		\brief This is an implementation namespace for the library which is not intended for general
+		usage
+
+		\addtogroup OOLuaGeneratorTemplates Generator Templates
+		@{
+			\brief Macros used to ease the generation of configuration specific code
+			\details
+			These are not templates is the C++ sense, even though they may use C++ templates.
+			Instead they are templates/stencils/patterns from which code will be generated given
+			a configuration specified value. The default values of which are:
+			\snippet oolua_generate.lua GenDefaultDetails
+		@}
+
+		\addtogroup OOLuaClassTypeChecking Class Type Checking
+		@{
+		@}
+	@}
+	\endcond
+*/
 
 /**
 \page OOLuaUseage Usage
@@ -43,9 +85,9 @@
 \page OOLuaFirstLook First look
 
 	\section HelloMoon Hello Moon
-		\snippet hello_moon.cpp HelloMoonCFuncAndProxy
-		\snippet hello_moon.cpp HelloMoonCFuncAndProxyMinimalist
-		\snippet hello_moon.cpp HelloMoonCFuncAndProxyMinimalistUsage
+		\snippet hello_moon.cpp HelloMoonCFunc
+		\snippet hello_moon.cpp HelloMoonCFuncMinimalistProxy
+		\snippet hello_moon.cpp HelloMoonCFuncMinimalistUsage
 
 	\section OOLuaConventions Conventions
 		\li \ref OOLuaDSL macros are upper case and prefixed with OOLUA_
@@ -58,20 +100,21 @@
  		\copydetails OOLUA::Script
 
 	\section OOLuaAndTheStack OOLua and the Lua stack
-		The Lua C API does not force you to treat the stack as such a data structure
+		The Lua C API does not force you to treat the stack as such a data structure,
 		with operations on just one end, instead for convenience it uses indices to
-		identify stack slots for a procedure. Given that it is a C API without C++'s name
-		mangling and overloading it also provides a function per type for pushing to the
-		stack.
+		identify stack slots for a procedure. Given that Lua is a C library without C++'s
+		name mangling and overloading, it also provides a function per type for pushing to
+		the stack.
 		<p>
-		OOLua tries to enforce a clean stack after operations as such it provides a simple
-		interface to the Lua stack which consists of two functions :
+		OOLua is a C++ library which tries to enforce a clean stack after operations, it
+		therefore provides a simpler interface to the Lua stack which consists of two
+		functions :
 			\arg \ref OOLUA::push "push" \copybrief OOLUA::push
 			\arg \ref OOLUA::pull "pull" \copybrief OOLUA::pull
  		<p>
- 		Most usage of OOLua will only require these functions to interact with the stack
- 		yet you are free to mix Lua C API calls if you take into account \ref OOLUA::pull
- 		"pull" removes top when it is valid.
+ 		Most usage of OOLua will only require these functions to interact with the stack,
+ 		although you are free to mix Lua C API calls if you take into account \ref OOLUA::pull
+ 		"pull" removes the top of the stack when it is valid.
 
  */
 
@@ -92,9 +135,9 @@
  			\subsection CallingALuaFunction Calling a Lua function
 			A Lua function can be called using the function object
 			\ref OOLUA::Lua_function of which there is an instance bound in the
-			constructor for Script \ref OOLUA::Script::call. Lua_function has
-			overloaded function call operators which take upto the maximum
-			defined OOLuaConfigLuaParams "\"lua_params\"".\n
+			constructor for Script \ref OOLUA::Script::call. \ref OOLUA::Lua_function
+			has overloaded function call operators which take upto the maximum
+			defined by \ref OOLuaConfigLuaParams "\"lua_params\"".\n
 
 			Name:
 			\snippet lua_caller.cpp CallingFunctionByGlobalName
@@ -138,7 +181,8 @@
 				\snippet expose_stub_classes.h MinimalProxyClass
 			<p>
 				\subsubsection ClassExporting Exporting
-				Secondly export member functions which are to be available to Lua for the type.
+				Secondly you export the member functions which are to be made available for the
+				type in Lua.
 				\copydetails OOLuaExporting
 				<p>
 				\snippet expose_stub_classes.cpp MinimalProxyExport
@@ -237,12 +281,37 @@
 	\section CFunctions C Functions
 		\subsection CFunctionMinimalist Minimalist
 		We have already seen the \ref OOLuaMinimalist version in the Hello Moon
-		example.
-		\copybrief OOLUA_CFUNC \copydetails OOLUA_CFUNC
+		example.\n
+		\copybrief OOLUA_CFUNC \n
+		\copydetails OOLUA_CFUNC
 		<p>
-		\snippet hello_moon.cpp HelloMoonCFuncAndProxy
-		\snippet hello_moon.cpp HelloMoonCFuncAndProxyMinimalist
-		\snippet hello_moon.cpp HelloMoonCFuncAndProxyMinimalistUsage
+		\snippet hello_moon.cpp HelloMoonCFunc
+		\snippet hello_moon.cpp HelloMoonCFuncMinimalistProxy
+		\snippet hello_moon.cpp HelloMoonCFuncMinimalistUsage
+
+		\subsection CFunctionExpressive Expressive
+		\copybrief OOLUA_C_FUNCTION \n
+		\copydetails OOLUA_C_FUNCTION
+		<p>
+		In the following example we have a C function which is overloaded, we can use the
+		\ref OOLuaExpressive DSL here in which we supply the return and parameter types.
+		The function will then be resolved to the correct overload.
+		\snippet hello_moon.cpp HelloMoonCFuncOverloaded
+		\snippet hello_moon.cpp HelloMoonCFuncExpressiveProxy
+		\snippet hello_moon.cpp HelloMoonCFuncExpressiveUsage
+
+		\subsection CFunctionMinimalistAnother Overloaded Minimalist
+		You may have noticed that we did not apply any \ref OOLuaTraits for the \ref CFunctionExpressive
+		"Expressive C version", so maybe it would be nice if we could do it another way; well that all
+		depends on what you consider nice! The function can not be resolved unless we give the
+		compiler more information, but in this case it does not mean we have to use the
+		\ref OOLuaExpressive DSL. We can instead cast the function pointer, note that a stand
+		alone function name is a function pointer, to the wanted type and therefore resolve
+		to the correct function overload whilst still using the \ref OOLuaMinimalist DSL
+		\snippet hello_moon.cpp HelloMoonCFuncOverloaded
+		\snippet hello_moon.cpp HelloMoonCFuncOverloadedCast
+		\snippet hello_moon.cpp HelloMoonCFuncCastUsage
+
 
 	\section OOLuaProxyTraits Traits
 		\copydetails OOLuaTraits <p>
@@ -323,7 +392,7 @@
 				\snippet construct.cpp ExampleCppAcquirePtr
 
 		\subsection OOLuaTraitReturnOrder Return Order
-				Lua supports multiple return values for functions ( return = [explist] ). The order of returns in the stack is shown in the following example, simply the first result will be inserted at the top of stack.
+				Lua supports multiple return values for functions ( return = [explist] ). The order of returns in the stack is shown in the following example, simply the first will be pushed to the top of the stack, then the second to the top. This continues until all returns have been pushed on to the stack and the final return is located at the top.
 				\snippet return_order.cpp TestLuaReturnOrder
 			C++ in a way also supports multiple returns via references. Here we have a C++ member function which returns an int, the function also assigns a new value to the parameter which is taken by reference.
 				\snippet return_order.cpp CppTraitReturnOrderOneParam

@@ -1,3 +1,29 @@
+/*
+The MIT License
+
+Copyright (c) 2009 - 2013 Liam Devine
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in
+all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+THE SOFTWARE.
+*/
+/**
+	\file oolua_member_function.h
+*/
 #ifndef OOLUA_MEMBER_FUNCTION_H_
 #	define OOLUA_MEMBER_FUNCTION_H_
 
@@ -72,10 +98,14 @@ namespace OOLUA
 
 
 		///////////////////////////////////////////////////////////////////////////////
-		///  inline public  member_caller
-		///  Member function dispatcher
-		///  @param [in]        lua_State *const \copydoc lua_State
-		///  @return int requirement of Lua functions
+		///  \brief Member function dispatcher
+		///	 \details This is the member function dispatcher which has the signature
+		///  of a \ref lua_CFunction and will be bound to a \ref lua_State by
+		///  OOLUA::register_class, to enable the calling of none constant member
+		///  functions. It receives the member function which it will call as an upvalue,
+		///  which is set a the time the function is bound.
+		///  @param[in] vm The lua_State on which to operate
+		///  @return int The number of returns from the function to Lua.
 		///////////////////////////////////////////////////////////////////////////////
 		template<typename Proxy_type, typename Base_type>
 		inline int member_caller(lua_State * vm)
@@ -85,15 +115,19 @@ namespace OOLUA
 #endif
 				typename Proxy_type::class_ *obj = INTERNAL::check_index_no_const<typename Proxy_type::class_>(vm, 1);
 				OOLUA_SELF_CHECK(obj, " ", Reg_type, class_name)
-				///get member function from upvalue
+				//get member function from upvalue
 				typename Proxy_class<Base_type >::Reg_type* r =
 						static_cast<typename Proxy_class<Base_type >::Reg_type*>(lua_touserdata(vm, lua_upvalueindex(1)));
 				Proxy_type P(obj);
-				return (P.*(r->mfunc))(vm);  ///call member function
+				return (P.*(r->mfunc))(vm); //call member function
 #if	OOLUA_USE_EXCEPTIONS == 1
 			OOLUA_MEMBER_FUNCTION_CATCH
 #endif
 		}
+
+		/**
+			\brief Dispatcher for constant member functions
+		*/
 		template<typename Proxy_type, typename Base_type>
 		inline int const_member_caller(lua_State * vm)
 		{
@@ -102,11 +136,11 @@ namespace OOLUA
 #endif
 				typename Proxy_type::class_ *obj = INTERNAL::check_index<typename Proxy_type::class_>(vm, 1);
 				OOLUA_SELF_CHECK(obj, "const", Reg_type_const, class_name_const)
-				///get member function from upvalue
+				//get member function from upvalue
 				typename Proxy_class<Base_type >::Reg_type_const* r =
 						static_cast<typename Proxy_class<Base_type >::Reg_type_const*>(lua_touserdata(vm, lua_upvalueindex(1)));
 				Proxy_type P(obj);
-				return (P.*(r->mfunc))(vm);  ///call member function
+				return (P.*(r->mfunc))(vm); //call member function
 #if	OOLUA_USE_EXCEPTIONS == 1
 			OOLUA_MEMBER_FUNCTION_CATCH
 #endif

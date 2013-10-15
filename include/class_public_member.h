@@ -1,9 +1,31 @@
-///////////////////////////////////////////////////////////////////////////////
-///  @file class_public_member.h
-///  @author Liam Devine
-///  \copyright
-///  See licence.txt for more details. \n
-///////////////////////////////////////////////////////////////////////////////
+/*
+The MIT License
+
+Copyright (c) 2009 - 2013 Liam Devine
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in
+all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+THE SOFTWARE.
+*/
+
+/**
+	\file class_public_member.h
+	\brief Proxies a class public member variable
+*/
 
 #ifndef CLASS_PUBLIC_MEMBER_H_
 #	define CLASS_PUBLIC_MEMBER_H_
@@ -56,6 +78,10 @@ namespace OOLUA
 	/** \endcond */
 } // namespace OOLUA
 
+
+//TODO Hmm these could use an Optional parameterfor the get/set name
+//consider changing this
+
 /** \addtogroup OOLuaDSL
  @{*/
 
@@ -64,7 +90,8 @@ namespace OOLUA
 
 	/** \def OOLUA_MEM_GETN
 		\hideinitializer
-		\brief Generates a getter for a public member
+		\brief Generates a getter for a public member, allowing a new to be set for
+		the proxy function.
 		\details OOLUA_MEM_GETN(get_name,id)
 		\param get_name	Name of the proxy function which is generated
 		\param id Public member name
@@ -113,6 +140,7 @@ namespace OOLUA
 	 */
 #	define OOLUA_MSET(id) OOLUA_MEM_SETN(set_##id, id)
 
+	//TODO this could also use optional parameters consider changing
 	/** \def OOLUA_MGET_MSET
 		\hideinitializer
 		\brief Generates both a getter and setter for a public member

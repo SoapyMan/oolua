@@ -1,16 +1,41 @@
+/*
+The MIT License
+
+Copyright (c) 2009 - 2013 Liam Devine
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in
+all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+THE SOFTWARE.
+*/
+
+/**
+	\file lua_function.h
+	\brief Provides the class OOLUA::Lua_function which is a helper for calling
+	Lua functions.
+*/
+
 #ifndef LUA_FUNCTION_H_
 #	define LUA_FUNCTION_H_
 
-///////////////////////////////////////////////////////////////////////////////
-///  @file lua_function.h
-///  @author Liam Devine
-///  \copyright
-///  See licence.txt for more details.
-///////////////////////////////////////////////////////////////////////////////
 #	include "lua_includes.h"
 #	include "fwd_push_pull.h"
 #	include "lua_ref.h"
 #	include "oolua_boilerplate.h"
+
 namespace OOLUA
 {
 
@@ -34,6 +59,15 @@ namespace OOLUA
 	return false;
 #endif
 
+/**
+	\addtogroup OOLuaGeneratorTemplates
+	@{
+*/
+/**
+	\brief Generates an OOLUA::Lua_function call operator
+	\hideinitializer
+	\param NUM Number of parameters for which it the template will generate the operator for
+*/
 #define OOLUA_INTERNAL_FUNC_OPERATOR(NUM) \
 	template<typename FUNC_TYPE OOLUA_COMMA_PREFIXED_TYPENAMES_##NUM > \
 	bool operator()(FUNC_TYPE const& func OOLUA_FCALL_PARAM_##NUM) \
@@ -46,7 +80,7 @@ namespace OOLUA
 		) return call(NUM, error_index); \
 		OOLUA_CALLER_HANDLE_FAIL \
 	}
-
+/**@}*/
 /** \endcond */
 
 
@@ -55,13 +89,12 @@ namespace OOLUA
 
 /**
 	\struct Lua_function
-	\brief
-	Struct which is used to call a Lua function.
+	\brief Structure which is used to call a Lua function.
 	\details
 	\ref OOLUA::Lua_function "Lua_function" is a lua_State function caller object, the state in which
 	it calls a function is specified in either the \ref OOLUA::Lua_function::Lua_function(lua_State*)
 	"constructor" or via \ref OOLUA::Lua_function::bind_script "bind_script".
-	This object provides function call operator overloads upto
+	This object provides function call operator overloads up to
 	\ref OOLuaConfigLuaParams "\"lua_params\"" count + 1 parameters, the first of which being
 	the function which is to be called and it's type maybe one of:
 		\li std::string A function in Lua's global table

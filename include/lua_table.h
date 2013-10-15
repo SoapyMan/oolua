@@ -1,10 +1,32 @@
-///////////////////////////////////////////////////////////////////////////////
-///  @file lua_table.h
-///  Wrapper around a table in Lua which allows quick and easy access.
-///  @author Liam Devine
-///  \copyright
-///  See licence.txt for more details.
-///////////////////////////////////////////////////////////////////////////////
+/*
+The MIT License
+
+Copyright (c) 2009 - 2013 Liam Devine
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in
+all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+THE SOFTWARE.
+*/
+
+/**
+	\file lua_table.h
+	\details Wrapper around a table in Lua which allows easy usage.
+*/
+
 #ifndef LUA_TABLE_H_
 #	define LUA_TABLE_H_
 
@@ -19,24 +41,24 @@
 namespace OOLUA
 {
 	/**	\class Table
-		\brief Wrapper around a table in Lua which allows quick and easy access.
+		\brief Wrapper around a table in Lua which allows easy usage
 		\details
+		\ref OOLUA::Table "Table" provides a simple typed C++ interface for the
+		Lua unordered and ordered associative container of the same name. Operations
+		which use the Lua stack ensure that the stack is the same on exit
+		as it was on entry, OOLua tries to force a clean stack(\ref OOLuaAndTheStack).
+
 		Any value can be retrieved or set from the table via the use of the template
-		member function. If the value asked for is not the correct type located
-		in the position an error can be reported, the type of which depends on \ref OOLuaErrorReporting \n
-		at:
-		 runs no checks on the table. Undefined if Lua instance is null or
-		(table or key is invalid) or value is not correct type.
-		 safe_at:
-		returns a bool to indicate for success.
-		try_at:
-		Function is only defined when exceptions are enabled.
-		throws Runtime_error when the key is not in the table
+		member functions \ref OOLUA::Table::set "set", \ref OOLUA::Table::at "at" or
+		\ref OOLUA::Table::safe_at "safe_at".
+		If the value asked for is not the correct type located in the position an
+		error can be reported, the type of which depends on \ref OOLuaErrorReporting
+		and the function which was called. See individual member function documentation
+		for details.
 
-		The functions guarantee that the Lua stack after operations is restored
-		to the state when entered.
-
-		See Unit Tests or CheatSheet for usage of constructor.
+		\note
+		The member function \ref OOLUA::Table::try_at "try_at" is only defined when exceptions
+		are enabled for the library.
 	*/
 	class Table
 	{
@@ -64,11 +86,19 @@ namespace OOLUA
 		~Table()OOLUA_DEFAULT;
 
 		/**@{*/
+		/**
+			\brief Associates the instance with the lua_State vm
+			\details Associates the instance with the lua_State vm.
+			If the table already has a lua_State bound to it
+				\li If the Current bound instance is not equal to vm and the
+				table has a valid reference, it releases the currently set reference
+				and sets vm as the bound instance.
+		*/
 		void bind_script(lua_State*  const vm);
 
 		/** \brief
-			Order of trying to initilaise :
-			\li name.empty() == true: Creates am invalid object.
+			Order of trying to initialise :
+			\li name.empty() == true: Creates an invalid object.
 			\li name found as a table in Lua global: Swaps the internal Lua_func_ref
 				with an instance initialised to an id obtained from the Lua registry.
 			\li name found as a table in Lua registry: Swaps the internal Lua_func_ref
@@ -87,17 +117,37 @@ namespace OOLUA
 
 		/**@{*/
 #if OOLUA_USE_EXCEPTIONS == 1
+		/**
+			\brief Function which throws on an error
+			\note This function is only defined when exceptions are enable for the library
+			\tparam T Key type
+			\tparam T1 Value type
+			\param[in] key
+			\param[out] value
+		*/
 		template<typename T, typename T1>void try_at(T const& key, T1& value);
 #endif
+		/**
+			\brief A safe version of \ref OOLUA::Table::at "at", which will always return
+			a boolean indicating the success of the function call.
+			\details This function will not throw an exception when exceptions are enabled
+			for the library.
+			\tparam T Key type
+			\tparam T1 Value type
+			\param[in] key
+			\param[out] value
+		*/
 		template<typename T, typename T1>bool safe_at(T const& key, T1& value);
 
 		/**
 			\brief
-			\tparam T key type
-			\tparam T1 value type
-
+			\tparam T Key type
+			\tparam T1 Value type
+			\param[in] key
+			\param[out] value
+			zreturn The same instance as value
 			\note
-			No error checking
+			No error checking.\n
 			It is undefined to call this function when:
 			\li table or the key are invalid
 			\li table does not contain the key
@@ -121,18 +171,24 @@ namespace OOLUA
 		/**@}*/
 
 		/** \brief
-			Returns a boolean which is the result of checking the state of the internal Lua_func_ref. */
+			Returns a boolean which is the result of checking the state of the internal Lua_func_ref.
+		*/
 		bool valid()const;
 
 		typedef void(*traverse_do_function)(lua_State* );//NOLINT
 		/** \deprecated*/
 		void traverse(traverse_do_function do_);
 
+		/**
+			\brief Provides access to the associated lua_State
+		*/
+		lua_State* state() const { return m_table_ref.m_lua; }
+
+
 		/** \cond INTERNAL*/
 		bool push_on_stack(lua_State* vm)const;
 		bool pull_from_stack(lua_State* vm);
 		void lua_get(lua_State* vm, int idx);
-		lua_State* state() const { return m_table_ref.m_lua; }
 		/** \endcond*/
 	private:
 		bool get_table()const;
@@ -162,7 +218,6 @@ namespace OOLUA
 	{
 		//record the stack size as we want to put the stack into the
 		//same state that it was before entering here
-		//int init_stack_size = lua_gettop(m_lua);
 		int const init_stack_size = initial_stack_size();
 		if(!get_table())return;
 		push(m_table_ref.m_lua, key);
@@ -180,7 +235,6 @@ namespace OOLUA
 	{
 		//record the stack size as we want to put the stack into the
 		//same state that it was before entering here
-		//int init_stack_size = lua_gettop(m_lua);
 		int const init_stack_size = initial_stack_size();
 		if(!get_table())return;
 		push(m_table_ref.m_lua, key);
@@ -237,7 +291,6 @@ namespace OOLUA
 	{
 		//record the stack size as we want to put the stack into the
 		//same state that it was before entering here
-		//int init_stack_size = lua_gettop(m_lua);
 		int const init_stack_size = initial_stack_size();
 		if( !get_table() )return false;
 		if( !push(m_table_ref.m_lua, key))
@@ -301,12 +354,14 @@ namespace OOLUA
 	OOLUA::Table new_table(lua_State* vm);
 
 	/**	\def oolua_ipairs (table)
-		Helper for iterating over the array part of a table declares:
-		\li \arg _i_index_			: current index into the array
-		\li \arg _oolua_array_index_: stack index at which table is located
-		\li \arg lvm				: the table's lua_State
-
+		\hideinitializer
+		\brief Helper for iterating over the sequence part of a table.
 		\param table
+		\details
+		Declares:
+		\li \verbatim int  _i_index_ \endverbatim	: Current index into the array
+		\li \verbatim int const _oolua_array_index_ \endverbatim	: Stack index at which table is located
+		\li \verbatim lua_State* lvm \endverbatim	: The vm associated with the table
 
 		\note
 		Returning from inside of the loop will not leave the stack clean
@@ -322,7 +377,7 @@ namespace OOLUA
 			}
 		}
 		oolua_ipairs_end()
-		return "Not enough ballons to go bang."
+		return "Not enough balloons to go bang."
 		\endcode
 	 */
 #	define oolua_ipairs(table) \
@@ -339,6 +394,7 @@ namespace OOLUA
 // NOLINT
 
 	/** \def oolua_ipairs_end()
+		\hideinitializer
 		\see oolua_ipairs
 	*/
 #	define oolua_ipairs_end()\
@@ -350,17 +406,25 @@ namespace OOLUA
 
 
 	/** \def oolua_pairs(table)
-		Helper for iterating over a table.\n
+		\hideinitializer
+		\param table
+		\brief Helper for iterating over a table.
+		\details
+		When iterating over a table, for the next iteration to work you must leave the key
+		on the top of the stack. If you need to work with the key, it is a good idea to use
+		lua_pushvalue to duplicate it on the stack. This is because if the type is not a
+		string and you retrieve a string from the stack with lua_tostring, this will alter
+		the vm's stack entry.\n
 		Declares:
-		\li _oolua_table_index_	: stack index at which table is located
-		\li lvm					: the table's lua_State
+		\li \verbatim int const  _oolua_table_index_ \endverbatim : Stack index at which table is located
+		\li \verbatim lua_State* lvm \endverbatim : The vm associated with the table
 
 		usage:
 		\code{.cpp}
 		oolua_pairs(table)
 		{
 			\\do what ever
-			lua_pop(value);\\leaving key at the top of stack
+			lua_pop(vm);\\Pop the value, leaving the key at the top of stack
 		}
 		oolua_pairs_end()
 		\endcode
@@ -376,13 +440,20 @@ namespace OOLUA
 		while (lua_next(lvm, _oolua_table_index_) != 0)
 
 	/** \def oolua_pairs_end()
+		\hideinitializer
 		\see oolua_pairs
 	*/
 #	define oolua_pairs_end() \
 		lua_pop(lvm, 1); \
 	}
 
-	/* \brief
+	/*
+		\brief Iterates over a table using oolua_pairs calling a member function for each iteration
+		\param[in] table The OOLUA::Table over which you want to iterate
+		\param[in] instance Class instance on which to call the callback
+		\param[in] func Member function call back for each iteration.
+
+		\details
 		You must remove the value from the stack and leave the key
 		do not call anything which may call tostring on the actual key
 		duplicate it instead with lua_pushvalue then call the operation on the copy

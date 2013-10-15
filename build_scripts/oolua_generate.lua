@@ -5,6 +5,31 @@
 --]]
 --*/
 
+local copyright = [[
+/*
+The MIT License
+
+Copyright (c) 2009 - 2013 Liam Devine
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in
+all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+THE SOFTWARE.
+*/
+]]
 
 --[[This allows doxygen to document the functions as you may expect--]]
 --function default_details();
@@ -115,7 +140,8 @@ end
 local file_create = function(options,path,filename,brief_blurb,detail_blurb)
 	local f_ = io.open( (path or '') ..filename,'w')
 	f_:write(
-	'/** \n'
+	copyright
+	..'/** \n'
 	..'\t\\file '.. filename ..'\n'
 	..'\t\\date ' ..os.date() .. '\n'
 	..(brief_blurb and ('\t\\brief \n' .. brief_blurb  ..'\n') or '')

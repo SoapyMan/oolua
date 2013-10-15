@@ -1,12 +1,33 @@
-///////////////////////////////////////////////////////////////////////////////
-///  @file lua_ref.h
-///  A wrapper for a lua registry reference in a struct
-///  so that the type is different to an int. Typedefs two types Lua_table_ref & \n
-///  Lua_ref.
-///  @author Liam Devine
-///  \copyright
-///  See licence.txt for more details.
-///////////////////////////////////////////////////////////////////////////////
+/*
+The MIT License
+
+Copyright (c) 2009 - 2013 Liam Devine
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in
+all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+THE SOFTWARE.
+*/
+/**
+	\@file lua_ref.h
+	\detailsA wrapper for a lua registry reference in a struct
+	so that the type is different to an int. Typedefs two types Lua_table_ref & \n
+	Lua_ref.
+*/
+
 #ifndef LUA_REF_H_
 #	define LUA_REF_H_
 
@@ -36,9 +57,9 @@ namespace OOLUA
 		\details
 		The Lua_ref templated class stores a reference using Lua's reference system
 		luaL_ref and luaL_unref, along with a lua_State. The reason this class stores
-		the lua_State is to make it difficult to correctly use the reference with
-		another universe. A reference from the same Lua universe, even if it is from
-		a different lua_State, is valid to be used in the universe.
+		the lua_State is to make it difficult to use the reference with another universe.
+		A reference from the same Lua universe, even if it is from a different lua_State,
+		is valid to be used in the universe.
 		<p>
 		The class takes ownership of any reference passed either to the
 		\ref OOLUA::Lua_ref::Lua_ref(lua_State* const,int const&) "two argument constructor"
@@ -56,7 +77,7 @@ namespace OOLUA
 		\tparam ID Lua type as returned by lua_type
 		\note
 			\li Universe: A call to luaL_newstate or lua_newstate creates a
-		Lua universe and a universe is completely independant of any other
+		Lua universe and a universe is completely independent of any other
 		universe. lua_newthread and coroutine.create, create a lua_State
 		in an already existing universe.\n
 		Term first heard in a Lua mailing list post by Mark Hamburg.
@@ -140,7 +161,7 @@ namespace OOLUA
 
 		/**
 			\brief
-			Returns the lua_State assocaiated with the Lua reference.
+			Returns the lua_State associated with the Lua reference.
 		*/
 		lua_State* state() const { return m_lua; }
 

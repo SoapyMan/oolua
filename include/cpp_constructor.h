@@ -1,12 +1,34 @@
+/*
+The MIT License
+
+Copyright (c) 2009 - 2013 Liam Devine
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in
+all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+THE SOFTWARE.
+*/
+
 #ifndef OOLUA_CPP_CONSTRUCTOR_H_
 #	define OOLUA_CPP_CONSTRUCTOR_H_
 
-///////////////////////////////////////////////////////////////////////////////
-///  @file cpp_constructor.h
-///  @author Liam Devine
-///  \copyright
-///  See licence.txt for more details. \n
-///////////////////////////////////////////////////////////////////////////////
+/**
+	\file cpp_constructor.h
+*/
+
 #	include "lua_includes.h"
 #	include "oolua_storage.h"
 #	include "param_traits.h"
@@ -67,6 +89,16 @@ namespace OOLUA
 {
 	namespace INTERNAL
 	{
+		/**\addtogroup OOLuaDeveloperDocs
+		@{*/
+
+		/**
+			\brief Default constructor for a type
+			\tparam Type Type to construct
+			\tparam HasNoDefaultTypedef None zero indicates the type does not have the
+				\ref No_default_constructor tag
+			\pre Will never be called on a type which has the \ref No_public_constructors tag
+		*/
 		template<typename Type, int HasNoDefaultTypedef>
 		struct Constructor
 		{
@@ -80,6 +112,13 @@ namespace OOLUA
 			}
 		};
 
+		/**
+		 	\brief Specialisation which generates a Lua error
+		 	\details The static function construct will only be called when
+		 		\li The type does not have a default constructor
+		 		\li and
+		 		\li There were no parameters passed to the new call.
+		*/
 		template<typename Type>
 		struct Constructor<Type, 1>
 		{
@@ -91,6 +130,9 @@ namespace OOLUA
 			}
 		};
 
+		/**
+			\brief Default constructor handler
+		*/
 		template<typename T>
 		inline int oolua_generic_default_constructor(lua_State* vm)
 		{
@@ -101,9 +143,20 @@ namespace OOLUA
 			}
 			return luaL_error(vm, "%s %d %s %s", "Could not match", stack_count, "parameter constructor for type", OOLUA::Proxy_class<T>::class_name);
 		}
+		/**@}*/
 	} // namespace INTERNAL // NOLINT
 } // namespace OOLUA
 
+/** \addtogroup OOLuaGeneratorTemplates
+@{
+*/
+/**
+	\def OOLUA_CONSTRUCTOR_GENERATE_NUM
+	\hideinitializer
+	\brief Constructor generator template
+	\details
+	\param NUM Number of parameters this macro will generate a constructor handler for
+*/
 #define OOLUA_CONSTRUCTOR_GENERATE_NUM(NUM) \
 namespace OOLUA \
 { \
@@ -134,16 +187,25 @@ namespace OOLUA \
 		}; \
 	} /* namespace INTERNAL*/ /*NOLINT*/\
 } /* namespace OOLUA*/
+/*@}*/
 
 
 OOLUA_INTERNAL_CONSTRUCTORS_GEN
 
+/**
+	\addtogroup OOLuaDeveloperDocs
+@{*/
 
+/**
+	\def OOLUA_CONSTRUCTORS_BEGIN
+	\hideinitializer
+	\brief Starts the generation of the static factory function for an OOLUA::Proxy_class
+*/
 #define OOLUA_CONSTRUCTORS_BEGIN \
 static int oolua_factory_function(lua_State* vm) \
 { \
 	int const stack_count = lua_gettop(vm);
-
+/**@}*/
 /** \endcond*/
 
 /** \addtogroup OOLuaDSL
@@ -153,7 +215,7 @@ static int oolua_factory_function(lua_State* vm) \
 	\brief Generates a constructor in a constructor block \see OOLUA_CTORS
 	\details
 	OOLUA_CTOR( ConstructorParameterList)
-	\param ConstructorParameterList Comma seperated list of parameters
+	\param ConstructorParameterList Comma separated list of parameters
 	\pre Size of ConstructorParameterList >0 and <= \ref OOLuaConfigConstructorParams "\"constructor_params\""
 	\see \ref OOLuaConfigConstructorParams "constructor_params"
  */
@@ -168,6 +230,20 @@ static int oolua_factory_function(lua_State* vm) \
 /**@}*/
 
 /** \cond INTERNAL*/
+/**
+	\addtogroup OOLuaDeveloperDocs
+@{*/
+
+/**
+	\def OOLUA_CONSTRUCTORS_END
+	\hideinitializer
+	\brief Ends the generation of the static factory function for an OOLUA::Proxy_class
+	\details This macro ends the factory function for an OOLUA::Proxy_class and also places
+	into the type a typedef named ctor_block_check, which is an alias for the type being proxied.
+	The presence of this alias can be checked for at a later point to determine if the type
+	does indeed have a factory function. After trying all constructors for which the stack count
+	is valid for, if it was unable to find a matching constructor then a Lua error is thrown.
+*/
 #define OOLUA_CONSTRUCTORS_END \
 	if(stack_count == 0 ) \
 	{ \
@@ -176,7 +252,7 @@ static int oolua_factory_function(lua_State* vm) \
 	return luaL_error(vm, "%s %d %s %s", "Could not match", stack_count, "parameter constructor for type", class_name); \
 } \
 	typedef class_ ctor_block_check;
-
+/**@}*/
 /** \endcond*/
 
 /** \addtogroup OOLuaDSL

@@ -3,8 +3,6 @@
 	Header file for Object Oriented Lua.
 */
 
-
-
 /**
 	\mainpage
 
@@ -206,9 +204,22 @@ namespace OOLUA
 			OOLUA::register_class_static<T>(m_lua, k, v);
 	}
 
+	template<typename T>
+	inline bool Script::push(T const& value)
+	{
+		return OOLUA::push(*this, value);
+	}
+
+	template<typename T>
+	inline bool Script::pull(T& value)
+	{
+		return OOLUA::pull(*this, value);
+	}
+
 	/**
-		\brief If you want to use OOLua with a lua_State you already have active
-		or supplied by some third party then calling this function
+		\brief Sets up a lua_State to work with OOLua.
+		\details If you want to use OOLua with a lua_State you already have active
+		or supplied by some third party, then calling this function
 		adds the necessary tables and globals for it to work with OOLua.
 		\param[in] vm lua_State to be initialise by OOLua
 	*/
@@ -230,6 +241,14 @@ namespace OOLUA
 		return true;
 	}
 
+	/**
+		\brief None template version
+		\details Enables setting a global with a value of lua_CFunction without
+		requiring you make a reference to the function.
+		\param[in] vm The lua_State to work on
+		\param[in] name String which is used for the global name
+		\param[in] instance The lua_CFuntion which will be set at the global value for name
+	*/
 	inline bool set_global(lua_State* vm, char const* name, lua_CFunction instance)
 	{
 		lua_pushcclosure(vm, instance, 0);
@@ -265,38 +284,30 @@ namespace OOLUA
 		\returns true is vm0 and vm1 are different yet related states, else false
 	*/
 	bool can_xmove(lua_State* vm0, lua_State* vm1);
+
 	/** \brief Loads a chunk leaving the resulting function on the stack
-		\param vm [in] \copydoc lua_State
-		\param chunk [in]
+		\param[in] vm \copydoc lua_State
+		\param[in] chunk
 	*/
 	bool load_chunk(lua_State* vm, std::string const& chunk);
+
 	/** \brief Loads and runs a chunk of code
-		\param vm [in] \copydoc lua_State
-		\param chunk [in]
+		\param[in] vm \copydoc lua_State
+		\param[in] chunk
 	*/
 	bool run_chunk(lua_State* vm, std::string const& chunk);
+
 	/** \brief Loads a file leaving the resulting function on the stack
-		\param vm [in] \copydoc lua_State
-		\param filename [in]
+		\param[in] vm \copydoc lua_State
+		\param[in] filename
 	 */
 	bool load_file(lua_State* vm, std::string const & filename);
+
 	/** \brief Loads and runs the file
-		\param vm [in] \copydoc lua_State
-		\param filename [in]
+		\param[in] vm \copydoc lua_State
+		\param[in] filename
 	*/
 	bool run_file(lua_State* vm, std::string const & filename);
-
-	template<typename T>
-	bool Script::push(T const& value)
-	{
-		return OOLUA::push(*this, value);
-	}
-
-	template<typename T>
-	bool Script::pull(T& value)
-	{
-		return OOLUA::pull(*this, value);
-	}
 
 } // namespace OOLUA
 

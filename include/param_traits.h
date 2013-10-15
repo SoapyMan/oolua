@@ -1,16 +1,38 @@
+/*
+The MIT License
+
+Copyright (c) 2009 - 2013 Liam Devine
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in
+all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+THE SOFTWARE.
+*/
+
 ///////////////////////////////////////////////////////////////////////////////
 ///  @file param_traits.h
 ///  Parameter traits for OOLUA::Proxy_class functions.
-///  These traits determine wether the parameters need to be passed back to Lua
+///  These traits determine whether the parameters need to be passed back to Lua
 ///  or not
 ///  @remarks
 ///  If parameter traits are not defined then it defaults to OOLUA::in_p.
 ///  For function return values OOLUA::function_return is used (inside the generating
 ///  function), this template is specialised for void types.
-///  @author Liam Devine
-///  \copyright
-///  See licence.txt for more details.
 ///////////////////////////////////////////////////////////////////////////////
+
 #ifndef PARAM_TRAITS_H_
 #	define PARAM_TRAITS_H_
 
@@ -25,8 +47,9 @@
 struct lua_State;
 namespace OOLUA
 {
-/*
-	TODO pull_type is really an incorrect name for return types
+	// TODO :
+/**
+	\todo pull_type is really an incorrect name for return types
 	yet it has this name to be the same as input parameters.
 	Consider changing the name of both to something more suitable.
 */
@@ -40,6 +63,10 @@ parameters, returns values and stack entries whilst traits which specify directi
 for parameters contain as part of their name "out", "in" or a combination.
 */
 
+	/** \addtogroup OOLuaParamTraits Parameter Traits
+	@{
+		\brief Traits for function parameter types.
+	*/
 	/** \struct in_p
 		\brief Input parameter trait
 		\details
@@ -48,7 +75,7 @@ for parameters contain as part of their name "out", "in" or a combination.
 		\note
 		This is the default trait used for function parameters when no trait
 		is supplied.
-	 */
+	*/
 	template<typename T>struct in_p;
 
 	/** \struct out_p
@@ -100,6 +127,19 @@ for parameters contain as part of their name "out", "in" or a combination.
 	 */
 	template<typename T>struct light_p;
 
+	/** \struct OOLUA::calling_lua_state
+		\brief Special parameter type
+		\details This is different from all other traits as it does not take a type, yet
+		is a type. It informs OOLua that the calling state is a parameter for a function
+	*/
+	struct calling_lua_state;
+	/**@}*/
+
+	/** \addtogroup OOLuaFunctionReturnTraits Function Return Traits
+	@{
+		\brief Traits for function return types.
+	*/
+
 	/** \struct light_return
 		\brief Return trait for a light userdata type
 		\details
@@ -127,6 +167,9 @@ for parameters contain as part of their name "out", "in" or a combination.
 		runtime value maybe NULL. If it is NULL then lua_pushnil will be called
 		else the pointer will be pushed as normal. No change of ownership will
 		occur for the type. This is only valid for function return types.
+		\note To be consistent in naming this should really be called
+		maybe_null_return, however I feel this would be too long a name for the
+		trait so "return" has been dropped.
 	*/
 	template<typename T>struct maybe_null;
 
@@ -138,13 +181,21 @@ for parameters contain as part of their name "out", "in" or a combination.
 		runtime value maybe NULL. If it is NULL then lua_pushnil will be called
 		else the pointer will be pushed and transfer ownership of the instance
 		to Lua. This is only valid for function return types.
+		\note To be consistent in naming this should really be called
+		lua_maybe_null_return, however I feel this would be too long a name for the
+		trait so "return" has been dropped.
 	*/
 	template<typename T>struct lua_maybe_null;
+	/**@}*/
 
+	/** \addtogroup OOLuaStackTraits Stack Traits
+	@{
+		\brief Stack traits which control a change of ownership
+	*/
 	/** \struct cpp_acquire_ptr
 		\brief Change of ownership to C++
 		\details
-		Informs the binding that C++ will take control of the pointer being used
+		Informs the library that C++ will take control of the pointer being used
 		and call delete on it when appropriate. This is only valid for
 		OOLUA::pull calls.
 	*/
@@ -153,19 +204,21 @@ for parameters contain as part of their name "out", "in" or a combination.
 	/** \struct lua_acquire_ptr
 		\brief Change of ownership to Lua
 		\details
-		Informs the binding that Lua will take control of the pointer being used
+		Informs the library that Lua will take control of the pointer being used
 		and call delete on it when appropriate. This is only valid for
 		OOLUA::push calls
 	*/
 	template<typename T>struct lua_acquire_ptr;
+	/**@}*/
 
-	/** \struct OOLUA::calling_lua_state
-		\brief Informs that the calling state is a parameter for a function
-	*/
-	struct calling_lua_state;
 
 	/** \enum Owner
-		Which language owns the parameter Lua, Cpp or no change to ownership
+		\brief Enumeration which identifies a possible change of ownership.
+		\details Which language owns the parameter Lua, Cpp or no change to ownership
+		\see OOLUA::set_owner
+		\note You can also set the owner from Lua using require('OOLua').set_owner(instance, value)
+		with instance being the class instance on which to change ownership and value being either
+		'Cpp' or 'Lua'.
 	*/
 	enum Owner
 	{	No_change	/*!< No change of ownership*/
@@ -173,7 +226,7 @@ for parameters contain as part of their name "out", "in" or a combination.
 		, Lua		/*!< Change in ownership, Lua will now own the instance*/
 	};
 
-/**}@*/
+/**@}*/
 
 
 	/** \cond INTERNAL*/
@@ -671,6 +724,10 @@ for parameters contain as part of their name "out", "in" or a combination.
 			enum { is_integral = traits::is_integral };
 		};
 
+		/**
+			\brief Function return trait
+			\details Default traits for function return types when none are provied
+		*/
 		template<typename T>
 		struct function_return
 		{
@@ -922,7 +979,7 @@ namespace OOLUA
 #endif
 
 
-
+//TODO move to parameter helper
 namespace OOLUA
 {
 	namespace INTERNAL

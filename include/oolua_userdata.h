@@ -1,3 +1,32 @@
+/*
+The MIT License
+
+Copyright (c) 2009 - 2013 Liam Devine
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in
+all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+THE SOFTWARE.
+*/
+
+/**
+	\file oolua_userdata.h
+	\brief Contains the internal userdata type used by OOLua to represent C++ class types,
+	also contains inlined functions for checking and setting flags in the userdata.
+*/
 #ifndef OOLUA_USERDATA_H_
 #	define OOLUA_USERDATA_H_
 
@@ -12,6 +41,10 @@ namespace OOLUA
 		struct Lua_ud;
 		typedef void (*oolua_function_check_base)(INTERNAL::Lua_ud* __restrict, INTERNAL::Lua_ud const* __restrict);
 		typedef void (*oolua_type_check_function)(lua_State * vm);
+
+		/**
+			\brief The internal type which is used by the library to represent C++ classes.
+		*/
 		struct Lua_ud
 		{
 			void* void_class_ptr;
@@ -54,7 +87,7 @@ namespace OOLUA
 		}
 
 	} // namespace INTERNAL //NOLINT
-	/**\endcond*/
+	/**\endcond */
 
 } // namespace OOLUA
 
