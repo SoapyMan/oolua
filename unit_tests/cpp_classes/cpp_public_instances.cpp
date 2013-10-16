@@ -13,6 +13,7 @@ const int Public_variables::initial_value;
 
 Public_variables::Public_variables()
 	: an_int(initial_value)
+	, m_int(initial_value)
 	, int_ptr(new int(initial_value))
 	, dummy_instance(new Stub1)
 	, dummy_ref(bad_namespaced_instance)

@@ -196,8 +196,8 @@ for parameters contain as part of their name "out", "in" or a combination.
 		\brief Change of ownership to C++
 		\details
 		Informs the library that C++ will take control of the pointer being used
-		and call delete on it when appropriate. This is only valid for
-		OOLUA::pull calls.
+		and call delete on it when appropriate. This is only valid for public API
+		functions which \ref OOLUA::pull from the stack.
 	*/
 	template<typename T>struct cpp_acquire_ptr;
 
@@ -205,8 +205,8 @@ for parameters contain as part of their name "out", "in" or a combination.
 		\brief Change of ownership to Lua
 		\details
 		Informs the library that Lua will take control of the pointer being used
-		and call delete on it when appropriate. This is only valid for
-		OOLUA::push calls
+		and call delete on it when appropriate. This is only valid for public API
+		functions which \ref OOLUA::push to the stack.
 	*/
 	template<typename T>struct lua_acquire_ptr;
 	/**@}*/
@@ -216,9 +216,16 @@ for parameters contain as part of their name "out", "in" or a combination.
 		\brief Enumeration which identifies a possible change of ownership.
 		\details Which language owns the parameter Lua, Cpp or no change to ownership
 		\see OOLUA::set_owner
-		\note You can also set the owner from Lua using require('OOLua').set_owner(instance, value)
-		with instance being the class instance on which to change ownership and value being either
-		'Cpp' or 'Lua'.
+		\note You can also set the owner from Lua using
+			\code{.lua}
+				local OOLua = require('OOLua')
+				instance:set_owner(OOLua.Lua_owns)
+			\endcode
+		or
+			\code{.lua}
+				instance:set_owner(_G['Cpp_owns'])
+			\endcode
+		The global table and the module OOLua both contain the same entries
 	*/
 	enum Owner
 	{	No_change	/*!< No change of ownership*/

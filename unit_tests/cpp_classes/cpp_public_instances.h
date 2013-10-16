@@ -10,6 +10,7 @@ public:
 	Public_variables();
 	~Public_variables();
 	int an_int;
+	int m_int;
 	int* int_ptr;
 	Stub1* dummy_instance;
 	Stub1 dummy_instance_none_ptr;

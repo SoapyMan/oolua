@@ -257,7 +257,43 @@ THE SOFTWARE.
 	*/
 #		define OOLUA_PROXY(...) \
 			OOLUA_VA_CONCAT(OOLUA_PROXY_WITH_BASES_, OOLUA_NARG_GREATER_THAN_ONE(__VA_ARGS__))(__VA_ARGS__)
+		/**@{*/
+	/** \def OOLUA_MGET
+		\hideinitializer
+		\brief Generates a getter, which is a constant function, to retreive a public instance.
+		\details
+		OOLUA_MGET(PublicName, Optional)
+		\param PublicName Name of the public variable to be proxied.
+		\param Optional GetterName. Defaults to get_PublicName
+	*/
+#		define OOLUA_MGET(...) \
+			OOLUA_VA_CONCAT(OOLUA_MGET_INTERNAL_, OOLUA_NARG(__VA_ARGS__)) (__VA_ARGS__)
 
+	/** \def OOLUA_MSET
+		\hideinitializer
+		\brief Generates a setter, which is a none constant function, to set the public instance.
+		\details
+		OOLUA_MGET(PublicName, Optional)
+		\param PublicName Name of the public variable to be proxied.
+		\param Optional SetterName. Defaults to set_PublicName
+	*/
+#		define OOLUA_MSET(...) \
+			OOLUA_VA_CONCAT(OOLUA_MSET_INTERNAL_, OOLUA_NARG(__VA_ARGS__)) (__VA_ARGS__)
+
+	/** \def OOLUA_MGET_MSET
+		\hideinitializer
+		\brief Generates a getter and setter for a public instance.
+		\details
+		OOLUA_MGET_MSET(PublicName, Optional1, Optional2)
+		\param PublicName Name of the public variable to be proxied.
+		\param Optional1 GetterName. Defaults to set_PublicName
+		\param Optional2 SetterName. Defaults to get_PublicName
+		\see OOLUA_MGET and OOLUA_MSET
+		\note If one optional parameter is supplied then both must be given.
+	*/
+#		define OOLUA_MGET_MSET(...) \
+			OOLUA_VA_CONCAT(OOLUA_MGET_MSET_INTERNAL_, OOLUA_NARG(__VA_ARGS__)) (__VA_ARGS__)
+		/**@}*/
 	/** \addtogroup OOLuaExpressive Expressive
 	@{
 	\brief Generates code where all details are expressed
@@ -265,7 +301,7 @@ THE SOFTWARE.
 	Generates a function for which the user has expressed all the parameters for a function
 	these may additionally have \ref OOLuaTraits.
 	*/
-
+		/**@{*/
 	/**	\def OOLUA_MEM_FUNC
 		\hideinitializer
 		\brief Generates a member function proxy which will also be the named FunctionName
@@ -273,7 +309,7 @@ THE SOFTWARE.
 		OOLUA_MEM_FUNC( FunctionReturnType, FunctionName, Optional)
 		\param FunctionReturnType
 		\param FunctionName
-		\param Optional : Function parameter types
+		\param Optional : Comma seperated list of function parameter types
 		\see \ref OOLuaConfigCppParams "cpp_params"
 	*/
 #		define OOLUA_MEM_FUNC(...) \
@@ -287,7 +323,7 @@ THE SOFTWARE.
 		\param ProxyFunctionName
 		\param FunctionReturnType
 		\param FunctionName
-		\param Optional : Function parameter types
+		\param Optional : Comma seperated list of function parameter types
 		\see \ref OOLuaConfigCppParams "cpp_params"
 	*/
 #		define OOLUA_MEM_FUNC_RENAME(...) \
@@ -319,6 +355,7 @@ THE SOFTWARE.
 	*/
 #		define OOLUA_MEM_FUNC_CONST_RENAME(...) \
 			OOLUA_VA_CONCAT(OOLUA_MEM_FUNC_CONST_RENAME_, OOLUA_NARG_GREATER_THAN_THREE(__VA_ARGS__))(__VA_ARGS__)
+		/**@}*/
 
 	/** \def OOLUA_C_FUNCTION
 		\hideinitializer
@@ -360,15 +397,17 @@ THE SOFTWARE.
 	The longer DSL name requires more information. \n
 	\note No \ref OOLuaTraits can be expressed with this DSL group.
 	*/
-
+		/**@{*/
 	/** \def OOLUA_MFUNC
 		\hideinitializer
 		\brief Deduce and generate a proxy for a member function
 		\details
-		OOLUA_MFUNC( FunctionName, Optional)
+		OOLUA_MFUNC(FunctionName, Optional)
 		\param FunctionName Name of the member function to be proxied
 		\param Optional ProxyFunctionName. Defaults to FunctionName
-		\see \ref OOLuaConfigCppParams "cpp_params"
+		\see \ref OOLuaConfigCppParams "cpp_params" \n
+		\ref OOLUA_MEM_FUNC \n
+		\ref OOLUA_MEM_FUNC_RENAME
 	*/
 #		define OOLUA_MFUNC(...) \
 			OOLUA_VA_CONCAT(OOLUA_MFUNC_INTERNAL_, OOLUA_NARG(__VA_ARGS__)) (__VA_ARGS__)
@@ -380,19 +419,23 @@ THE SOFTWARE.
 		OOLUA_MFUNC_CONST(FunctionName, Optional)
 		\param FunctionName Name of the constant function to be proxied
 		\param Optional ProxyFunctionName. Defaults to FunctionName
-		\see \ref OOLuaConfigCppParams "cpp_params"
+		\see \ref OOLuaConfigCppParams "cpp_params" \n
+		\ref OOLUA_MEM_FUNC_CONST \n
+		\ref OOLUA_MEM_FUNC_CONST_RENAME
 	*/
 #		define OOLUA_MFUNC_CONST(...) \
 			OOLUA_VA_CONCAT(OOLUA_MFUNC_CONST_INTERNAL_, OOLUA_NARG(__VA_ARGS__)) (__VA_ARGS__)
+		/**@}*/
 
 	/** \def OOLUA_CFUNC
 		\hideinitializer
 		\brief Deduce and generate a proxy for a C function
 		\details
-		OOLUA_CFUNC(FunctionName,Optional)
+		OOLUA_CFUNC(FunctionName, Optional)
 		\param FunctionName Name of the C function to be proxied
 		\param Optional ProxyFunctionName. Defaults to FunctionName
-		\see \ref OOLuaConfigCppParams "cpp_params"
+		\see \ref OOLuaConfigCppParams "cpp_params" \n
+		\ref OOLUA_C_FUNCTION
 	*/
 #		define OOLUA_CFUNC(...) \
 			OOLUA_VA_CONCAT(OOLUA_CFUNC_INTERNAL_, OOLUA_NARG(__VA_ARGS__)) (__VA_ARGS__)
@@ -401,15 +444,16 @@ THE SOFTWARE.
 		\hideinitializer
 		\brief Deduce and generate a proxy for a class static function
 		\details
-		OOLUA_SFUNC(FunctionName,Optional)
+		OOLUA_SFUNC(FunctionName, Optional)
 		\param FunctionName Name of the static function to be proxied
 		\param Optional ProxyFunctionName. Defaults to FunctionName
-		\note This function will not exported and needs to be registered
+		\note This function will not be exported and needs to be registered
 		with OOLua see OOLUA::register_class_static
 		\see \ref OOLuaConfigCppParams "cpp_params"
 	 */
 #		define OOLUA_SFUNC(...) \
 			OOLUA_VA_CONCAT(OOLUA_STATIC_FUNC_INTERNAL_, OOLUA_NARG(__VA_ARGS__)) (__VA_ARGS__)
+
 	/**	@}*/
 
 

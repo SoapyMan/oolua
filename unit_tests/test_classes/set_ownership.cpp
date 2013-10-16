@@ -275,7 +275,7 @@ public:
 		OOLUA::INTERNAL::userdata_gc_value(ud, false);//stop delete being called on this stack pointer
 		CPPUNIT_ASSERT_EQUAL(true, gc_value);
 	}
-
+	/**[ExampleLuaAcquirePtr]*/
 	void callFunction_passingPointerUsingLuaAcquirePtr_topOfStackGcIsTrue()
 	{
 		Stub1 stub;
@@ -283,9 +283,10 @@ public:
 		m_lua->call("foo", OOLUA::lua_acquire_ptr<Stub1*>(&stub));
 		OOLUA::INTERNAL::Lua_ud * ud = get_ud_helper();
 		bool gc_value = OOLUA::INTERNAL::userdata_is_to_be_gced(ud);
-		OOLUA::INTERNAL::userdata_gc_value(ud, false);//stop delete being called on this stack pointer
+		OOLUA::INTERNAL::userdata_gc_value(ud, false);///stop delete being called on what is really a stack pointer
 		CPPUNIT_ASSERT_EQUAL(true, gc_value);
 	}
+	/**[ExampleLuaAcquirePtr]*/
 
 	void callFunction_passingPointerUsingLuaAcquirePtr_topOfComparesEqualToStackPointer()
 	{

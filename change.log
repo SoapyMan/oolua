@@ -26,6 +26,7 @@
 - Added \ref OOLUA::light_return This is a function return type which pushes a light userdata onto the stack
 - Removed ability for \ref OOLUA::lua_acquire_ptr to be used on function returns, use OOLUA::lua_return instead
 - Removed ability for \ref OOLUA::cpp_acquire_ptr to be used for function parameters, use \ref OOLUA::cpp_in_p instead
+- Modified \ref OOLUA_MGET, \ref OOLUA_MSET and \ref OOLUA_MGET_MSET to use optional parameters.
 
 
 \section OOLuaChanges1-4-0 1.4.0

@@ -389,7 +389,8 @@
 				\snippet construct.cpp ExampleCppAcquirePtr
 			\subsubsection OOLuaTraitLuaAcquirePtr lua_acquire_ptr
 				\copydetails OOLUA::lua_acquire_ptr <p>
-				\snippet construct.cpp ExampleCppAcquirePtr
+				\snippet set_ownership.cpp ExampleLuaAcquirePtr
+				\note Here we use the public API function \ref OOLUA::Script::call which uses \ref OOLUA::push
 
 		\subsection OOLuaTraitReturnOrder Return Order
 				Lua supports multiple return values for functions ( return = [explist] ). The order of returns in the stack is shown in the following example, simply the first will be pushed to the top of the stack, then the second to the top. This continues until all returns have been pushed on to the stack and the final return is located at the top.

@@ -22,6 +22,8 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
 
+/** \cond INTERNAL */
+
 /**
 	\file class_public_member.h
 	\brief Proxies a class public member variable
@@ -35,10 +37,8 @@ THE SOFTWARE.
 
 namespace OOLUA
 {
-	/** \cond INTERNAL */
 	namespace INTERNAL
 	{
-
 		template<typename T, int shouldBeByRef>
 		struct shouldPushValueByReference
 		{
@@ -75,85 +75,40 @@ namespace OOLUA
 		};
 
 	} // namespace INTERNAL // NOLINT
-	/** \endcond */
 } // namespace OOLUA
 
 
-//TODO Hmm these could use an Optional parameterfor the get/set name
-//consider changing this
-
-/** \addtogroup OOLuaDSL
- @{*/
-
-	/** \addtogroup OOLuaExpressive Expressive
-	@{*/
-
-	/** \def OOLUA_MEM_GETN
-		\hideinitializer
-		\brief Generates a getter for a public member, allowing a new to be set for
-		the proxy function.
-		\details OOLUA_MEM_GETN(get_name,id)
-		\param get_name	Name of the proxy function which is generated
-		\param id Public member name
-	*/
-#	define OOLUA_MEM_GETN(get_name, id) \
-	int get_name(lua_State* vm) const \
+#define OOLUA_MGET_INTERNAL_2(PublicInstance, GetterName) \
+	int GetterName(lua_State* vm) const \
 	{ \
-		OOLUA::INTERNAL::PushPublicMember::push(vm, &m_this->id); \
+		OOLUA::INTERNAL::PushPublicMember::push(vm, &m_this->PublicInstance); \
 		return 1; \
 	}
 
-	/** \def OOLUA_MEM_SETN
-		\hideinitializer
-		\brief Generates a setter for a public member
-		\details OOLUA_MEM_SETN(set_name,id)
-		\param set_name	Name of the proxy function which is generated
-		\param id Public member name
-	 */
-#	define OOLUA_MEM_SETN(set_name, id) \
-	int set_name(lua_State* vm) \
+#define OOLUA_MGET_INTERNAL_1(PublicInstance) \
+	OOLUA_MGET_INTERNAL_2(PublicInstance, get_##PublicInstance)
+
+
+#define OOLUA_MSET_INTERNAL_2(PublicInstance, SetterName) \
+	int SetterName(lua_State* vm) \
 	{ \
-		OOLUA::INTERNAL::LUA_CALLED::get(vm, 2, m_this->id); \
+		OOLUA::INTERNAL::LUA_CALLED::get(vm, 2, m_this->PublicInstance); \
 		return 0; \
 	}
 
+#define OOLUA_MSET_INTERNAL_1(PublicInstance) \
+	OOLUA_MSET_INTERNAL_2(PublicInstance, set_##PublicInstance)
 
-	/**	@}*/
+
+#define OOLUA_MGET_MSET_INTERNAL_3(PublicInstance, GetterName, SetterName) \
+	OOLUA_MGET_INTERNAL_2(PublicInstance,GetterName) \
+	OOLUA_MSET_INTERNAL_2(PublicInstance,SetterName)
+
+#define OOLUA_MGET_MSET_INTERNAL_1(PublicInstance) \
+	OOLUA_MGET_INTERNAL_1(PublicInstance) \
+	OOLUA_MSET_INTERNAL_1(PublicInstance)
+
+	/** \endcond */
 
 
-	/** \addtogroup OOLuaMinimalist Minimalist
-	@{*/
-		/**@{*/
-	/** \def OOLUA_MGET
-		\hideinitializer
-		\details OOLUA_MGET(id)
-		\brief Generates a getter for a public member
-		\param id Public member name
-	*/
-#	define OOLUA_MGET(id) OOLUA_MEM_GETN(get_##id, id)
-
-	/** \def OOLUA_MSET
-		\hideinitializer
-		\details OOLUA_MGET(id)
-		\brief Generates a setter for a public member
-		\param id Public member name
-	 */
-#	define OOLUA_MSET(id) OOLUA_MEM_SETN(set_##id, id)
-
-	//TODO this could also use optional parameters consider changing
-	/** \def OOLUA_MGET_MSET
-		\hideinitializer
-		\brief Generates both a getter and setter for a public member
-		\details OOLUA_MGET_MSET(id)
-		\param id Public member name
-	 */
-#	define OOLUA_MGET_MSET(id) \
-		OOLUA_MGET(id) \
-		OOLUA_MSET(id)
-
-		/**@}*/
-
-	/**	@}*/
-
-/**	@}*/
 #endif //CLASS_PUBLIC_MEMBER_H_

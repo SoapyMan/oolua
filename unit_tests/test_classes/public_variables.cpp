@@ -16,6 +16,12 @@ class PublicVariablesTest : public CPPUNIT_NS::TestFixture
 	CPPUNIT_TEST(getClassInstance_passedPublicVariablesInstance_callReturnsTrue);
 	CPPUNIT_TEST(getClassInstance_getDummyInstanceNonePtr_topOfStackGarbageCollectIsFalse);
 	CPPUNIT_TEST(getClassInstance_getDummyInstanceNonePtr_topOfStackPointerEqualsMemberAddress);
+
+	CPPUNIT_TEST(getAnIntProxyNameSupplied_publicVariablesClassPassedToLua_returnsSetValue);
+	CPPUNIT_TEST(getAnIntNoProxyNameSupplied_publicVariablesClassPassedToLua_returnsSetValue);
+
+	CPPUNIT_TEST(setMIntNoProxyNameSupplied_publicVariablesClassAndIntPassedToLua_mIntComparesEqualToSetValue);
+	CPPUNIT_TEST(setMIntProxyNameSupplied_publicVariablesClassAndIntPassedToLua_mIntComparesEqualToSetValue);
 	CPPUNIT_TEST_SUITE_END();
 	OOLUA::Script * m_lua;
 	Public_variables* m_class_with_public_vars;
@@ -120,6 +126,41 @@ public:
 		OOLUA::pull(*m_lua, result);
 		CPPUNIT_ASSERT_EQUAL(result, &m_class_with_public_vars->dummy_instance_none_ptr);
 	}
+
+	void getAnIntProxyNameSupplied_publicVariablesClassPassedToLua_returnsSetValue()
+	{
+		m_class_with_public_vars->m_int = Public_variables::set_value;
+		m_lua->run_chunk("func = function(obj) return obj:get_int() end");
+		m_lua->call("func", m_class_with_public_vars);
+		int result(Public_variables::initial_value);
+		OOLUA::pull(*m_lua, result);
+		CPPUNIT_ASSERT_EQUAL(Public_variables::set_value, result);
+	}
+
+	void getAnIntNoProxyNameSupplied_publicVariablesClassPassedToLua_returnsSetValue()
+	{
+		m_class_with_public_vars->m_int = Public_variables::set_value;
+		m_lua->run_chunk("func = function(obj) return obj:get_m_int() end");
+		m_lua->call("func", m_class_with_public_vars);
+		int result(Public_variables::initial_value);
+		OOLUA::pull(*m_lua, result);
+		CPPUNIT_ASSERT_EQUAL(Public_variables::set_value, result);
+	}
+
+	void setMIntNoProxyNameSupplied_publicVariablesClassAndIntPassedToLua_mIntComparesEqualToSetValue()
+	{
+		m_lua->run_chunk("func = function(obj, i) obj:set_m_int(i) end");
+		m_lua->call("func", m_class_with_public_vars, Public_variables::set_value);
+		CPPUNIT_ASSERT_EQUAL(Public_variables::set_value, m_class_with_public_vars->m_int);
+	}
+
+	void setMIntProxyNameSupplied_publicVariablesClassAndIntPassedToLua_mIntComparesEqualToSetValue()
+	{
+		m_lua->run_chunk("func = function(obj, i) obj:set_int(i) end");
+		m_lua->call("func", m_class_with_public_vars, Public_variables::set_value);
+		CPPUNIT_ASSERT_EQUAL(Public_variables::set_value, m_class_with_public_vars->m_int);
+	}
+
 };
 
 CPPUNIT_TEST_SUITE_REGISTRATION(PublicVariablesTest);
