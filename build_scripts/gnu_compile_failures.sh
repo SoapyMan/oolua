@@ -29,7 +29,7 @@ run_test lua_acquire_ref_const_int
 run_test lua_acquire_const_ptr_const_int
 run_test lua_acquire_ref_const_ptr_const_int
 run_test lua_acquire_stub
-run_test lua_acquire_ref_ref_stub
+run_test lua_acquire_ref_stub
 
 run_test cpp_in_int
 run_test cpp_in_ptr_int

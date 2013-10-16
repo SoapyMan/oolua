@@ -3,8 +3,8 @@ cd ..
 
 if not exist .\build_logs  md .\build_logs
 
-CALL premake4 clean
-CALL premake4 vs%1 windows
+CALL premake4 clean > NUL
+CALL premake4 vs%1 windows > NUL
 
 
 call .\build_scripts\vs_run_test.bat debug test.unit test_unit %1
