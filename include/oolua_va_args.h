@@ -282,7 +282,7 @@ THE SOFTWARE.
 		\hideinitializer
 		\brief Generates a setter, which is a none constant function, to set the public instance.
 		\details
-		OOLUA_MGET(PublicName, Optional)
+		OOLUA_MSET(PublicName, Optional)
 		\param PublicName Name of the public variable to be proxied.
 		\param Optional SetterName. Defaults to set_PublicName
 	*/
@@ -295,8 +295,8 @@ THE SOFTWARE.
 		\details
 		OOLUA_MGET_MSET(PublicName, Optional1, Optional2)
 		\param PublicName Name of the public variable to be proxied.
-		\param Optional1 GetterName. Defaults to set_PublicName
-		\param Optional2 SetterName. Defaults to get_PublicName
+		\param Optional1 GetterName. Defaults to get_PublicName
+		\param Optional2 SetterName. Defaults to set_PublicName
 		\see OOLUA_MGET and OOLUA_MSET
 		\note If one optional parameter is supplied then both must be given.
 	*/
