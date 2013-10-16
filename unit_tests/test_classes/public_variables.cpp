@@ -160,7 +160,6 @@ public:
 		m_lua->call("func", m_class_with_public_vars, Public_variables::set_value);
 		CPPUNIT_ASSERT_EQUAL(Public_variables::set_value, m_class_with_public_vars->m_int);
 	}
-
 };
 
 CPPUNIT_TEST_SUITE_REGISTRATION(PublicVariablesTest);

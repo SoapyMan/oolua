@@ -101,8 +101,8 @@ namespace OOLUA
 
 
 #define OOLUA_MGET_MSET_INTERNAL_3(PublicInstance, GetterName, SetterName) \
-	OOLUA_MGET_INTERNAL_2(PublicInstance,GetterName) \
-	OOLUA_MSET_INTERNAL_2(PublicInstance,SetterName)
+	OOLUA_MGET_INTERNAL_2(PublicInstance, GetterName) \
+	OOLUA_MSET_INTERNAL_2(PublicInstance, SetterName)
 
 #define OOLUA_MGET_MSET_INTERNAL_1(PublicInstance) \
 	OOLUA_MGET_INTERNAL_1(PublicInstance) \
