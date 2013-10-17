@@ -313,9 +313,12 @@
 		\snippet hello_moon.cpp HelloMoonCFuncCastUsage
 
 
-	\section OOLuaProxyTraits Traits
+	\section OOLuaProxyTraitsDoc Traits
+		\copybrief OOLuaTraits <p>
 		\copydetails OOLuaTraits <p>
 		\subsection OOLuaParamTraits Parameter Traits
+			\copybrief OOLuaFunctionParamTraits <p>
+			\copydetails OOLuaFunctionParamTraits <p>
 			\subsubsection OOLuaTraitInDoc in_p
 				\copydetails OOLUA::in_p <p>
 				Member Function:
@@ -356,8 +359,41 @@
 				\snippet expose_ownership.h ProxyCppInTrait
 				Usage:
 				\snippet set_ownership.cpp TestCppOutTrait
+			\subsubsection OOLuaTraitLightPDoc light_p
+				\copydetails OOLUA::light_p <p>
+				Member Function:
+				\code{.cpp}
+				void value(void* void_ptr);
+				\endcode
+				Proxy Function:
+				\snippet expose_userdata_function_params.h ExposeLightUserDataParam
+				Usage:
+				\snippet light_ud.cpp TestLightUserdataParam
+				<p>
+				or
+				<p>
+				Member Function:
+				\code{.cpp}
+				void ptr(InvalidStub* data);
+				\endcode
+				Proxy Function:
+				\snippet expose_userdata_function_params.h ExposeLightUserDataNonVoidParam
+				Usage:
+				\snippet light_ud.cpp TestLightUserdataNonVoidParam
 
-		\subsection OOLuaReturnTraits Function Return Traits
+
+			\subsubsection OOLuaTraitCallingLuaState calling_lua_state
+				\copydetails OOLUA::calling_lua_state <p>
+				Member Function:
+				\snippet cpp_function_params.h ValueParam
+				Proxy Function:
+				\snippet expose_false_integral_function_params.h ProxyCallingLuaStateTrait
+				Usage:
+				\snippet traits.cpp TestCallingLuaStateTrait
+
+		\subsection OOLuaFunctionReturnTraitsDoc Function Return Traits
+			\copybrief OOLuaFunctionReturnTraits <p>
+			\copydetails OOLuaFunctionReturnTraits <p>
 			\subsubsection OOLuaLuaReturnTrait lua_return
 				\copydetails OOLUA::lua_return <p>
 				Member Function:
@@ -382,8 +418,16 @@
 				\snippet expose_userdata_function_returns.h UserDataProxyLuaMaybeNullTrait
 				Usage:
 				\snippet userdata_function_returns.cpp LuaMaybeNullTraitPtrUsage
+			\subsubsection OOLuaLightReturnTraits light_return
+				\copydetails OOLUA::light_return <p>
+				Void pointer:
+				\snippet expose_userdata_function_returns.h lightReturnVoidProxy
+				None void pointer:
+				\snippet expose_userdata_function_returns.h lightReturnNoneVoidProxy
 
-		\subsection OOLuaStackTraits Stack Traits
+		\subsection OOLuaStackTraitsDoc Stack Traits
+			\copybrief OOLuaStackTraits <p>
+			\copydetails OOLuaStackTraits <p>
 			\subsubsection OOLuaTraitCppAcquirePtr cpp_acquire_ptr
 				\copydetails OOLUA::cpp_acquire_ptr <p>
 				\snippet construct.cpp ExampleCppAcquirePtr

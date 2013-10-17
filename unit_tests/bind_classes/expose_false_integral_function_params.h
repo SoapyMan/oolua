@@ -33,7 +33,9 @@ OOLUA_PROXY_END
 
 OOLUA_PROXY(LuaStateParam)
 	OOLUA_TAGS(Abstract)
+	/**[ProxyCallingLuaStateTrait]*/
 	OOLUA_MEM_FUNC(void, value, calling_lua_state)
+	/**[ProxyCallingLuaStateTrait]*/
 OOLUA_PROXY_END
 
 #endif

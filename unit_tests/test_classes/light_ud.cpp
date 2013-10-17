@@ -236,6 +236,7 @@ public:
 		::testing::NiceMock<LightParamUserDataMock> mock;
 	}
 
+	/**[TestLightUserdataParam]*/
 	void functionParam_functionWhichTakesVoidPointer_functionIsCalledWithTheCorrectValue()
 	{
 		LightParamUserDataMock mock;
@@ -247,12 +248,14 @@ public:
 		m_lua->run_chunk("return function(object,param) return object:value(param) end");
 		m_lua->call(1, object, input_ud);
 	}
+	/**[TestLightUserdataParam]*/
 
 	void functionParam_functionWhichTakesNoneVoidPointer_compiles()
 	{
 		::testing::NiceMock<LightNoneVoidParamUserDataMock> mock;
 	}
 
+	/**[TestLightUserdataNonVoidParam]*/
 	void functionParam_functionWhichTakesNoneVoidPointer_functionIsCalledWithTheCorrectValue()
 	{
 		LightNoneVoidParamUserDataMock mock;
@@ -264,6 +267,7 @@ public:
 		m_lua->run_chunk("return function(object,param) return object:ptr(param) end");
 		m_lua->call(1, object, lightud_ptr);
 	}
+	/**[TestLightUserdataNonVoidParam]*/
 
 	void constructor_takesVoidPointer_compiles()
 	{

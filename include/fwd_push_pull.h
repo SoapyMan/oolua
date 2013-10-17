@@ -70,11 +70,14 @@ namespace OOLUA
 	template<typename T>
 	bool push(lua_State* const vm, T * const &  value);
 	template<typename T>
-	bool push(lua_State* const vm, T * const &  value, OOLUA::Owner);
-	template<typename T>
 	bool push(lua_State* const vm, lua_acquire_ptr<T>&  value);
 	template<typename T>
 	bool push(lua_State* const vm, T const &  value);
+
+	/** \cond INTERNAL */
+	template<typename T>
+	bool push(lua_State* const vm, T * const &  value, OOLUA::Owner);
+	/** \endcond */
 	/**@}*/
 
 	/**

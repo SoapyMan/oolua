@@ -47,25 +47,29 @@ THE SOFTWARE.
 struct lua_State;
 namespace OOLUA
 {
-	// TODO :
-/**
-	\todo pull_type is really an incorrect name for return types
+
+// TODO :
+/*
+	pull_type is really an incorrect name for return types
 	yet it has this name to be the same as input parameters.
 	Consider changing the name of both to something more suitable.
 */
 
 /** \addtogroup OOLuaTraits Traits
 @{
-\brief Provides direction and ownership information.
+\brief Provides direction and/or ownership information.
 \details
-In C++ the use of traits which have a lua_ or cpp_ prefix can control ownership for
-parameters, returns values and stack entries whilst traits which specify direction
-for parameters contain as part of their name "out", "in" or a combination.
+The general naming convention for traits is:\n
+\li \ref OOLuaFunctionParamTraits : end in "_p"
+\li \ref OOLuaFunctionReturnTraits : end in "_return" or "_null"
+\li \ref OOLuaStackTraits : end in "_ptr".
 */
 
-	/** \addtogroup OOLuaParamTraits Parameter Traits
+	/** \addtogroup OOLuaFunctionParamTraits Parameter Traits
 	@{
-		\brief Traits for function parameter types.
+		\brief DSL Traits for function parameter types.
+		\details Traits which allow control of ownership include in their name either
+		"lua" or "cpp"; directional traits contain "in", "out" or a combination.
 	*/
 	/** \struct in_p
 		\brief Input parameter trait
@@ -137,16 +141,22 @@ for parameters contain as part of their name "out", "in" or a combination.
 
 	/** \addtogroup OOLuaFunctionReturnTraits Function Return Traits
 	@{
-		\brief Traits for function return types.
+		\brief DSL traits for function return types.
+		\details Some of the these traits allow for NULL pointers to be returned
+		from functions, which was something commonly requested for the library.
+		When such a trait is used and the runtime value is NULL, Lua's value of
+		nil will be pushed to the stack.
 	*/
 
 	/** \struct light_return
 		\brief Return trait for a light userdata type
 		\details
-		The type returned from the function is a not a OOLUA::Proxy_class type yet either
-		a void pointer or a pointer of another type. When the function returns it will push
-		a LUA_TLIGHTUSERDATA to the stack.
-		A light userdata us never owned by Lua.
+		The type returned from the function is  either a void pointer or a pointer to another
+		type. When the function returns, it will push a LUA_TLIGHTUSERDATA to the stack even
+		when the pointer is NULL; therefore a NULL pointer using this traits is never converted
+		to a Lua nil value. A light userdata is also never owned by Lua and OOLua does not
+		store any type information for the it; light_return is a black box which when used
+		incorrectly will invoke undefined behaviour.\n
 		This is only valid for function return types.
 	*/
 	template<typename T>struct light_return;
@@ -190,7 +200,9 @@ for parameters contain as part of their name "out", "in" or a combination.
 
 	/** \addtogroup OOLuaStackTraits Stack Traits
 	@{
-		\brief Stack traits which control a change of ownership
+		\brief Public API traits which control a change of ownership
+		\details Valid to usage for the \ref OOLUA::INTERNAL "Public API" which interact
+		with the Lua stack.
 	*/
 	/** \struct cpp_acquire_ptr
 		\brief Change of ownership to C++

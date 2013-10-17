@@ -157,6 +157,7 @@ public:
 		CPPUNIT_ASSERT_EQUAL(1, is_same);
 	}
 
+	/**[TestCallingLuaStateTrait]*/
 	void callingLuaState_luaPassesNoParameterYetFunctionWantsALuaInstance_calledOnceWithCorrectInstance()
 	{
 		LuaStateParamMock mock;
@@ -167,6 +168,7 @@ public:
 		m_lua->run_chunk("return function(object) object:value() end");
 		m_lua->call(1, static_cast<LuaStateParam*>(&mock));
 	}
+	/**[TestCallingLuaStateTrait]*/
 
 	void luaMaybeNull_onwershipIsSetToLua()
 	{

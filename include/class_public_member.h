@@ -22,7 +22,6 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
 
-/** \cond INTERNAL */
 
 /**
 	\file class_public_member.h
@@ -34,6 +33,9 @@ THE SOFTWARE.
 
 #include "fwd_push_pull.h"
 #include "param_traits.h"
+
+/** \cond INTERNAL */
+
 
 namespace OOLUA
 {
@@ -110,5 +112,5 @@ namespace OOLUA
 
 	/** \endcond */
 
-
 #endif //CLASS_PUBLIC_MEMBER_H_
+

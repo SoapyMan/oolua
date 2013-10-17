@@ -60,12 +60,16 @@ OOLUA_PROXY_END
 
 OOLUA_PROXY(LightUserDataFunctionReturnTraits)
 	OOLUA_TAGS(Abstract)
+	/**[lightReturnVoidProxy]*/
 	OOLUA_MEM_FUNC(light_return<void*>, value)
+	/**[lightReturnVoidProxy]*/
 OOLUA_PROXY_END
 
 OOLUA_PROXY(CastLightUserDataFunctionReturnTraits)
 	OOLUA_TAGS(Abstract)
+	/**[lightReturnNoneVoidProxy]*/
 	OOLUA_MEM_FUNC(light_return<InvalidStub*>, ptr)
+	/**[lightReturnNoneVoidProxy]*/
 OOLUA_PROXY_END
 
 #endif

@@ -44,12 +44,16 @@ OOLUA_PROXY_END
 
 OOLUA_PROXY(LightParamUserData)
 	OOLUA_TAGS(Abstract)
+	/**[ExposeLightUserDataParam]*/
 	OOLUA_MEM_FUNC(void, value, light_p<void*>)
+	/**[ExposeLightUserDataParam]*/
 OOLUA_PROXY_END
 
 OOLUA_PROXY(LightNoneVoidParamUserData)
 	OOLUA_TAGS(Abstract)
+	/**[ExposeLightUserDataNonVoidParam]*/
 	OOLUA_MEM_FUNC(void, ptr, light_p<InvalidStub*>)
+	/**[ExposeLightUserDataNonVoidParam]*/
 OOLUA_PROXY_END
 
 #endif
