@@ -32,7 +32,7 @@ THE SOFTWARE.
 #	define CLASS_PUBLIC_MEMBER_H_
 
 #include "fwd_push_pull.h"
-#include "param_traits.h"
+#include "oolua_traits.h"
 
 /** \cond INTERNAL */
 

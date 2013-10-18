@@ -33,7 +33,7 @@ THE SOFTWARE.
 #	define FORWARD_DECLARE_PUSH_PULL_H_
 
 #include <string>
-#include "param_traits.h" //required for OOLUA::Owner
+#include "oolua_traits.h" //required for OOLUA::Owner
 
 namespace OOLUA
 {

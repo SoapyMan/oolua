@@ -37,7 +37,7 @@ THE SOFTWARE.
 #include "lua_table.h"
 #include "lua_ref.h"
 #include "lvd_types.h"
-#include "param_traits.h"
+#include "oolua_traits.h"
 #include "proxy_class.h"
 #include "class_from_stack.h"
 #include "push_pointer_internal.h"

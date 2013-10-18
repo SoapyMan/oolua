@@ -29,7 +29,7 @@ THE SOFTWARE.
 #ifndef CPP_MEMBER_FUNC_H_
 #	define CPP_MEMBER_FUNC_H_
 
-#	include "param_traits.h"
+#	include "oolua_traits.h"
 #	include "oolua_boilerplate.h"
 #	include "proxy_caller.h"
 #	include "default_trait_caller.h"

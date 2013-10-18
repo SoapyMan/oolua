@@ -22,19 +22,17 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
 
-///////////////////////////////////////////////////////////////////////////////
-///  @file param_traits.h
-///  Parameter traits for OOLUA::Proxy_class functions.
-///  These traits determine whether the parameters need to be passed back to Lua
-///  or not
-///  @remarks
-///  If parameter traits are not defined then it defaults to OOLUA::in_p.
-///  For function return values OOLUA::function_return is used (inside the generating
-///  function), this template is specialised for void types.
-///////////////////////////////////////////////////////////////////////////////
+/*
+	\file oolua_traits.h
+	Traits for the DSL and public API functions.
+	\remarks
+	For the DSL if parameter traits are not supplied then it defaults to OOLUA::in_p.
+	For function return values OOLUA::function_return is used (inside the generating
+	function), this template is specialised for void types.
+*/
 
-#ifndef PARAM_TRAITS_H_
-#	define PARAM_TRAITS_H_
+#ifndef OOLUA_TRAITS_H_
+#	define OOLUA_TRAITS_H_
 
 #	include "lvd_types.h"
 #	include "determin_qualifier.h"

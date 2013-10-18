@@ -28,7 +28,7 @@ THE SOFTWARE.
 #include "lua_includes.h"
 #include "proxy_class.h"
 #include "oolua_userdata.h"
-#include "param_traits.h"
+#include "oolua_traits.h"
 #include "lvd_types.h"
 #include "base_checker.h"
 #include "class_from_stack.h"

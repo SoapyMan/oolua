@@ -27,11 +27,12 @@ THE SOFTWARE.
 
 /**
 	\file proxy_caller.h
-	\brief blah blah
+	\brief Provides implementations which actually call the member or stand
+	alone function and push function returns to the stack.
 */
 
 #	include "member_func_helper.h"
-#	include "param_traits.h"
+#	include "oolua_traits.h"
 #	include "oolua_converters.h"
 
 #	include "oolua_boilerplate.h"

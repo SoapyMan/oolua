@@ -30,7 +30,7 @@ THE SOFTWARE.
 #ifndef OOLUA_C_FUNC_H_
 #	define OOLUA_C_FUNC_H_
 
-#	include "param_traits.h"
+#	include "oolua_traits.h"
 #	include "oolua_boilerplate.h"
 #	include "proxy_caller.h"
 #	include "default_trait_caller.h"

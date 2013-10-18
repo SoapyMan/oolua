@@ -71,7 +71,7 @@
 
 #	include "lua_includes.h"
 #	include "oolua_push_pull.h"
-#	include "param_traits.h"
+#	include "oolua_traits.h"
 #	include "export_func_to_lua.h"
 #	include "cpp_member_func.h"
 #	include "oolua_c_func.h"
