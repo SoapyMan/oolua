@@ -29,6 +29,7 @@
 - Modified \ref OOLUA_MGET, \ref OOLUA_MSET and \ref OOLUA_MGET_MSET to use optional parameters.
 - Added oolua_dsl.h and oolua_dsl_export.h which reduces the include graph when using the DSL
 - Added oolua_string.h/.c to make it easier to enable other string types as an integral type. \ref OOLUA::STRING
+- Bug fix. Prevent exceptions escaping for stand alone functions.
 
 \section OOLuaChanges1-4-0 1.4.0
 - Added OOLUA_DEDUCE_FUNC(_CONST) for when there is no ambiguity for a function

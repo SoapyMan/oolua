@@ -40,6 +40,20 @@ namespace
 
 
 #if OOLUA_USE_EXCEPTIONS ==  1
+void cFunctionNoReturn_throwsStdRuntimeError()
+{
+	throw std::runtime_error("This must not escape");
+}
+OOLUA_CFUNC(cFunctionNoReturn_throwsStdRuntimeError, l_cFunctionNoReturn_throwsStdRuntimeError)
+
+int cFunctionWithReturn_throwsStdRuntimeError()
+{
+	throw std::runtime_error("This must not escapee");
+	return 1;
+}
+OOLUA_CFUNC(cFunctionWithReturn_throwsStdRuntimeError, l_cFunctionWithReturn_throwsStdRuntimeError)
+
+
 struct ExceptionMock
 {
 	void throwsStdRuntimeError()
@@ -211,6 +225,9 @@ class Error_test : public CPPUNIT_NS::TestFixture
 		CPPUNIT_TEST(memberFunctionCall_memberFunctionWhichTakesFloatYetPassedTable_throwsRuntimeError);
 		CPPUNIT_TEST(memberFunctionCall_memberFunctionWhichTakesDoubleYetPassedTable_throwsRuntimeError);
 		CPPUNIT_TEST(memberFunctionCall_memberFunctionWhichTakesLuaCFunctionYetPassedTable_throwsRuntimeError);
+
+		CPPUNIT_TEST(cFunctionNoReturn_throwsStdRuntimeError_exceptionDoesNotEscapePcall);
+		CPPUNIT_TEST(cFunctionWithReturn_throwsStdRuntimeError_exceptionDoesNotEscapePcall);
 #endif
 
 /* ====================== LuaJIT2 protected tests ===========================*/
@@ -856,6 +873,19 @@ public:
 		m_lua->run_chunk("return function(object) object:value{} end");
 		CPPUNIT_ASSERT_THROW(m_lua->call(1, object), OOLUA::Runtime_error);
 	}
+
+	void cFunctionNoReturn_throwsStdRuntimeError_exceptionDoesNotEscapePcall()
+	{
+		OOLUA::set_global(*m_lua,"throwsException", l_cFunctionNoReturn_throwsStdRuntimeError);
+		CPPUNIT_ASSERT_NO_THROW(m_lua->run_chunk("pcall(throwsException)"));
+	}
+
+	void cFunctionWithReturn_throwsStdRuntimeError_exceptionDoesNotEscapePcall()
+	{
+		OOLUA::set_global(*m_lua,"throwsException", l_cFunctionWithReturn_throwsStdRuntimeError);
+		CPPUNIT_ASSERT_NO_THROW(m_lua->run_chunk("pcall(throwsException)"));
+	}
+
 #endif
 
 

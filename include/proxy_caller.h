@@ -37,6 +37,36 @@ THE SOFTWARE.
 #	include "type_converters.h"
 #	include "proxy_function_stack_helper.h"
 #	include "lua_includes.h"
+#	include "oolua_config.h"
+
+#if	OOLUA_USE_EXCEPTIONS ==1
+#	include "oolua_exception.h"
+
+#	define OOLUA_NONE_MEMBER_CATCH_RESPONSE(exception_type, what_message) \
+		luaL_error(vm, "Type of exception: %s.\n what(): %s.\n When calling function on C function\n" \
+					, exception_type \
+					, what_message);
+
+#	define OOLUA_NONE_MEMBER_FUNCTION_TRY \
+	try \
+	{ /*start try block*/
+// NOLINT
+
+#	define OOLUA_NONE_MEMBER_FUNCTION_CATCH \
+	} /*end try block */ \
+	catch(std::exception const& e) \
+	{ \
+		OOLUA_NONE_MEMBER_CATCH_RESPONSE("std::exception", e.what()) \
+	} \
+	catch(...) \
+	{ \
+		OOLUA_NONE_MEMBER_CATCH_RESPONSE("Unknown type", " ") \
+	}
+#else
+#	define OOLUA_NONE_MEMBER_FUNCTION_TRY
+#	define OOLUA_NONE_MEMBER_FUNCTION_CATCH (void)vm;
+#endif
+
 
 /** \cond INTERNAL*/
 /**	\addtogroup OOLuaGeneratorTemplates
@@ -76,8 +106,10 @@ THE SOFTWARE.
 	static void call(lua_State* const vm, FuncType ptr2func OOLUA_PULL_TYPE_PARAMS_##NUM) \
 	{ \
 		OOLUA_CONVERTER_##NUM \
-		typename R::type r( (*ptr2func)(OOLUA_CONVERTER_PARAMS_##NUM) ); \
-		Member_func_helper<typename R::traits, R::owner>::push2lua(vm, r); \
+		OOLUA_NONE_MEMBER_FUNCTION_TRY \
+			typename R::type r( (*ptr2func)(OOLUA_CONVERTER_PARAMS_##NUM) ); \
+			Member_func_helper<typename R::traits, R::owner>::push2lua(vm, r); \
+		OOLUA_NONE_MEMBER_FUNCTION_CATCH \
 	}
 
 /**	\def OOLUA_INTERNAL_C_CALLER_NO_RETURN_NUM
@@ -86,10 +118,12 @@ THE SOFTWARE.
 */
 #	define OOLUA_INTERNAL_C_CALLER_NO_RETURN_NUM(NUM) \
 	template<typename FuncType  OOLUA_COMMA_PREFIXED_TYPENAMES_##NUM > \
-	static void call(lua_State* const /*vm*/, FuncType ptr2func OOLUA_PULL_TYPE_PARAMS_##NUM) \
+	static void call(lua_State* const vm, FuncType ptr2func OOLUA_PULL_TYPE_PARAMS_##NUM) \
 	{ \
 		OOLUA_CONVERTER_##NUM \
-		(*ptr2func)(OOLUA_CONVERTER_PARAMS_##NUM); \
+		OOLUA_NONE_MEMBER_FUNCTION_TRY \
+			(*ptr2func)(OOLUA_CONVERTER_PARAMS_##NUM); \
+		OOLUA_NONE_MEMBER_FUNCTION_CATCH \
 	}
 
 /** @}*/
@@ -147,7 +181,9 @@ namespace OOLUA
 #undef OOLUA_INTERNAL_MEMBER_CALLER_NO_RETURN_NUM
 #undef OOLUA_INTERNAL_C_CALLER_NUM
 #undef OOLUA_INTERNAL_C_CALLER_NO_RETURN_NUM
-
+#undef OOLUA_NONE_MEMBER_FUNCTION_TRY
+#undef OOLUA_NONE_MEMBER_FUNCTION_CATCH
+#undef OOLUA_NONE_MEMBER_CATCH_RESPONSE
 
 /**\endcond */
 #endif
