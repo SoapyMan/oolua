@@ -310,8 +310,9 @@ namespace OOLUA
 #define OOLUA_ENUMS_START \
 static void oolua_enums(lua_State * vm) \
 { \
-	Table meth(vm, Proxy_class<class_>::class_name); \
-	meth.push_on_stack(vm); \
+	/*Table meth(vm, Proxy_class<class_>::class_name);*/ \
+	/*meth.push_on_stack(vm);*/ \
+	lua_getglobal(vm, Proxy_class<class_>::class_name); \
 	int const top = lua_gettop(vm);
 
 #define OOLUA_ENUMS_END \

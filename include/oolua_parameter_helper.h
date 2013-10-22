@@ -24,24 +24,101 @@ THE SOFTWARE.
 /**
 	\file oolua_parameter_helper.h
 	\brief Helps test that a constructor parameter is of the requested type
-	so that the correct constructor can be called
+	so that a matching constructor can be called
 */
 
 #ifndef OOLUA_PARAMETER_HELPER_H_
 #	define OOLUA_PARAMETER_HELPER_H_
 
-//#	include "param_traits.h"
-#	include "oolua_userdata.h"
+#	include "proxy_userdata.h"
 #	include "lua_includes.h"
 #	include "class_from_stack.h"
 #	include "oolua_config.h"
+#	include "type_list.h"
+#	include "oolua_string.h"
+#	include "oolua_traits_fwd.h"
 
 namespace OOLUA
 {
-
 	/** \cond INTERNAL */
+	//fwd declare
+	template<int ID>
+	struct Lua_ref;
+
 	namespace INTERNAL
 	{
+		/*
+		#define LUA_TNIL		0
+		#define LUA_TBOOLEAN		1
+		#define LUA_TLIGHTUSERDATA	2
+		#define LUA_TNUMBER		3
+		#define LUA_TSTRING		4
+		#define LUA_TTABLE		5
+		#define LUA_TFUNCTION		6
+		#define LUA_TUSERDATA		7
+		#define LUA_TTHREAD		8
+		*/
+
+		//Used for constructors to check parameters on the stack
+		template<typename Cpp_type, int Lua_type>
+		struct lua_type_is_cpp_type;
+
+		/*
+		Specialisation
+		This is required as Type_enum_defaults will strip the pointer and then can_convert_to_int
+		uses the resulting type with a reference applied. This means it will try to use
+		void& which is illegal.
+		*/
+		template<>
+		struct lua_type_is_cpp_type<void*, LUA_TNUMBER>
+		{
+			enum {value = 0 };
+		};
+
+		template<typename Cpp_type>
+		struct lua_type_is_cpp_type<Cpp_type, LUA_TNUMBER>
+		{
+			enum {value = Type_enum_defaults<Cpp_type>::is_integral
+					&& !LVD::is_same<bool, Cpp_type>::value };
+		};
+
+		template<typename Cpp_type>
+		struct lua_type_is_cpp_type<Cpp_type, LUA_TSTRING>
+		{
+			enum { value = LVD::is_same<char*, Cpp_type>::value
+					|| OOLUA::STRING::is_integral_string_class<Cpp_type>::value };
+		};
+
+		template<typename Cpp_type>
+		struct lua_type_is_cpp_type<Cpp_type, LUA_TBOOLEAN>
+		{
+			enum {value = LVD::is_same<bool, Cpp_type>::value};
+		};
+
+		template<typename Cpp_type>
+		struct lua_type_is_cpp_type<Cpp_type, LUA_TFUNCTION>
+		{
+			enum {value = LVD::is_same<Lua_ref<LUA_TFUNCTION>, Cpp_type>::value};
+		};
+
+		template<typename Cpp_type>
+		struct lua_type_is_cpp_type<Cpp_type, LUA_TTABLE>
+		{
+			typedef Type_list<
+			Lua_ref<LUA_TTABLE>, Table
+			>::type Table_types;
+			enum {value = TYPELIST::IndexOf<Table_types, Cpp_type>::value == -1 ? 0 : 1};
+		};
+
+		template<typename Cpp_type>
+		struct lua_type_is_cpp_type<Cpp_type, LUA_TLIGHTUSERDATA>
+		{
+			enum {value = LVD::is_same<void*, Cpp_type>::value};
+		};
+
+
+
+
 		/**
 			\struct index_can_convert_to_type
 			\brief Implements the testing of a stack index type against a requested
@@ -93,7 +170,8 @@ MSC_POP_COMPILER_WARNING_OOLUA
 			\tparam ParamWithTraits The current requested parameter type, with traits applied,
 			for the stack index.
 		*/
-		template<typename ParamWithTraits>struct Param_helper;
+		template<typename ParamWithTraits>
+		struct Param_helper;
 
 		/**
 			\struct Param_helper<OOLUA::INTERNAL::param_type<OOLUA::calling_lua_state> >

@@ -7,7 +7,7 @@
 #	include "expose_userdata_function_params.h"
 #	include "expose_integral_function_params.h"
 #	include "expose_false_integral_function_params.h"
-
+#	include <stdexcept>
 #	include <csetjmp>
 
 #if OOLUA_DEBUG_CHECKS == 1

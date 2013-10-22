@@ -2,7 +2,7 @@
 #	define EXPOSE_INTEGRAL_FUNCTION_RETURNS_H_
 
 #include "cpp_integral_function_returns.h"
-#include "oolua.h"
+#include "oolua_dsl.h"
 
 OOLUA_PROXY(CStringFunctionReturn)
 	OOLUA_TAGS(Abstract)

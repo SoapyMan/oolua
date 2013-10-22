@@ -1,4 +1,5 @@
 #include "expose_ownership.h"
+#include "oolua_dsl_export.h"
 
 OOLUA_EXPORT_FUNCTIONS(OwnershipParamUserData
 								, lua_takes_ownership_of_ref_2_ptr

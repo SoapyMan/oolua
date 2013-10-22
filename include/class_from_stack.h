@@ -28,15 +28,15 @@ THE SOFTWARE.
 	\details Preforms error config dependant checks in a attempt to return a
 	typed pointer from a userdata which resides on the stack.
 */
-#ifndef CLASS_FROM_STACK_H_
-#	define CLASS_FROM_STACK_H_
+#ifndef OOLUA_CLASS_FROM_STACK_H_
+#	define OOLUA_CLASS_FROM_STACK_H_
 
 #	include "lua_includes.h"
 #	include "proxy_class.h"
-#	include "oolua_userdata.h"
+#	include "proxy_userdata.h"
 #	include "oolua_config.h"
 
-#	include "base_checker.h"
+#	include "proxy_base_checker.h"
 
 #if OOLUA_DEBUG_CHECKS == 1
 #	include <cassert>
@@ -172,4 +172,4 @@ namespace OOLUA
 	/** \endcond */
 } // namespace OOLUA
 
-#endif
+#endif //OOLUA_CLASS_FROM_STACK_H_

@@ -46,23 +46,24 @@ THE SOFTWARE.
 */
 
 #ifndef OOLUA_REGISTRATION_H_
-#   define OOLUA_REGISTRATION_H_
+#	define OOLUA_REGISTRATION_H_
 
 #include "lua_includes.h"
-#include "class_from_stack.h"
 #include "proxy_class.h"
-#include "push_pointer_internal.h"
-#include "oolua_userdata.h"
-#include "lua_operator.h"
-#include "oolua_member_function.h"
-#include "oolua_storage.h"
-#include "base_checker.h"
-#include "oolua_char_arrays.h"
-#include "lvd_types.h"
-#include "oolua_tags.h"
-#include "lua_table.h"
+#include "proxy_userdata.h"
+#include "proxy_operators.h"
+#include "proxy_function_dispatch.h"
+#include "proxy_storage.h"
+#include "proxy_tags.h"
+#include "proxy_tag_info.h"
 
+#include "proxy_base_checker.h"
+#include "class_from_stack.h"
+#include "push_pointer_internal.h"
+#include "oolua_table.h"
 #include "oolua_config.h"
+#include "char_arrays.h"
+#include "lvd_types.h"
 
 
 namespace OOLUA
@@ -101,17 +102,19 @@ namespace OOLUA
 	{
 		template<typename T>struct garbage_collect;
 
-		template<typename T, typename B>struct Add_base;//TODO change to Add_base_methods
-		template<typename T, typename TL, int index, typename B>struct Register_base;//TODO change to Register_base_methods
+		//TODO change to Add_base_methods
+		template<typename T, typename B>struct Add_base;
+		//TODO change to Register_base_methods
+		template<typename T, typename TL, int index, typename B>struct Register_base;
 
 		template<typename T, int HasNoPublicDestructor>struct set_delete_function;
 		template<typename T, bool HasNoPublicDestructor>struct set_owner_function;
 		template<typename T, bool IsAbstractOrNoConstructors>struct set_create_function;
 
-		//fwd declare, not defined here
+		//fwd not defined here
 		template<typename T>
 		int oolua_generic_default_constructor(lua_State* vm);
-
+		//fwd not defined here
 
 		void set_function_in_table_with_upvalue(lua_State* vm, char const * func_name, lua_CFunction func
 														, int tableIndex, void* upvalue);
@@ -479,6 +482,7 @@ namespace OOLUA
 	} // namespace INTERNAL // NOLINT
 	/** \endcond*/
 
+	// TODO this should be the default behaviour
 	template<typename T>
 	inline void register_class_and_bases(lua_State * vm)
 	{

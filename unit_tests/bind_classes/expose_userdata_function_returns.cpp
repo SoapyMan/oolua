@@ -1,4 +1,5 @@
 
+#include "oolua_dsl_export.h"
 #include "expose_userdata_function_returns.h"
 
 OOLUA_EXPORT_FUNCTIONS(UserDataFunctionDefaultReturnTraits

@@ -1,7 +1,7 @@
 #ifndef EXPOSE_OUT_PARAMS_H_
 #	define EXPOSE_OUT_PARAMS_H_
 
-#include "oolua.h"
+#include "oolua_dsl.h"
 #include "cpp_out_params.h"
 #include "expose_stub_classes.h"
 

@@ -28,14 +28,15 @@ THE SOFTWARE.
 /**
 	\file proxy_caller.h
 	\brief Provides implementations which actually call the member or stand
-	alone function and push function returns to the stack.
+	alone function, it also pushes a function return to the stack if the
+	fubction has one.
 */
 
-#	include "member_func_helper.h"
-#	include "oolua_traits.h"
-#	include "oolua_converters.h"
-
 #	include "oolua_boilerplate.h"
+#	include "oolua_traits_fwd.h"
+#	include "type_converters.h"
+#	include "proxy_function_stack_helper.h"
+#	include "lua_includes.h"
 
 /** \cond INTERNAL*/
 /**	\addtogroup OOLuaGeneratorTemplates

@@ -2,7 +2,7 @@
 #	define EXPOSE_MAX_PARAMS_H_
 
 #	include "cpp_max_params.h"
-#	include "oolua.h"
+#	include "oolua_dsl.h"
 
 OOLUA_PROXY(VoidReturnIntParam)
 	OOLUA_TAGS(Abstract)

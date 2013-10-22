@@ -1,7 +1,7 @@
 #ifndef EXPOSE_CLASS_ENUMS_H_
 #	define EXPOSE_CLASS_ENUMS_H_
 
-#	include "oolua.h"
+#	include "oolua_dsl.h"
 #	include "cpp_class_enums.h"
 
 /*

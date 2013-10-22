@@ -34,13 +34,11 @@ THE SOFTWARE.
 #ifndef OOLUA_TRAITS_H_
 #	define OOLUA_TRAITS_H_
 
+#	include "oolua_traits_fwd.h"
 #	include "lvd_types.h"
-#	include "determin_qualifier.h"
-#	include "oolua_config.h"
-
-#if OOLUA_STD_STRING_IS_INTEGRAL == 1
-#	include <string>
-#endif
+#	include "lvd_type_traits.h"
+#	include "proxy_test.h"
+#	include "oolua_string.h"
 
 struct lua_State;
 namespace OOLUA
@@ -221,28 +219,6 @@ The general naming convention for traits is:\n
 	template<typename T>struct lua_acquire_ptr;
 	/**@}*/
 
-
-	/** \enum Owner
-		\brief Enumeration which identifies a possible change of ownership.
-		\details Which language owns the parameter Lua, Cpp or no change to ownership
-		\see OOLUA::set_owner
-		\note You can also set the owner from Lua using
-			\code{.lua}
-				local OOLua = require('OOLua')
-				instance:set_owner(OOLua.Lua_owns)
-			\endcode
-		or
-			\code{.lua}
-				instance:set_owner(_G['Cpp_owns'])
-			\endcode
-		The global table and the module OOLua both contain the same entries
-	*/
-	enum Owner
-	{	No_change	/*!< No change of ownership*/
-		, Cpp		/*!< Change in ownership, C++ will now own the instance*/
-		, Lua		/*!< Change in ownership, Lua will now own the instance*/
-	};
-
 /**@}*/
 
 
@@ -255,49 +231,6 @@ The general naming convention for traits is:\n
 
 	namespace INTERNAL
 	{
-
-		template<typename Type>
-		struct has_a_proxy_type
-		{
-			typedef OOLUA::Proxy_class<Type> proxy_type;
-			template <typename U>
-			static char (& has_none_proxy_typedef(typename U::OoluaNoneProxy*))[1];
-
-			template <typename U>
-			static char (& has_none_proxy_typedef(...))[2];
-
-			enum {value = sizeof(has_none_proxy_typedef<proxy_type>(0)) == 1 ? 0 : 1};
-		};
-
-		template <typename From>
-		class can_convert_to_int
-		{
-			typedef char (&yes)[1];
-			typedef char (&no)[2];
-			struct Convertor
-			{
-				template <typename T>
-				Convertor(T&);
-			};
-			static no test(Convertor);
-			static no test(float&);
-			static no test(double&);
-			static yes test(int); // NOLINT
-			static From& make_from();
-		public:
-			enum { value = sizeof test(make_from()) == sizeof(yes) ? 1 : 0 };
-		};
-
-		template<typename T>
-		struct Raw_type
-		{
-			typedef typename LVD::remove_ref<T>::type no_ref;
-			typedef typename LVD::remove_all_const<no_ref>::type no_ref_or_const;
-			typedef typename LVD::remove_all_ptrs<no_ref_or_const>::type raw;
-
-			typedef raw type;
-		};
-
 		template<typename T>
 		struct Type_enum_defaults
 		{
@@ -305,36 +238,14 @@ The general naming convention for traits is:\n
 			enum { is_constant =  LVD::is_const<T>::value };
 			enum
 			{
-				is_integral = LVD::is_integral_type< typename Raw_type<T>::raw >::value
-					|| /*enum*/(!has_a_proxy_type<typename Raw_type<T>::raw>::value
-								&& can_convert_to_int<typename Raw_type<T>::raw>::value)
+				is_integral = LVD::is_integral_type< typename LVD::raw_type<T>::raw >::value
+					|| /*enum*/(!has_a_proxy_type<typename LVD::raw_type<T>::raw>::value
+								&& LVD::can_convert_to_int<typename LVD::raw_type<T>::raw>::value)
 			};
 		};
 
-
-		template<typename T>
-		struct is_param_by_value
-		{
-			enum { value = !LVD::by_reference<T>::value };
-		};
-
-		template<typename T>
-		struct strip_ref_n_const
-		{
-			typedef typename LVD::remove_all_const<
-				typename LVD::remove_ref<T>
-				::type>
-				::type type;
-		};
-
-
-		template<typename T>
-		struct no_pointers
-		{
-			typedef typename LVD::remove_all_ptrs<T>::type type;
-		};
-
-		template<typename T, int is_integral>struct Pull_type;
+		template<typename T, int is_integral>
+		struct Pull_type;
 
 		template<typename T>
 		struct Pull_type<T, 0>
@@ -381,6 +292,26 @@ The general naming convention for traits is:\n
 			typedef T type;
 		};
 
+		template<typename T>
+		struct is_lua_ref
+		{
+			enum{value = 0};
+		};
+		template<int LuaTypeId>
+		struct is_lua_ref< OOLUA::Lua_ref<LuaTypeId> >
+		{
+			enum{value = 1};
+		};
+
+		template<typename T>
+		struct is_false_integral
+		{
+			typedef typename LVD::raw_type<T>::type raw;
+			enum {value = STRING::is_integral_string_class<raw>::value
+						|| INTERNAL::is_lua_ref<raw>::value
+						|| LVD::is_same<OOLUA::Table, raw>::value
+					};
+		};
 	} // namespace INTERNAL // NOLINT
 
 
@@ -388,28 +319,34 @@ The general naming convention for traits is:\n
 	struct in_p
 	{
 		typedef T type;
-		typedef typename INTERNAL::Raw_type<T>::type raw;
-		typedef typename INTERNAL::Pull_type_<raw, T, INTERNAL::Type_enum_defaults<type>::is_integral>::type pull_type;
+		typedef typename LVD::raw_type<T>::type raw;
+		typedef typename INTERNAL::Pull_type_<raw, T
+								, INTERNAL::Type_enum_defaults<type>::is_integral
+								|| INTERNAL::is_false_integral<type>::value>::type pull_type;
 		enum {in = 1};
 		enum {out = 0};
 		enum {owner = No_change};
 		enum { is_by_value = INTERNAL::Type_enum_defaults<type>::is_by_value  };
 		enum { is_constant = INTERNAL::Type_enum_defaults<type>::is_constant  };
-		enum { is_integral = INTERNAL::Type_enum_defaults<type>::is_integral  };
+		enum { is_integral = INTERNAL::Type_enum_defaults<type>::is_integral
+							|| INTERNAL::is_false_integral<type>::value };
 	};
 
 	template<typename T>
 	struct in_out_p
 	{
 		typedef T type;
-		typedef typename INTERNAL::Raw_type<T>::type raw;
-		typedef typename INTERNAL::Pull_type<raw, LVD::is_integral_type<raw>::value >::type pull_type;
+		typedef typename LVD::raw_type<T>::type raw;
+		typedef typename INTERNAL::Pull_type<raw
+									, LVD::is_integral_type<raw>::value
+									|| INTERNAL::is_false_integral<type>::value>::type pull_type;
 		enum { in = 1};
 		enum { out = 1};
 		enum { owner = No_change};
 		enum { is_by_value = INTERNAL::Type_enum_defaults<type>::is_by_value  };
 		enum { is_constant = INTERNAL::Type_enum_defaults<type>::is_constant  };
-		enum { is_integral = INTERNAL::Type_enum_defaults<type>::is_integral  };
+		enum { is_integral = INTERNAL::Type_enum_defaults<type>::is_integral
+								|| INTERNAL::is_false_integral<type>::value };
 		typedef char type_has_to_be_by_reference [is_by_value ? -1 : 1 ];
 	};
 
@@ -421,14 +358,16 @@ The general naming convention for traits is:\n
 	struct out_p
 	{
 		typedef T type;
-		typedef typename INTERNAL::Raw_type<T>::type raw;
+		typedef typename LVD::raw_type<T>::type raw;
 		typedef raw pull_type;
 		enum { in = 0};
 		enum { out = 1};
-		enum { owner = INTERNAL::Type_enum_defaults<raw>::is_integral? No_change : Lua};
+		enum { owner = INTERNAL::Type_enum_defaults<raw>::is_integral
+						|| INTERNAL::is_false_integral<type>::value ? No_change : Lua};
 		enum { is_by_value = 1};//yes OOLua creates on the stack
 		enum { is_constant = INTERNAL::Type_enum_defaults<type>::is_constant  };
-		enum { is_integral = INTERNAL::Type_enum_defaults<type>::is_integral  };
+		enum { is_integral = INTERNAL::Type_enum_defaults<type>::is_integral
+							|| INTERNAL::is_false_integral<type>::value };
 		typedef char type_has_to_be_by_reference [INTERNAL::Type_enum_defaults<type>::is_by_value ? -1 : 1 ];
 	};
 
@@ -438,7 +377,7 @@ The general naming convention for traits is:\n
 	struct cpp_in_p
 	{
 		typedef T type;
-		typedef typename INTERNAL::Raw_type<T>::type raw;
+		typedef typename LVD::raw_type<T>::type raw;
 		typedef typename INTERNAL::Pull_type<raw, LVD::is_integral_type<raw>::value >::type pull_type;
 		enum { in = 1};
 		enum { out = 0};
@@ -491,7 +430,7 @@ The general naming convention for traits is:\n
 	struct lua_out_p
 	{
 		typedef T type;
-		typedef typename INTERNAL::Raw_type<T>::type raw;
+		typedef typename LVD::raw_type<T>::type raw;
 		typedef typename INTERNAL::Pull_type_<raw, T, LVD::is_integral_type<raw>::value >::type pull_type;
 		enum { in = 0};
 		enum { out = 1};
@@ -512,7 +451,8 @@ The general naming convention for traits is:\n
 	struct lua_return
 	{
 		typedef T type;
-		typedef typename INTERNAL::Raw_type<T>::type raw;
+		typedef typename LVD::raw_type<T>::type raw;
+		//TODO : A Lua owned type can not be integral why is this used?
 		typedef typename INTERNAL::Pull_type_<raw, T, LVD::is_integral_type<raw>::value >::type pull_type;
 		enum { in = 0};
 		enum { out = 1};
@@ -545,7 +485,7 @@ The general naming convention for traits is:\n
 	struct maybe_null
 	{
 		typedef T type;
-		typedef typename INTERNAL::Raw_type<T>::type raw;
+		typedef typename LVD::raw_type<T>::type raw;
 		typedef typename INTERNAL::Pull_type_<raw, T, LVD::is_integral_type<raw>::value >::type pull_type;
 		enum { in = 0};
 		enum { out = 1};
@@ -571,7 +511,8 @@ The general naming convention for traits is:\n
 	struct lua_maybe_null
 	{
 		typedef T type;
-		typedef typename INTERNAL::Raw_type<T>::type raw;
+		typedef typename LVD::raw_type<T>::type raw;
+		//TODO : A Lua owned type can not be integral, why is this used?
 		typedef typename INTERNAL::Pull_type_<raw, T, LVD::is_integral_type<raw>::value >::type pull_type;
 		enum { in = 0};
 		enum { out = 1};
@@ -596,7 +537,8 @@ The general naming convention for traits is:\n
 	struct cpp_acquire_ptr
 	{
 		typedef T type;
-		typedef typename INTERNAL::Raw_type<T>::type raw;
+		typedef typename LVD::raw_type<T>::type raw;
+		//TODO : A C++ owned type can not be integral, why is this used?
 		typedef typename INTERNAL::Pull_type_<raw, T, LVD::is_integral_type<raw>::value>::type pull_type;
 		enum { in = 1 };
 		enum { out = 0 };
@@ -618,7 +560,8 @@ The general naming convention for traits is:\n
 	struct lua_acquire_ptr
 	{
 		typedef T type;
-		typedef typename INTERNAL::Raw_type<T>::type raw;
+		typedef typename LVD::raw_type<T>::type raw;
+		//TODO : A Lua owned type can not be integral, why is this used?
 		typedef typename INTERNAL::Pull_type_<raw, T, LVD::is_integral_type<raw>::value >::type pull_type;
 		enum { in = 0};
 		enum { out = 1};
@@ -749,14 +692,17 @@ The general naming convention for traits is:\n
 		struct function_return
 		{
 			typedef T type;//real type
-			typedef typename Raw_type<T>::type raw;//all modifiers removed
-			typedef typename Pull_type<raw, LVD::is_integral_type<raw>::value >::type pull_type;
+			typedef typename LVD::raw_type<T>::type raw;//all modifiers removed
+			typedef typename Pull_type<raw
+								, LVD::is_integral_type<raw>::value
+								|| INTERNAL::is_false_integral<type>::value >::type pull_type;
 			enum { in = 0};
 			enum { out = 1};
 			enum { owner = No_change};
 			enum { is_by_value = Type_enum_defaults<type>::is_by_value  };
 			enum { is_constant = Type_enum_defaults<type>::is_constant  };
-			enum { is_integral = Type_enum_defaults<type>::is_integral  };
+			enum { is_integral = Type_enum_defaults<type>::is_integral
+									|| INTERNAL::is_false_integral<type>::value  };
 		};
 
 		template<>
@@ -906,186 +852,6 @@ The general naming convention for traits is:\n
 		enum { is_integral = 1 };
 	};
 
-
-
-	/*
-	 Integral specialisation helper macros
-	*/
-#define oolua_end_integral_trait(trait_is_in, trait_is_out) \
-		enum { in = trait_is_in}; \
-		enum { out = trait_is_out}; \
-		enum { owner = No_change}; \
-		enum { is_by_value = INTERNAL::Type_enum_defaults<type>::is_by_value }; \
-		enum { is_constant = INTERNAL::Type_enum_defaults<type>::is_constant }; \
-		enum { is_integral = 1 };
-
-#define oolua_integral_ref_trait(specialisation, pulling_type, trait_name, trait_is_in, trait_is_out) \
-	template<int ID > \
-	struct trait_name< specialisation > \
-	{ \
-		typedef specialisation type; \
-		typedef pulling_type pull_type; \
-		typedef typename INTERNAL::Raw_type<specialisation>::type raw; \
-		oolua_end_integral_trait(trait_is_in, trait_is_out) \
-	};
-
-#define oolua_integral_trait(specialisation, pulling_type, trait_name, trait_is_in, trait_is_out) \
-	template< > \
-	struct trait_name<specialisation > \
-	{ \
-		typedef specialisation type; \
-		typedef pulling_type pull_type; \
-		typedef INTERNAL::Raw_type<specialisation>::type raw; \
-		oolua_end_integral_trait(trait_is_in, trait_is_out) \
-	};
-
-	///////////////////////////////////////////////////////////////////////////////
-	///  Specialisation for registry references
-	///////////////////////////////////////////////////////////////////////////////
-
-	oolua_integral_ref_trait(Lua_ref<ID>, Lua_ref<ID>, in_p, 1, 0)
-	oolua_integral_ref_trait(Lua_ref<ID>&, Lua_ref<ID>, in_p, 1, 0)
-	oolua_integral_ref_trait(Lua_ref<ID> const&, Lua_ref<ID>, in_p, 1, 0)
-
-	oolua_integral_ref_trait(Lua_ref<ID>&, Lua_ref<ID>, out_p, 0, 1)
-	oolua_integral_ref_trait(Lua_ref<ID>&, Lua_ref<ID>, in_out_p, 1, 1)
-
-	oolua_integral_trait(Table, Table, in_p, 1, 0)
-
-	oolua_integral_trait(Table&, Table, in_p, 1, 0)
-	oolua_integral_trait(Table const&, Table, in_p, 1, 0)
-	oolua_integral_trait(Table&, Table, out_p, 0, 1)
-	oolua_integral_trait(Table&, Table, in_out_p, 1, 1)
-
-	namespace INTERNAL
-	{
-		oolua_integral_ref_trait(Lua_ref<ID>, Lua_ref<ID> , function_return, 0, 1)
-		oolua_integral_ref_trait(Lua_ref<ID>&, Lua_ref<ID>, function_return, 0, 1)
-		oolua_integral_ref_trait(Lua_ref<ID>const&, Lua_ref<ID>, function_return, 0, 1)
-
-		oolua_integral_trait(Table, Table, function_return, 0, 1)
-		oolua_integral_trait(Table&, Table, function_return, 0, 1)
-		oolua_integral_trait(Table const&, Table, function_return, 0, 1)
-	} // namespace INTERNAL
-
-#undef oolua_integral_ref_trait
 } // namespace OOLUA
 
-
-#if OOLUA_STD_STRING_IS_INTEGRAL == 1
-/**[StdStringIntegralTraits]*/
-namespace OOLUA
-{
-	oolua_integral_trait(std::string, std::string, in_p, 1, 0)
-	oolua_integral_trait(std::string&, std::string, in_p, 1 , 0)
-	oolua_integral_trait(std::string const, std::string, in_p, 1, 0)
-	oolua_integral_trait(std::string const&, std::string, in_p, 1, 0)
-
-	template<>struct out_p<std::string>;//disable
-	oolua_integral_trait(std::string &, std::string, out_p, 0, 1)
-	oolua_integral_trait(std::string &, std::string, in_out_p, 1, 1)
-	namespace INTERNAL
-	{
-		oolua_integral_trait(std::string, std::string, function_return, 0, 1)
-		oolua_integral_trait(std::string&, std::string, function_return, 0, 1)
-		oolua_integral_trait(std::string const, std::string, function_return, 0, 1)
-		oolua_integral_trait(std::string const&, std::string, function_return, 0, 1)
-	} // namespace INTERNAL
-} // namespace OOLUA
-/**[StdStringIntegralTraits]*/
-#endif
-
-
-//TODO move to parameter helper
-namespace OOLUA
-{
-	namespace INTERNAL
-	{
-
-		enum LUA
-		{
-			BOOLEAN = 1,
-			LIGHTUSERDATA = 2,
-			NUMBER = 3,
-			STRING = 4,
-			TABLE = 5,
-			FUNCTION = 6
-		};
-		/*
-		 #define LUA_TNIL		0
-		 #define LUA_TBOOLEAN		1
-		 #define LUA_TLIGHTUSERDATA	2
-		 #define LUA_TNUMBER		3
-		 #define LUA_TSTRING		4
-		 #define LUA_TTABLE		5
-		 #define LUA_TFUNCTION		6
-		 #define LUA_TUSERDATA		7
-		 #define LUA_TTHREAD		8
-		 */
-
-		//Used for constructors to check parameters on the stack
-		template<typename Cpp_type, int Lua_type>
-		struct lua_type_is_cpp_type;
-
-		/*
-		Specialisation
-		This is required as Type_enum_defaults will strip the pointer and then can_convert_to_int
-		uses the resulting type with a reference applied. This means it will try to use
-		void& which is illegal.
-		*/
-		template<>
-		struct lua_type_is_cpp_type<void*, NUMBER>
-		{
-			enum {value = 0 };
-		};
-
-		template<typename Cpp_type>
-		struct lua_type_is_cpp_type<Cpp_type, NUMBER>
-		{
-			enum {value = Type_enum_defaults<Cpp_type>::is_integral && !LVD::is_same<bool, Cpp_type>::value };
-		};
-
-		/**[StdStringIntegralConstructor]*/
-		template<typename Cpp_type>
-		struct lua_type_is_cpp_type<Cpp_type, STRING>
-		{
-			typedef Type_list<
-			char*
-#if OOLUA_STD_STRING_IS_INTEGRAL == 1
-			, std::string
-#endif
-			/*Your string type here*/
-			>::type Lua_string;
-			enum {value = TYPELIST::IndexOf<Lua_string, Cpp_type>::value == -1 ? 0 : 1};
-		};
-		/**[StdStringIntegralConstructor]*/
-
-		template<typename Cpp_type>
-		struct lua_type_is_cpp_type<Cpp_type, BOOLEAN>
-		{
-			enum {value = LVD::is_same<bool, Cpp_type>::value};
-		};
-		template<typename Cpp_type>
-		struct lua_type_is_cpp_type<Cpp_type, FUNCTION>
-		{
-			enum {value = LVD::is_same<Lua_ref<FUNCTION>, Cpp_type>::value};
-		};
-		template<typename Cpp_type>
-		struct lua_type_is_cpp_type<Cpp_type, TABLE>
-		{
-			typedef Type_list<
-			Lua_ref<TABLE>, Table
-			>::type Table_types;
-			enum {value = TYPELIST::IndexOf<Table_types, Cpp_type>::value == -1 ? 0 : 1};
-		};
-		template<typename Cpp_type>
-		struct lua_type_is_cpp_type<Cpp_type, LIGHTUSERDATA>
-		{
-			enum {value = LVD::is_same<void*, Cpp_type>::value};
-		};
-
-	} // namespace INTERNAL // NOLINT
-	/**\endcond*/
-} // namespace OOLUA
-
-#endif //PARAM_TRAITS_H_
+#endif //OOLUA_TRAITS_H_

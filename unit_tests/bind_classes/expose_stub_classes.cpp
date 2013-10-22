@@ -1,4 +1,5 @@
 #include "expose_stub_classes.h"
+#include "oolua_dsl_export.h"
 
 /**[MinimalProxyExport]*/
 OOLUA_EXPORT_NO_FUNCTIONS(Stub1)

@@ -1,7 +1,7 @@
 #ifndef EXPOSE_ENUM_PARAM_H_
 #	define EXPOSE_ENUM_PARAM_H_
 
-#include "oolua.h"
+#include "oolua_dsl.h"
 #include "cpp_enum.h"
 
 /*[ClassEnumExpose]*/

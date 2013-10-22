@@ -1,7 +1,7 @@
 #ifndef EXPOSE_USERDATA_FUNCTION_PARAMS_H_
 #	define EXPOSE_USERDATA_FUNCTION_PARAMS_H_
 
-#include "oolua.h"
+#include "oolua_dsl.h"
 #include "cpp_userdata_function_params.h"
 
 /**[ExposeOutParamsUserData]*/

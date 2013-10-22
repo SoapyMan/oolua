@@ -1,4 +1,5 @@
 #include "expose_hierarchy.h"
+#include "oolua_dsl_export.h"
 
 /*[ExportAbstract1]*/
 OOLUA_EXPORT_FUNCTIONS(Abstract1, func1, virtualVoidParam3Int)

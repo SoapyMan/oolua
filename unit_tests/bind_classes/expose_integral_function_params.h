@@ -1,7 +1,7 @@
 #ifndef EXPOSE_INTEGRAL_FUNCTION_PARAMS_H_
 #	define EXPOSE_INTEGRAL_FUNCTION_PARAMS_H_
 
-#include "oolua.h"
+#include "oolua_dsl.h"
 #include "cpp_integral_function_params.h"
 #include "cpp_function_params.h"
 

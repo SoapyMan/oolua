@@ -74,7 +74,7 @@ public:
 	void needsToBePushedByReference_isCurrentlyByValue_valueEqualsZero()
 	{
 		int value = OOLUA::INTERNAL::shouldPushValueByReference< StubNoneProxy,
-										OOLUA::INTERNAL::is_param_by_value<StubNoneProxy>::value
+										LVD::by_value<StubNoneProxy>::value
 											&& OOLUA::INTERNAL::has_a_proxy_type<StubNoneProxy>::value >::value;
 		CPPUNIT_ASSERT_EQUAL(int(0), value); //NOLINT(readability/casting)
 	}
@@ -82,8 +82,8 @@ public:
 	void needsToBePushedByReference_isCurrentlyByReference_valueEqualsZero()
 	{
 		int value = OOLUA::INTERNAL::shouldPushValueByReference< Stub1*,
-									OOLUA::INTERNAL::is_param_by_value<Stub1*>::value
-										&& OOLUA::INTERNAL::has_a_proxy_type<OOLUA::INTERNAL::Raw_type<Stub1*>::type >::value >::value;
+									LVD::by_value<Stub1*>::value
+										&& OOLUA::INTERNAL::has_a_proxy_type<LVD::raw_type<Stub1*>::type >::value >::value;
 		CPPUNIT_ASSERT_EQUAL(int(0), value); //NOLINT(readability/casting)
 	}
 

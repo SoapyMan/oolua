@@ -212,27 +212,27 @@ public:
 
 	void canConvertToIntFrom_intType_valueEqualsOne()
 	{
-		CPPUNIT_ASSERT_EQUAL(1, static_cast<int>(OOLUA::INTERNAL::can_convert_to_int<int>::value));
+		CPPUNIT_ASSERT_EQUAL(1, static_cast<int>(LVD::can_convert_to_int<int>::value));
 	}
 
 	void canConvertToIntFrom_classType_valueEqualsZero()
 	{
-		CPPUNIT_ASSERT_EQUAL(0, static_cast<int>(OOLUA::INTERNAL::can_convert_to_int<dummy_class>::value));
+		CPPUNIT_ASSERT_EQUAL(0, static_cast<int>(LVD::can_convert_to_int<dummy_class>::value));
 	}
 
 	void canConvertToIntFrom_enumType_valueEqualsOne()
 	{
-		CPPUNIT_ASSERT_EQUAL(1, static_cast<int>(OOLUA::INTERNAL::can_convert_to_int<Enums::COLOUR>::value));
+		CPPUNIT_ASSERT_EQUAL(1, static_cast<int>(LVD::can_convert_to_int<Enums::COLOUR>::value));
 	}
 
 	void canConvertToIntFrom_float_valueEqualsZero()
 	{
-		CPPUNIT_ASSERT_EQUAL(0, static_cast<int>(OOLUA::INTERNAL::can_convert_to_int<float>::value));
+		CPPUNIT_ASSERT_EQUAL(0, static_cast<int>(LVD::can_convert_to_int<float>::value));
 	}
 
 	void canConvertToIntFrom_double_valueEqualsZero()
 	{
-		CPPUNIT_ASSERT_EQUAL(0, static_cast<int>(OOLUA::INTERNAL::can_convert_to_int<double>::value));
+		CPPUNIT_ASSERT_EQUAL(0, static_cast<int>(LVD::can_convert_to_int<double>::value));
 	}
 };
 

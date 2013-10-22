@@ -25,9 +25,9 @@ THE SOFTWARE.
 #ifndef PUSH_POINTER_INTERAL_H_
 #	define PUSH_POINTER_INTERAL_H_
 
-#include "oolua_userdata.h"
-#include "oolua_storage.h"
-#include "determin_qualifier.h"
+#include "proxy_userdata.h"
+#include "proxy_storage.h"
+#include "lvd_type_traits.h"
 
 struct lua_State;
 

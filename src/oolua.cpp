@@ -26,10 +26,11 @@ THE SOFTWARE.
 ///  @file oolua.cpp
 ///////////////////////////////////////////////////////////////////////////////
 #	include "oolua.h"
-#   include "oolua_storage.h"
+#   include "proxy_storage.h"
 #   include "oolua_check_result.h"
 #	include "oolua_error.h"
-#	include "oolua_char_arrays.h"
+#	include "char_arrays.h"
+#if OOLUA_MOVED == 1
 namespace
 {
 	void add_weaklookup_table(lua_State* vm)
@@ -102,16 +103,20 @@ namespace
 		lua_settop(vm, top);
 	}
 } // namespace
+#endif
 
 namespace OOLUA
 {
+#if OOLUA_MOVED == 1
 	void setup_user_lua_state(lua_State* vm)
 	{
 		add_weaklookup_table(vm);
 		register_oolua_module(vm);
 		add_ownership_globals(vm);
 	}
+#endif
 
+#if OOLUA_MOVED == 1
 	Script::Script()
 		:call(), m_lua(0)
 	{
@@ -160,6 +165,8 @@ namespace OOLUA
 	{
 		return OOLUA::load_file(m_lua, filename);
 	}
+#endif //OOLUA_MOVED
+
 
 	void set_global_to_nil(lua_State* vm, char const * name)
 	{
@@ -190,6 +197,7 @@ namespace OOLUA
 		return lua_topointer(vm0, LUA_REGISTRYINDEX) == lua_topointer(vm1, LUA_REGISTRYINDEX);
 	}
 
+#if OOLUA_MOVED == 1
 
 	bool load_chunk(lua_State* vm, std::string const& chunk)
 	{
@@ -224,5 +232,6 @@ namespace OOLUA
 		int result = luaL_loadfile(vm, filename.c_str() );
 		return INTERNAL::load_buffer_check_result(vm, result);;
 	}
+#endif //OOLUA_MOVED
 
 } // namespace OOLUA

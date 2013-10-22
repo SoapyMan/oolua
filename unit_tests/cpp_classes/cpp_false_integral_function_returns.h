@@ -3,8 +3,8 @@
 
 #	include "oolua_tests_pch.h"
 #	include "gmock/gmock.h"
-#	include "lua_ref.h"
-#	include "lua_table.h"
+#	include "oolua_ref.h"
+#	include "oolua_table.h"
 #	include "cpp_function_returns.h"
 
 struct fake_return_default{};

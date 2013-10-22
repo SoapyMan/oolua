@@ -38,7 +38,7 @@ THE SOFTWARE.
 		are disabled then it depends on \ref OOLUA_DEBUG_CHECKS as to whether
 		any error will be reported
 	*/
-
+//TODO update
 	/**	\def OOLUA_USE_EXCEPTIONS
 		\hideinitializer
 		\brief \b Default: Disabled

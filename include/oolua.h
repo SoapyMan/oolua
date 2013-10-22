@@ -67,164 +67,23 @@
 #	define OOLUA_H_
 
 
-#	include <string>
-
 #	include "lua_includes.h"
-#	include "oolua_push_pull.h"
-#	include "oolua_traits.h"
-#	include "export_func_to_lua.h"
-#	include "cpp_member_func.h"
-#	include "oolua_c_func.h"
-#	include "lua_operator.h"
-#	include "proxy_class.h"
-#	include "class_public_member.h"
-#	include "lua_function.h"
-#	include "lua_table.h"
-#	include "lua_ref.h"
-#	include "lua_stack_dump.h"
-#	include "oolua_tags.h"
-#	include "member_func_helper.h"
-#	include "oolua_registration.h"
-#	include "oolua_error.h"
+#	include "oolua_dsl.h"
+#	include "proxy_function_exports.h"
 #	include "oolua_version.h"
-#	include "cpp_constructor.h"
-#	include "oolua_va_args.h"
+#	include "oolua_error.h"
+//#	include "oolua_traits.h"
+#	include "oolua_stack.h"
+#	include "oolua_script.h"
+#	include "oolua_open.h"
+#	include "oolua_chunk.h"
+#	include "oolua_registration.h"
+#	include "oolua_table.h"
+#	include "oolua_ref.h"
 
 
-/** \namespace OOLUA
-	\brief This is the root namespace of the library
-	\details There are sub namespaces in OOLUA yet these are not intended for general
-	usage, instead this namespace contains all such functions, structures ...
-*/
 namespace OOLUA
 {
-
-	/** \class Script
-		\brief OOLua helper class
-		\details
-		OOLua is purposely designed not to be dependent on the \ref OOLUA::Script "Script" class
-		and therefore passes around it's dependency of a lua_State instance.
-		The Script class is only a helper and anything you can do with it
-		can be accomplished either via using a \ref OOLUA::Lua_function "Lua_function" struct,
-		calling OOLUA namespaced functions or using the Lua C API.
-
-		Script provides the following :
-		\li Scopes a lua_State pointer
-		\li Provides access to the lua_State pointer via a \ref OOLUA::Script::operator "cast operator" and \ref OOLUA::Script::state "function"
-		\li Provides methods to \ref OOLUA::Script::register_class "register" types
-		\li Binds a \ref OOLUA::Lua_function "Lua_function" instance to \ref OOLUA::Script::call "call" functions
-		\li Has member functions for a little state management
-		\li \ref OOLUA::setup_user_lua_state "Sets up" the state to work with OOLua
-
-		\note
-		This class is not copy constructible or assignable.
-		To accomplish this a counted reference to the lua_State would need to be
-		maintained.
-		\note If you do not want to or can not use this class please see
-		\ref OOLUA::setup_user_lua_state "setup_user_lua_state"
-	*/
-	class Script
-	{
-	public:
-		/** Function object instance which can be used to call Lua functions*/
-		Lua_function call;
-
-		/**@{*/
-		Script();
-		~Script();
-		/**@}*/
-
-		/**@{*/
-		/** \brief Returns the stack count from the lua_State */
-		int stack_count(){ return lua_gettop(m_lua); }
-		/** \brief Conversion operator so that a \ref OOLUA::Script "Script"
-			instance can be passed in place of a lua_State pointer*/
-		operator lua_State * () const {return m_lua;}
-		/** \brief Sometimes you may want to be explicit \see Script::operator()  */
-		lua_State * const & state() const {return m_lua;}
-		/** \brief Performs a garbage collection on the state*/
-		void gc();
-		/**@}*/
-
-		/**@{*/
-		/** \brief Helper function \see OOLUA::register_class*/
-		template<typename T>
-		void register_class();
-		/** \brief Helper function \see OOLUA::register_class*/
-		template<typename T>
-		void register_class(T* /*dummy*/); // NOLINT
-		/** \brief Helper function \see OOLUA::register_class_static */
-		template<typename T, typename K, typename V>
-		void register_class_static(K const& k, V const& v);
-		/**@}*/
-
-		/**@{*/
-		/** \brief Helper function \see OOLUA::run_file */
-		bool run_file(std::string const & filename);
-		/** \brief Helper function \see OOLUA::load_file */
-		bool load_file(std::string const & filename);
-		/** \brief Helper function \see OOLUA::load_chunk */
-		bool load_chunk(std::string const& chunk);
-		/** \brief Helper function \see OOLUA::run_chunk */
-		bool run_chunk(std::string const& chunk);
-		/**@}*/
-
-		/**@{*/
-		/** \brief Helper function \see OOLUA::pull */
-		template<typename T>
-		bool pull(T & t);
-		/** \brief Helper function \see OOLUA::push */
-		template<typename T>
-		bool push(T const& t);
-		/**@}*/
-
-	protected:
-		void close_down();
-		Script(Script const&);
-		Script& operator = (Script const&);
-		lua_State* m_lua;
-	};
-
-
-	template<typename T>
-	inline void Script::register_class()
-	{
-		OOLUA::register_class<T>(m_lua);
-	}
-
-	template<typename T>
-	inline void Script::register_class(T* /*dummy*/) // NOLINT
-	{
-		register_class<T>();
-	}
-
-	template<typename T, typename K, typename V>
-	inline void Script::register_class_static(K const& k, V const& v)
-	{
-			OOLUA::register_class_static<T>(m_lua, k, v);
-	}
-
-	template<typename T>
-	inline bool Script::push(T const& value)
-	{
-		return OOLUA::push(*this, value);
-	}
-
-	template<typename T>
-	inline bool Script::pull(T& value)
-	{
-		return OOLUA::pull(*this, value);
-	}
-
-	/**
-		\brief Sets up a lua_State to work with OOLua.
-		\details If you want to use OOLua with a lua_State you already have active
-		or supplied by some third party, then calling this function
-		adds the necessary tables and globals for it to work with OOLua.
-		\param[in] vm lua_State to be initialise by OOLua
-	*/
-	void setup_user_lua_state(lua_State* vm);
-
 	/**
 		\brief Helper function to set a Lua global variable.
 		\tparam T Type for instance
@@ -284,30 +143,6 @@ namespace OOLUA
 		\returns true is vm0 and vm1 are different yet related states, else false
 	*/
 	bool can_xmove(lua_State* vm0, lua_State* vm1);
-
-	/** \brief Loads a chunk leaving the resulting function on the stack
-		\param[in] vm \copydoc lua_State
-		\param[in] chunk
-	*/
-	bool load_chunk(lua_State* vm, std::string const& chunk);
-
-	/** \brief Loads and runs a chunk of code
-		\param[in] vm \copydoc lua_State
-		\param[in] chunk
-	*/
-	bool run_chunk(lua_State* vm, std::string const& chunk);
-
-	/** \brief Loads a file leaving the resulting function on the stack
-		\param[in] vm \copydoc lua_State
-		\param[in] filename
-	 */
-	bool load_file(lua_State* vm, std::string const & filename);
-
-	/** \brief Loads and runs the file
-		\param[in] vm \copydoc lua_State
-		\param[in] filename
-	*/
-	bool run_file(lua_State* vm, std::string const & filename);
 
 } // namespace OOLUA
 

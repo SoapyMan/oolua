@@ -1,7 +1,7 @@
 #ifndef EXPOSE_STATIC_AND_C_FUNCTIONS_H_
 #	define EXPOSE_STATIC_AND_C_FUNCTIONS_H_
 
-#include "oolua.h"
+#include "oolua_dsl.h"
 #include "cpp_static_and_c_functions.h"
 
 /*[ClassStaticFunctionExpose]*/

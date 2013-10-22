@@ -1,4 +1,5 @@
 #include "expose_class_constructors.h"
+#include "oolua_dsl_export.h"
 
 OOLUA_EXPORT_NO_FUNCTIONS(ParamConstructor)
 OOLUA_EXPORT_NO_FUNCTIONS(TableRefConstructor)

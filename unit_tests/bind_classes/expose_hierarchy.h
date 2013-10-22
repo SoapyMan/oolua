@@ -1,7 +1,7 @@
 #ifndef EXPOSE_HEIRARCHY_H_
 #	define EXPOSE_HEIRARCHY_H_
 
-#include "oolua.h"
+#include "oolua_dsl.h"
 #include "cpp_hierarchy.h"
 
 /*[ExposeAbstract1]*/

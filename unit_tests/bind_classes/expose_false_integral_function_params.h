@@ -1,7 +1,7 @@
 #ifndef EXPOSE_FALSE_INTEGRAL_FUNCTION_PARAMS_H_
 
 #include "cpp_false_integral_function_params.h"
-#include "oolua.h"
+#include "oolua_dsl.h"
 
 OOLUA_PROXY(FunctionRefParam)
 	OOLUA_TAGS(Abstract)

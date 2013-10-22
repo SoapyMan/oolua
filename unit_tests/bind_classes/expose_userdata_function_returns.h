@@ -1,7 +1,7 @@
 #ifndef EXPOSE_METHOD_RETURNS_CLASS_H_
 #	define EXPOSE_METHOD_RETURNS_CLASS_H_
 
-#	include "oolua.h"
+#	include "oolua_dsl.h"
 #	include "expose_stub_classes.h"
 #	include "cpp_userdata_function_returns.h"
 

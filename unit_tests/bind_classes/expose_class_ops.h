@@ -2,7 +2,7 @@
 #	define EXPOSE_CLASS_OPS_H_
 
 #include "cpp_class_ops.h"
-#include "oolua.h"
+#include "oolua_dsl.h"
 
 /*[ClassOpsExpose]*/
 OOLUA_PROXY(Class_ops)

@@ -1,7 +1,7 @@
 #ifndef EXPOSE_CLASS_CONSTRUCTORS_H_
 #	define EXPOSE_CLASS_CONSTRUCTORS_H_
 
-#include "oolua.h"
+#include "oolua_dsl.h"
 #include "expose_stub_classes.h"
 #include "cpp_constructor_mock.h"
 

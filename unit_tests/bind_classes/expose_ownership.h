@@ -3,8 +3,7 @@
 
 #include "expose_stub_classes.h"
 #include "cpp_userdata_function_params.h"
-#include "oolua.h"
-
+#include "oolua_dsl.h"
 
 OOLUA_PROXY(OwnershipParamUserData)
 	OOLUA_TAGS(Abstract)

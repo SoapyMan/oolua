@@ -1,4 +1,5 @@
 #include "expose_static_and_c_functions.h"
+#include "oolua_dsl_export.h"
 
 /*[ClassStaticFunctionExport]*/
 OOLUA_EXPORT_NO_FUNCTIONS(ClassHasStaticFunction)

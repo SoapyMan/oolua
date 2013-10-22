@@ -1,7 +1,7 @@
 #ifndef EXPOSE_FALSE_INTEGRAL_FUNCTION_RETURNS_H_
 #	define EXPOSE_FALSE_INTEGRAL_FUNCTION_RETURNS_H_
 
-#include "oolua.h"
+#include "oolua_dsl.h"
 #include "cpp_false_integral_function_returns.h"
 
 OOLUA_PROXY(FunctionRefReturn)

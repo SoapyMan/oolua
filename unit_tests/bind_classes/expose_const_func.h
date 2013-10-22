@@ -2,7 +2,7 @@
 #	define EXPOSE_CONST_FUNCS_H_
 
 #	include "cpp_const_funcs.h"
-#	include "oolua.h"
+#	include "oolua_dsl.h"
 
 OOLUA_PROXY(Constant)
 	OOLUA_TAGS(Abstract)

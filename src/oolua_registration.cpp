@@ -23,7 +23,7 @@ THE SOFTWARE.
 */
 
 #include "oolua_registration.h"
-#include "cpp_constructor.h"
+#include "proxy_constructor.h"
 
 namespace OOLUA
 {

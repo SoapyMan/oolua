@@ -81,79 +81,117 @@ THE SOFTWARE.
 #	if OOLUA_USE_EXCEPTIONS == 1
 
 #	include "lua_includes.h"
-#	include <stdexcept>
+#	include <exception>
+
 	namespace OOLUA
 	{
 		namespace ERROR
 		{
 			struct PopTheStack{};
+			size_t copy_buffer(char* to, char const* from);
+			void copy_buffer(char* to, char const* from, size_t& size);
 		} // namespace ERROR
 
-		struct Exception : public std::runtime_error
+		/*
+		class exception
+		{
+		public:
+			exception () throw();
+			exception (const exception&) throw();
+			exception& operator = (const exception&) throw();
+			virtual ~exception() throw();
+			virtual const char* what() const throw();
+		}
+*/
+		struct Exception : std::exception
 		{
 			Exception(lua_State* vm)
-				:std::runtime_error(lua_tostring(vm, -1))
-			{}
-			Exception(lua_State* vm, ERROR::PopTheStack*)
-				:std::runtime_error(lua_tostring(vm, -1))
+				: m_len(0)
 			{
+				char const* str = lua_tolstring(vm, -1, &m_len);
+				ERROR::copy_buffer(m_buffer, str, m_len);
+			}
+			Exception(lua_State* vm, ERROR::PopTheStack*)
+				: m_len(0)
+			{
+				char const* str = lua_tolstring(vm, -1, &m_len);
+				ERROR::copy_buffer(m_buffer, str, m_len);
 				lua_pop(vm, 1);
 			}
-			Exception(std::string const& str)
-				:std::runtime_error(str)
-			{}
+			Exception(char const* msg)
+				: m_len(0)
+			{
+				m_len = ERROR::copy_buffer(m_buffer, msg);
+			}
+			Exception(Exception const& rhs)
+				: m_len(rhs.m_len)
+			{
+				ERROR::copy_buffer(m_buffer, rhs.m_buffer, m_len);
+			}
+			Exception& operator = (Exception const& rhs) throw()
+			{
+				m_len = rhs.m_len;
+				ERROR::copy_buffer(m_buffer, rhs.m_buffer, m_len);
+				return *this;
+			}
+			char const* what() const throw()
+			{
+				return &m_buffer[0];
+			}
+			size_t m_len;
+			char m_buffer[1024];
 		};
 
-		struct Syntax_error : public Exception
+		struct Syntax_error : Exception
 		{
 			Syntax_error(lua_State* vm)
-				:Exception(vm)
+				: Exception(vm)
 			{}
 			Syntax_error(lua_State* vm, ERROR::PopTheStack* specialisation)
-				:Exception(vm, specialisation)
+				: Exception(vm, specialisation)
 			{}
 		};
 
-		struct Runtime_error : public Exception
+		struct Runtime_error : Exception
 		{
 			Runtime_error(lua_State* vm)
-				:Exception(vm)
+				: Exception(vm)
 			{}
 			Runtime_error(lua_State* vm, ERROR::PopTheStack* specialisation)
-				:Exception(vm, specialisation)
+				: Exception(vm, specialisation)
 			{}
-			Runtime_error(std::string const& str)
-				:Exception(str)
+			Runtime_error(char const* msg)
+				: Exception(msg)
 			{}
 		};
 
-		struct Memory_error : public Exception
+		struct Memory_error : Exception
 		{
-			Memory_error(std::string const& str)
-				:Exception(str)
-			{}
 			Memory_error(lua_State* vm)
-				:Exception(vm)
+				: Exception(vm)
 			{}
 			Memory_error(lua_State* vm, ERROR::PopTheStack* specialisation)
-				:Exception(vm, specialisation)
+				: Exception(vm, specialisation)
 			{}
 		};
 
-		struct File_error : public  Exception
+		struct File_error : Exception
 		{
 			File_error(lua_State* vm)
-				:Exception(vm)
+				: Exception(vm)
 			{}
 			File_error(lua_State* vm, ERROR::PopTheStack* specialisation)
-				:Exception(vm, specialisation)
+				: Exception(vm, specialisation)
 			{}
 		};
 
-		struct Type_error : public Exception
+		struct Type_error : Exception
 		{
-			Type_error(std::string const& str)
-				:Exception(str)
+//			Type_error(std::string const& str)
+//				:Exception(str)
+//			{}
+			Type_error(lua_State* vm, ERROR::PopTheStack* specialisation)
+				:Exception(vm, specialisation)
 			{}
 		};
 

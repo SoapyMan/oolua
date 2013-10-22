@@ -1,5 +1,6 @@
 #include "expose_public_instances.h"
 #include "expose_stub_classes.h"
+#include "oolua_dsl_export.h"
 
 /*[PublicMembersExport]*/
 OOLUA_EXPORT_FUNCTIONS(Public_variables

@@ -1,7 +1,7 @@
 #ifndef EXPOSE_PUBLIC_INSTANCES_OOLUA_H_
 #	define EXPOSE_PUBLIC_INSTANCES_OOLUA_H_
 
-#include "oolua.h"
+#include "oolua_dsl.h"
 #include "cpp_public_instances.h"
 #include "cpp_stub_classes.h"
 

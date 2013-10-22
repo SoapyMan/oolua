@@ -3,8 +3,6 @@
 #	include "common_cppunit_headers.h"
 #	include <cstdio>
 
-
-
 /** [HelloMoonCFunc]*/
 void say(char const* input)
 {

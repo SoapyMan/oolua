@@ -1,4 +1,5 @@
 #include "expose_integral_function_params.h"
+#include "oolua_dsl_export.h"
 
 OOLUA_EXPORT_FUNCTIONS_CONST(IntegerFunctionInTraits)
 OOLUA_EXPORT_FUNCTIONS(IntegerFunctionInTraits

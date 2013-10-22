@@ -1,5 +1,5 @@
 #include "expose_method_returns_class.h"
-
+#include "oolua_dsl_export.h"
 
 OOLUA_EXPORT_FUNCTIONS(Method_returns_class
 						, ref

@@ -1,7 +1,7 @@
 #ifndef EXPOSE_NAMESPACED_CLASS_H_
 #	define EXPOSE_NAMESPACED_CLASS_H_
 
-#include "oolua.h"
+#include "oolua_dsl.h"
 #include "cpp_class_in_namespace.h"
 
 namespace OOLUA

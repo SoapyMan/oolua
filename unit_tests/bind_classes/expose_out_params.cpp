@@ -1,4 +1,5 @@
 #include "expose_out_params.h"
+#include "oolua_dsl_export.h"
 
 OOLUA_EXPORT_FUNCTIONS(OutParamsTest
 						, int_ref

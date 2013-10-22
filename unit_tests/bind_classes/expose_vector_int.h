@@ -2,7 +2,7 @@
 #	define EXPOSE_VECTOR_INT_H_
 
 #	include <vector>
-#	include "oolua.h"
+#	include "oolua_dsl.h"
 
 /**[StdVectorProxy]*/
 //typedef the type of vector into the global namespace
