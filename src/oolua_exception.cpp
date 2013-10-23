@@ -23,8 +23,10 @@ THE SOFTWARE.
 */
 
 #include "oolua_exception.h"
-#include "lua_includes.h"
-#include <cstring>
+#	if OOLUA_USE_EXCEPTIONS == 1
+
+#	include "lua_includes.h"
+#	include <cstring>
 
 namespace 
 {
@@ -122,3 +124,4 @@ namespace OOLUA
 	{}
 } // namespace OOLUA
 
+#endif //OOLUA_USE_EXCEPTIONS
