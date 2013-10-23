@@ -141,17 +141,13 @@ namespace OOLUA
 		{
 			static int valid(lua_State* vm, int index)
 			{
-				//TODO we index into a Lua_ud here without knowing for sure that the
-				//stack index is actally a OOLUA userdata type; yet we can not call
-				//check_index_no_const as this throws a Lua error when the constness is
-				//incorrect.
 MSC_PUSH_DISABLE_CONDITIONAL_CONSTANT_OOLUA
-				if( !TypeWithTraits::is_constant
-				   && INTERNAL::userdata_is_constant(static_cast<INTERNAL::Lua_ud *>(lua_touserdata(vm, index))) )
+				if( OOLUA::INTERNAL::check_index<typename TypeWithTraits::raw>(vm, index) )
 				{
-					return 0;
+					return ! ( !TypeWithTraits::is_constant
+									&& INTERNAL::userdata_is_constant(static_cast<INTERNAL::Lua_ud *>(lua_touserdata(vm, index))) );
 				}
-				return OOLUA::INTERNAL::check_index<typename TypeWithTraits::raw>(vm, index) != 0;
+				return 0;
 MSC_POP_COMPILER_WARNING_OOLUA
 			}
 		};
