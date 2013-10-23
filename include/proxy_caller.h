@@ -35,7 +35,7 @@ THE SOFTWARE.
 #	include "oolua_boilerplate.h"
 #	include "oolua_traits_fwd.h"
 #	include "type_converters.h"
-#	include "proxy_function_stack_helper.h"
+#	include "proxy_stack_helper.h"
 #	include "lua_includes.h"
 #	include "oolua_config.h"
 
@@ -82,7 +82,7 @@ THE SOFTWARE.
 	{ \
 		OOLUA_CONVERTER_##NUM \
 		typename R::type r( (m_this->*ptr2mem)(OOLUA_CONVERTER_PARAMS_##NUM) ); \
-		Member_func_helper<typename R::traits, R::owner>::push2lua(vm, r); \
+		Proxy_stack_helper<typename R::traits, R::owner>::push(vm, r); \
 	}
 
 /**	\def OOLUA_INTERNAL_MEMBER_CALLER_NO_RETURN_NUM
@@ -108,7 +108,7 @@ THE SOFTWARE.
 		OOLUA_CONVERTER_##NUM \
 		OOLUA_NONE_MEMBER_FUNCTION_TRY \
 			typename R::type r( (*ptr2func)(OOLUA_CONVERTER_PARAMS_##NUM) ); \
-			Member_func_helper<typename R::traits, R::owner>::push2lua(vm, r); \
+			Proxy_stack_helper<typename R::traits, R::owner>::push(vm, r); \
 		OOLUA_NONE_MEMBER_FUNCTION_CATCH \
 	}
 

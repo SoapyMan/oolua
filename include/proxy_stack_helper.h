@@ -23,10 +23,10 @@ THE SOFTWARE.
 */
 
 ///////////////////////////////////////////////////////////////////////////////
-///  @file proxy_function_stack_helper.h
+///  @file proxy_stack_helper.h
 ///////////////////////////////////////////////////////////////////////////////
-#ifndef OOLUA_PROXY_FUNCTION_STACK_HELPER_H_
-#	define OOLUA_PROXY_FUNCTION_STACK_HELPER_H_
+#ifndef OOLUA_PROXY_STACK_HELPER_H_
+#	define OOLUA_PROXY_STACK_HELPER_H_
 
 #	include "lua_includes.h"
 #	include "oolua_stack_fwd.h"
@@ -99,16 +99,15 @@ namespace OOLUA
 			\tparam owner One of OOLUA::Owner entries which indicate which language owns the type
 		*/
 		template<typename TypeWithTraits, int owner>
-		struct Member_func_helper;
-		//TODO change Member_func_helper::push2lua to push
+		struct Proxy_stack_helper;
 
 		/*
 		Specialisation for the light_return type.
 		*/
 		template<typename LightUdType>
-		struct Member_func_helper<light_return<LightUdType>, No_change>
+		struct Proxy_stack_helper<light_return<LightUdType>, No_change>
 		{
-			static void push2lua(lua_State* vm, LightUdType ptr)
+			static void push(lua_State* vm, LightUdType ptr)
 			{
 				OOLUA::push(vm, static_cast<void*>(ptr));
 			}
@@ -118,7 +117,7 @@ namespace OOLUA
 		Specialisation for the light_p parameter type.
 		*/
 		template<typename LightUdType>
-		struct Member_func_helper<light_p<LightUdType>, No_change>
+		struct Proxy_stack_helper<light_p<LightUdType>, No_change>
 		{
 			static void get(lua_State* const vm, int idx, void*& value)
 			{
@@ -129,7 +128,7 @@ namespace OOLUA
 				get(vm, idx, value);
 				++idx;
 			}
-			static void push2lua(lua_State* /*vm*/, void* /*ptr*/) // NOLINT(readability/casting)
+			static void push(lua_State* /*vm*/, void* /*ptr*/) // NOLINT(readability/casting)
 			{
 				assert(0 && "this function should not be called");
 			}
@@ -140,12 +139,12 @@ namespace OOLUA
 		If NULL it pushes nil to the stack else calls the normal helper static function.
 		*/
 		template<typename MaybeNullType>
-		struct Member_func_helper<maybe_null<MaybeNullType>, No_change>
+		struct Proxy_stack_helper<maybe_null<MaybeNullType>, No_change>
 		{
-			static void push2lua(lua_State* vm, MaybeNullType ptr)
+			static void push(lua_State* vm, MaybeNullType ptr)
 			{
 				if (ptr)
-					Member_func_helper<function_return<MaybeNullType>, No_change>::push2lua(vm, ptr);
+					Proxy_stack_helper<function_return<MaybeNullType>, No_change>::push(vm, ptr);
 				else
 					lua_pushnil(vm);
 			}
@@ -156,19 +155,19 @@ namespace OOLUA
 		If NULL it pushes nil to the stack else calls the normal helper static function.
 		*/
 		template<typename MaybeNullType>
-		struct Member_func_helper<lua_maybe_null<MaybeNullType>, Lua>
+		struct Proxy_stack_helper<lua_maybe_null<MaybeNullType>, Lua>
 		{
-			static void push2lua(lua_State* vm, MaybeNullType ptr)
+			static void push(lua_State* vm, MaybeNullType ptr)
 			{
 				if (ptr)
-					Member_func_helper<lua_return<MaybeNullType>, Lua>::push2lua(vm, ptr);
+					Proxy_stack_helper<lua_return<MaybeNullType>, Lua>::push(vm, ptr);
 				else
 					lua_pushnil(vm);
 			}
 		};
 
 		template<typename TypeWithTraits>
-		struct Member_func_helper<TypeWithTraits, No_change>
+		struct Proxy_stack_helper<TypeWithTraits, No_change>
 		{
 			template<typename T>
 			static void get(lua_State* const vm, int idx, T& value)
@@ -196,32 +195,32 @@ namespace OOLUA
 			}
 
 			template<typename T>
-			static void push2lua(lua_State* const vm, T& value)
+			static void push(lua_State* const vm, T& value)
 			{
 				maybe_integral<T, TypeWithTraits, TypeWithTraits::is_integral>::push(vm, value);
 			}
 
 			template<typename T>
-			static void push2lua(lua_State* const vm, T*& value)
+			static void push(lua_State* const vm, T*& value)
 			{
 				OOLUA::push(vm, value, No_change);
 			}
 
 			///special case "T* const" and "T const * const"
 			template<typename T>
-			static void push2lua(lua_State* const vm, T*const& value)
+			static void push(lua_State* const vm, T*const& value)
 			{
 				OOLUA::push(vm, value, No_change);
 			}
 
-			static void push2lua(lua_State* const , lua_State *& )
+			static void push(lua_State* const , lua_State *& )
 			{
 				assert(0 && "this function should not be called");
 			}
 		};
 
 		template<typename TypeWithTraits>
-		struct Member_func_helper<TypeWithTraits, Cpp>
+		struct Proxy_stack_helper<TypeWithTraits, Cpp>
 		{
 			template<typename T>
 			static void get(lua_State* const vm, int idx, T*& value)
@@ -239,24 +238,24 @@ namespace OOLUA
 			}
 
 			template<typename T>
-			static void push2lua(lua_State* const /*s*/, T*& /*value*/)//noop
+			static void push(lua_State* const /*s*/, T*& /*value*/)//noop
 			{
 				assert(0 && "this function should never be called");
 			}
 		};
 
 		template<typename TypeWithTraits>
-		struct Member_func_helper<TypeWithTraits, Lua>
+		struct Proxy_stack_helper<TypeWithTraits, Lua>
 		{
 			template<typename T>
-			static void push2lua(lua_State* const vm, T*& value)
+			static void push(lua_State* const vm, T*& value)
 			{
 				OOLUA::lua_acquire_ptr<typename TypeWithTraits::type> p(value);
 				OOLUA::push(vm, p);
 			}
 
 			template<typename T>
-			static void push2lua(lua_State* const vm, T& value)
+			static void push(lua_State* const vm, T& value)
 			{
 				proxy_maybe_by_ref<typename TypeWithTraits::raw
 								, T
@@ -281,4 +280,4 @@ namespace OOLUA
 	/** \endcond */
 } // namespace OOLUA
 
-#endif //OOLUA_PROXY_FUNCTION_STACK_HELPER_H_
+#endif //OOLUA_PROXY_STACK_HELPER_H_

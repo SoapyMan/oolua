@@ -23,7 +23,7 @@ THE SOFTWARE.
 */
 /** 
 	\file proxy_function_exports.h
-	\date Wed Oct 23 10:52:12 2013
+	\date Wed Oct 23 17:57:13 2013
 	\details 
 	Configurable values as set when generating this file
 	\li class_functions 15 - Maximum amount of class functions that can be registered for each proxied type	(Default 15)
