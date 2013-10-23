@@ -172,9 +172,7 @@ public:
 		m_lua->run_chunk("return function(obj) obj:cpp_func_const() end");
 		CPPUNIT_ASSERT_NO_THROW(m_lua->call(1, const_instance));
 	}
-
 #endif
-
 };
 
 CPPUNIT_TEST_SUITE_REGISTRATION(Constant_functions);

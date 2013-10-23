@@ -214,7 +214,7 @@ namespace OOLUA
 		{
 			if( lua_type(vm, -1) == LUA_TSTRING )
 			{
-				OOLUA_PUSH_CARRAY(vm,OOLUA::INTERNAL::new_str);
+				OOLUA_PUSH_CARRAY(vm, OOLUA::INTERNAL::new_str);
 				if( lua_rawequal(vm, -1, -2) )
 				{
 					/*

@@ -910,7 +910,7 @@ public:
 		//So we assign a buffer longer than we want, correct the size member
 		//and then copy the data
 		OOLUA::Exception e("DontCare");
-		e.m_len=1;
+		e.m_len = 1;
 		OOLUA::Exception corrected(e);
 		char expected_value('\0');
 		CPPUNIT_ASSERT_EQUAL(expected_value, corrected.m_buffer[1]);
@@ -919,7 +919,7 @@ public:
 	void exceptionBufferIsTrimmedCorrectly_assignStringOfOneGreaterThanExceptionBufferCanContain_memberLenEqualsBufferSizeMinusTwo()
 	{
 		char buffer[OOLUA::ERROR::size+2];
-		memset(buffer,1,OOLUA::ERROR::size);
+		memset(buffer, 1, OOLUA::ERROR::size);
 		buffer[OOLUA::ERROR::size+1]='\0';
 		OOLUA::Exception e(buffer);
 		size_t expected_value(OOLUA::ERROR::size-2);
@@ -928,7 +928,7 @@ public:
 	void exceptionBufferIsTrimmedCorrectly_assignStringOfOneGreaterThanExceptionBufferCanCotain_bufferMaxSizeMinusOneIsNullToken()
 	{
 		char buffer[OOLUA::ERROR::size+2];
-		memset(buffer,1,OOLUA::ERROR::size);
+		memset(buffer, 1, OOLUA::ERROR::size);
 		buffer[OOLUA::ERROR::size+1]='\0';
 		OOLUA::Exception e(buffer);
 		char expected_value('\0');
