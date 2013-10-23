@@ -124,7 +124,8 @@ THE SOFTWARE.
 				m_len = ERROR::copy_buffer(m_buffer, msg);
 			}
 			Exception(Exception const& rhs)
-				: m_len(rhs.m_len)
+				: std::exception(rhs)
+				, m_len(rhs.m_len)
 			{
 				ERROR::copy_buffer(m_buffer, rhs.m_buffer, m_len);
 			}
