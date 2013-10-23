@@ -359,7 +359,7 @@ end
 
 local gen_exports = function(options,path)
 
-	local f = file_create({class_functions=options.class_functions},path,'export_func_to_lua.h')
+	local f = file_create({class_functions=options.class_functions},path,'proxy_function_exports.h')
 	f:write('#define LUA_MEMBER_FUNC_1(Class, func1) {#func1, &Class::func1},\n')
 	local previous = 'Class, func1'
 	for i = 2, options.class_functions do

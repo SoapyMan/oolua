@@ -21,17 +21,17 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
-/**
+/** 
 	\file proxy_function_exports.h
-	\date Wed Oct  9 20:03:18 2013
-	\details
+	\date Wed Oct 23 10:52:12 2013
+	\details 
 	Configurable values as set when generating this file
 	\li class_functions 15 - Maximum amount of class functions that can be registered for each proxied type	(Default 15)
 	\note Warning this file was generated, edits to the file will not persist if it is regenerated.
 */
 
-#ifndef OOLUA_PROXY_FUNCTION_EXPORTS_H_
-#	define OOLUA_PROXY_FUNCTION_EXPORTS_H_
+#ifndef PROXY_FUNCTION_EXPORTS_H_
+#	define PROXY_FUNCTION_EXPORTS_H_
 /** \cond INTERNAL */
 
 #define LUA_MEMBER_FUNC_1(Class, func1) {#func1, &Class::func1},
@@ -209,4 +209,4 @@ OOLUA::Proxy_class< Class >::Reg_type_const OOLUA::Proxy_class< Class >::class_m
 
 /**@}*/
 
-#endif //OOLUA_PROXY_FUNCTION_EXPORTS_H_
+#endif

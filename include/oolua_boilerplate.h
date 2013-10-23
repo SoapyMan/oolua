@@ -23,7 +23,7 @@ THE SOFTWARE.
 */
 /** 
 	\file oolua_boilerplate.h
-	\date Wed Oct  9 20:03:18 2013
+	\date Wed Oct 23 10:52:12 2013
 	\details 
 	Configurable values as set when generating this file
 	\li constructor_params 5 - Maximum amount of parameters for a constructor of a proxied type	(Default 5)
