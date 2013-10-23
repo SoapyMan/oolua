@@ -23,24 +23,102 @@ THE SOFTWARE.
 */
 
 #include "oolua_exception.h"
+#include "lua_includes.h"
 #include <cstring>
+
+namespace 
+{
+	void copy_buffer(char* to, char const* from, size_t& sz)
+	{
+		to[0]='\0';
+		to[511]='\0';
+		memcpy(to, from, sz < 512 ? sz : 510);
+		sz = sz < 512 ? sz : 511;
+	}
+	size_t copy_buffer(char* to, char const* from)
+	{
+		size_t sz = strlen(from);
+		copy_buffer(to, from, sz);
+		return sz;
+	}
+} // namespace
 
 namespace OOLUA
 {
-	namespace ERROR
+	Exception::Exception(lua_State* vm)
+		: m_len(0)
 	{
-		void copy_buffer(char* to, char const* from, size_t& sz)
-		{
-			to[0]='\0';
-			to[511]='\0';
-			memcpy(to, from, sz < 512 ? sz : 510);
-			sz = sz < 512 ? sz : 511;
-		}
-		size_t copy_buffer(char* to, char const* from)
-		{
-			size_t sz = strlen(from);
-			copy_buffer(to, from, sz);
-			return sz;
-		}
-	} // namespace ERROR //NOLINT(readability/namespace)
+		char const* str = lua_tolstring(vm, -1, &m_len);
+		copy_buffer(m_buffer, str, m_len);
+	}
+	
+	Exception::Exception(lua_State* vm, ERROR::PopTheStack*)
+		: m_len(0)
+	{
+		char const* str = lua_tolstring(vm, -1, &m_len);
+		copy_buffer(m_buffer, str, m_len);
+		lua_pop(vm, 1);
+	}
+	
+	Exception::Exception(char const* msg)
+		: m_len(0)
+	{
+		m_len = copy_buffer(m_buffer, msg);
+	}
+	
+	Exception::Exception(Exception const& rhs)
+		: std::exception(rhs)
+		, m_len(rhs.m_len)
+	{
+		copy_buffer(m_buffer, rhs.m_buffer, m_len);
+	}
+	
+	Exception& Exception::operator = (Exception const& rhs) throw()
+	{
+		m_len = rhs.m_len;
+		copy_buffer(m_buffer, rhs.m_buffer, m_len);
+		return *this;
+	}
+	
+	char const* Exception::what() const throw()
+	{
+		return &m_buffer[0];
+	}
+	
+	
+	Syntax_error::Syntax_error(lua_State* vm)
+		: Exception(vm)
+	{}
+	Syntax_error::Syntax_error(lua_State* vm, ERROR::PopTheStack* specialisation)
+		: Exception(vm, specialisation)
+	{}
+
+	Runtime_error::Runtime_error(lua_State* vm)
+		: Exception(vm)
+	{}
+	Runtime_error::Runtime_error(lua_State* vm, ERROR::PopTheStack* specialisation)
+		: Exception(vm, specialisation)
+	{}
+	Runtime_error::Runtime_error(char const* msg)
+		: Exception(msg)
+	{}
+
+	Memory_error::Memory_error(lua_State* vm)
+		: Exception(vm)
+	{}
+	Memory_error::Memory_error(lua_State* vm, ERROR::PopTheStack* specialisation)
+		: Exception(vm, specialisation)
+	{}
+
+	File_error::File_error(lua_State* vm)
+		: Exception(vm)
+	{}
+	File_error::File_error(lua_State* vm, ERROR::PopTheStack* specialisation)
+		: Exception(vm, specialisation)
+	{}
+
+	Type_error::Type_error(lua_State* vm, ERROR::PopTheStack* specialisation)
+		:Exception(vm, specialisation)
+	{}
 } // namespace OOLUA
+
