@@ -22,6 +22,10 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
 
+/**
+	\file oolua_chunk.h
+	\brief Provides methods for running and loading chunks.
+*/
 #ifndef OOLUA_CHUNK_H_
 #	define OOLUA_CHUNK_H_
 

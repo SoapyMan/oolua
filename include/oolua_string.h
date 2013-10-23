@@ -32,6 +32,15 @@ struct lua_State;
 
 namespace OOLUA
 {
+	/**
+		\namespace OOLUA::STRING
+		\brief Defines which type of string classes can be pulled and pushed from
+		the stack with the public API and the DSL.
+		\details
+		I would really like to be able to forward declare string types in a cross
+		platform way; for example when using GCC we could, but really shouldn't,
+		use bits/stringfwd.h
+	*/
 	namespace STRING
 	{
 		template<typename StringType>
@@ -107,9 +116,9 @@ OOLUA_CLASS_OR_BASE_CONTAINS_METHOD(is_qstring
 */
 
 		/**
-			I would really like to be able to forward declare string types in a cross
-			platform way; for example when using GCC we could, but really shouldn't,
-			use bits/stringfwd.h.
+			\brief Preforms the check on the type without including the string header
+			\details To add a different string class type, see the commented out macros
+			in oolua_string.h.
 		*/
 		template<typename T>
 		struct is_integral_string_class

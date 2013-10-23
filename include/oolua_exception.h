@@ -36,11 +36,11 @@ THE SOFTWARE.
 	/** \addtogroup OOLuaExceptionClasses Exception classes
 		@{
 	*/
-	/** \struct std::runtime_error */
+	/** \struct std::exception */
 
 	/** \struct OOLUA::Exception
 		\brief Base class for OOLua exceptions
-		\extends std::runtime_error
+		\extends std::exception
 		\see OOLuaErrorReporting
 	 */
 
@@ -98,7 +98,7 @@ THE SOFTWARE.
 			Exception(Exception const& rhs);
 			Exception& operator = (Exception const& rhs) throw();
 			char const* what() const throw();
-			
+
 			size_t m_len;
 			char m_buffer[1024];
 		};

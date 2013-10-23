@@ -313,7 +313,7 @@ The general naming convention for traits is:\n
 					};
 		};
 	} // namespace INTERNAL // NOLINT
-
+	/** \endcond */
 
 	template<typename T>
 	struct in_p
@@ -578,6 +578,7 @@ The general naming convention for traits is:\n
 		typedef char type_can_not_be_just_a_reference_to_type [	LVD::is_same<raw&, type>::value ? -1 : 1];
 	};
 
+	/** \cond INTERNAL*/
 	namespace INTERNAL
 	{
 
@@ -780,6 +781,7 @@ The general naming convention for traits is:\n
 		};
 
 	} // namespace INTERNAL // NOLINT
+	/** \endcond */
 
 	///////////////////////////////////////////////////////////////////////////////
 	///  Specialisation for the calling lua_State

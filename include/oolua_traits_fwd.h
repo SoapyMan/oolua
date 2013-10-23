@@ -70,6 +70,7 @@ namespace OOLUA
 		, Lua		/*!< Change in ownership, Lua will now own the instance*/
 	};
 
+	/** \cond INTERNAL */
 	namespace INTERNAL
 	{
 		template<typename T>
@@ -88,6 +89,7 @@ namespace OOLUA
 		struct lua_return_count;
 
 	} //namespace INTERNAL //NOLINT(readability/namespace)
+	/** \endcond */
 } // namespace OOLUA
 
 #endif //OOLUA_TRAITS_FWD_H_

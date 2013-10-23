@@ -36,6 +36,7 @@ THE SOFTWARE.
 
 namespace OOLUA
 {
+	/** \cond INTERNAL*/
 	namespace INTERNAL
 	{
 		//fwd

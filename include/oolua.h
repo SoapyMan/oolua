@@ -82,6 +82,13 @@
 #	include "oolua_ref.h"
 
 
+/**
+	\namespace OOLUA
+	\brief This is the root namespace of the Library
+	\details There are sub namespaces contained in OOLUA yet mostly these are not
+	meant for general usage, instead this namespace contains all Public API functions,
+	structures etc.
+*/
 namespace OOLUA
 {
 	/**

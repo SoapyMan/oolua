@@ -440,9 +440,9 @@ THE SOFTWARE.
 		\hideinitializer
 		\brief Deduce and generate a proxy for a C function
 		\details
-		OOLUA_CFUNC(FunctionName, Optional)
+		OOLUA_CFUNC(FunctionName, ProxyFunctionName)
 		\param FunctionName Name of the C function to be proxied
-		\param Optional ProxyFunctionName. Defaults to FunctionName
+		\param ProxyFunctionName Name of the function to generate which will proxy FunctionName
 		\see \ref OOLuaConfigCppParams "cpp_params" \n
 		\ref OOLUA_C_FUNCTION
 	*/

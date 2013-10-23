@@ -22,6 +22,10 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
 
+/**
+	\file oolua_open.h
+	\brief Sets up the a Lua Universe to work with the library.
+*/
 #ifndef OOLUA_OPEN_H_
 #	define OOLUA_OPEN_H_
 

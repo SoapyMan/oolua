@@ -16,5 +16,5 @@ namespace std
 {
 	/**
 	*/
-	struct runtime_error{};
+	struct exception{};
 }

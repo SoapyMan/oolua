@@ -32,7 +32,6 @@ THE SOFTWARE.
 #ifndef OOLUA_STACK_FWD_H_
 #	define OOLUA_STACK_FWD_H_
 
-//#include <string>
 #include "oolua_traits_fwd.h" //required for OOLUA::Owner
 
 struct lua_State;
@@ -45,13 +44,11 @@ namespace OOLUA
 
 	class Table;
 
-//	template<typename T>struct lua_acquire_ptr;
-//	template<typename T>struct cpp_acquire_ptr;
-
 	//this does not take into account calling convention!!
 	typedef int(*oolua_CFunction)(lua_State* vm); //NOLINT(readability/casting)
 
-	/**@{
+	/**@{*/
+	/**
 		\brief Pushes an instance to top of the Lua stack
 		\return
 		If \ref OOLUA_STORE_LAST_ERROR is set to one then the the return value will
@@ -66,13 +63,10 @@ namespace OOLUA
 	*/
 	bool push(lua_State* const vm, void* lightud);
 	bool push(lua_State* const vm, bool const& value);
-//	bool push(lua_State* const vm, std::string const& value);
 	bool push(lua_State* const vm, char * const& value);
 	bool push(lua_State* const vm, char const * const& value);
 	bool push(lua_State* const vm, double const& value);
 	bool push(lua_State* const vm, float const&  value);
-//	bool push(lua_State* const vm, lua_CFunction const &  value);
-//	bool push(lua_State* const vm, int(*)(lua_State*) const &  value);
 	bool push(lua_State* const vm, oolua_CFunction const &  value);
 	bool push(lua_State* const vm, Table const &  value);
 
@@ -82,12 +76,12 @@ namespace OOLUA
 	bool push(lua_State* const vm, lua_acquire_ptr<T>&  value);
 	template<typename T>
 	bool push(lua_State* const vm, T const &  value);
+	/**@}*/
 
 	/** \cond INTERNAL */
 	template<typename T>
 	bool push(lua_State* const vm, T * const &  value, OOLUA::Owner);
 	/** \endcond */
-	/**@}*/
 
 	/**
 		@{
@@ -102,10 +96,8 @@ namespace OOLUA
 	*/
 	bool pull(lua_State* const vm, void*& lightud);
 	bool pull(lua_State* const vm, bool& value);
-//	bool pull(lua_State* const vm, std::string& value);
 	bool pull(lua_State* const vm, double& value);
 	bool pull(lua_State* const vm, float& value);
-//	bool pull(lua_State* const vm, lua_CFunction& value);
 	bool pull(lua_State* const vm, oolua_CFunction& value);
 	bool pull(lua_State* const vm, Table&  value);
 
@@ -138,7 +130,6 @@ namespace OOLUA
 			void get(lua_State* const vm, int idx, char *& value);
 			void get(lua_State* const vm, int idx, double& value);
 			void get(lua_State* const vm, int idx, float& value);
-//			void get(lua_State* const vm, int idx, lua_CFunction& value);
 			void get(lua_State* const vm, int idx, oolua_CFunction& value);
 			void get(lua_State* const vm, int idx, Table&  value);
 

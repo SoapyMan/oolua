@@ -28,6 +28,7 @@ namespace OOLUA
 {
 	template<typename T>
 	class Proxy_class;
+	/** \cond INTERNAL */
 	namespace INTERNAL
 	{
 		template<typename Type>
@@ -43,6 +44,7 @@ namespace OOLUA
 			enum {value = sizeof(has_none_proxy_typedef<proxy_type>(0)) == 1 ? 0 : 1};
 		};
 	} // namespace INTERNAL //NOLINT(readability/namespace)
+	/** \endcond*/
 } // namespace OOLUA
 
 #endif
