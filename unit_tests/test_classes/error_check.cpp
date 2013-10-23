@@ -876,13 +876,13 @@ public:
 
 	void cFunctionNoReturn_throwsStdRuntimeError_exceptionDoesNotEscapePcall()
 	{
-		OOLUA::set_global(*m_lua,"throwsException", l_cFunctionNoReturn_throwsStdRuntimeError);
+		OOLUA::set_global(*m_lua, "throwsException", l_cFunctionNoReturn_throwsStdRuntimeError);
 		CPPUNIT_ASSERT_NO_THROW(m_lua->run_chunk("pcall(throwsException)"));
 	}
 
 	void cFunctionWithReturn_throwsStdRuntimeError_exceptionDoesNotEscapePcall()
 	{
-		OOLUA::set_global(*m_lua,"throwsException", l_cFunctionWithReturn_throwsStdRuntimeError);
+		OOLUA::set_global(*m_lua, "throwsException", l_cFunctionWithReturn_throwsStdRuntimeError);
 		CPPUNIT_ASSERT_NO_THROW(m_lua->run_chunk("pcall(throwsException)"));
 	}
 

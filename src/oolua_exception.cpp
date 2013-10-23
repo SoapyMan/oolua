@@ -28,7 +28,7 @@ THE SOFTWARE.
 #	include "lua_includes.h"
 #	include <cstring>
 
-namespace 
+namespace
 {
 	void copy_buffer(char* to, char const* from, size_t& sz)
 	{
@@ -53,7 +53,7 @@ namespace OOLUA
 		char const* str = lua_tolstring(vm, -1, &m_len);
 		copy_buffer(m_buffer, str, m_len);
 	}
-	
+
 	Exception::Exception(lua_State* vm, ERROR::PopTheStack*)
 		: m_len(0)
 	{
@@ -61,33 +61,33 @@ namespace OOLUA
 		copy_buffer(m_buffer, str, m_len);
 		lua_pop(vm, 1);
 	}
-	
+
 	Exception::Exception(char const* msg)
 		: m_len(0)
 	{
 		m_len = copy_buffer(m_buffer, msg);
 	}
-	
+
 	Exception::Exception(Exception const& rhs)
 		: std::exception(rhs)
 		, m_len(rhs.m_len)
 	{
 		copy_buffer(m_buffer, rhs.m_buffer, m_len);
 	}
-	
+
 	Exception& Exception::operator = (Exception const& rhs) throw()
 	{
 		m_len = rhs.m_len;
 		copy_buffer(m_buffer, rhs.m_buffer, m_len);
 		return *this;
 	}
-	
+
 	char const* Exception::what() const throw()
 	{
 		return &m_buffer[0];
 	}
-	
-	
+
+
 	Syntax_error::Syntax_error(lua_State* vm)
 		: Exception(vm)
 	{}

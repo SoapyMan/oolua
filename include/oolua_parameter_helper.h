@@ -144,7 +144,7 @@ namespace OOLUA
 MSC_PUSH_DISABLE_CONDITIONAL_CONSTANT_OOLUA
 				if( OOLUA::INTERNAL::check_index<typename TypeWithTraits::raw>(vm, index) )
 				{
-					return ! ( !TypeWithTraits::is_constant
+					return !( !TypeWithTraits::is_constant
 									&& INTERNAL::userdata_is_constant(static_cast<INTERNAL::Lua_ud *>(lua_touserdata(vm, index))) );
 				}
 				return 0;

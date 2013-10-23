@@ -57,7 +57,7 @@ namespace OOLUA
 			}
 			static void setWeakTable(lua_State* vm, int value_index)
 			{
-				push_char_carray(vm, OOLUA::INTERNAL::weak_lookup_name);
+				OOLUA_PUSH_CARRAY(vm, OOLUA::INTERNAL::weak_lookup_name);
 				lua_pushvalue(vm, value_index);
 				lua_rawset(vm, LUA_REGISTRYINDEX);
 			}

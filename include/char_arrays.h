@@ -46,8 +46,7 @@ namespace OOLUA
 	} // namespace INTERNAL
 } // namespace OOLUA
 
-//TODO : rename and use upper case */
-#define push_char_carray(lua, carray)lua_pushlstring(lua, carray, sizeof(carray)-1)
+#define OOLUA_PUSH_CARRAY(lua, carray) lua_pushlstring(lua, carray, sizeof(carray)-1)
 
 /** \endcond */
 #endif

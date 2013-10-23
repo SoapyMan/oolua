@@ -60,11 +60,11 @@ namespace
 
 		OOLUA::INTERNAL::get_oolua_module(vm);
 		lua_pushinteger(vm, OOLUA::Cpp);//int
-		push_char_carray(vm, OOLUA::INTERNAL::cpp_owns_str);
+		OOLUA_PUSH_CARRAY(vm, OOLUA::INTERNAL::cpp_owns_str);
 		lua_rawset(vm, -3);
 
 		lua_pushinteger(vm, OOLUA::Lua);//int
-		push_char_carray(vm, OOLUA::INTERNAL::lua_owns_str);
+		OOLUA_PUSH_CARRAY(vm, OOLUA::INTERNAL::lua_owns_str);
 		lua_rawset(vm, -3);
 
 		lua_pop(vm, 1);
@@ -89,11 +89,11 @@ namespace
 		int const top = lua_gettop(vm);
 		get_preload_table(vm);
 
-		push_char_carray(vm, OOLUA::INTERNAL::oolua_str);
+		OOLUA_PUSH_CARRAY(vm, OOLUA::INTERNAL::oolua_str);
 		lua_pushcclosure(vm, OOLUA::INTERNAL::get_oolua_module, 0);
 		lua_settable(vm, -3);
 
-		push_char_carray(vm, OOLUA::INTERNAL::oolua_str);
+		OOLUA_PUSH_CARRAY(vm, OOLUA::INTERNAL::oolua_str);
 		lua_createtable(vm, 0, 2);//starts with two entries cpp_own and lua_owns
 		lua_rawset(vm, LUA_REGISTRYINDEX);
 

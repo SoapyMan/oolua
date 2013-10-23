@@ -21,7 +21,7 @@
 - Added \ref OOLUA::lua_return which is a specific trait for return types which will be owned by Lua.
 - Added \ref OOLUA::maybe_null which allows C functions and member functions to return NULL
 - Added \ref OOLUA::lua_maybe_null which allows C functions and member functions to return a runtime value of NULL, if it is not NULL then the instance will be owned by Lua
-- Changed OOLUA_C_FUNCTION, it now requires a lua_State pointer instance identified as "vm" instead of 'l'
+- Changed \ref OOLUA_C_FUNCTION, it now requires a lua_State pointer instance identified as "vm" instead of 'l'
 - Added \ref OOLUA::light_p This pulls a light userdata from the stack and casts to the requested type
 - Added \ref OOLUA::light_return This is a function return type which pushes a light userdata onto the stack
 - Removed ability for \ref OOLUA::lua_acquire_ptr to be used on function returns, use OOLUA::lua_return instead
@@ -29,7 +29,7 @@
 - Modified \ref OOLUA_MGET, \ref OOLUA_MSET and \ref OOLUA_MGET_MSET to use optional parameters.
 - Added oolua_dsl.h and oolua_dsl_export.h which reduces the include graph when using the DSL
 - Added oolua_string.h/.c to make it easier to enable other string types as an integral type. \ref OOLUA::STRING
-- Bug fix. Prevent exceptions escaping for stand alone functions.
+- Bug fix. Prevent exceptions escaping from stand alone functions.
 
 \section OOLuaChanges1-4-0 1.4.0
 - Added OOLUA_DEDUCE_FUNC(_CONST) for when there is no ambiguity for a function

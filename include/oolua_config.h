@@ -38,14 +38,16 @@ THE SOFTWARE.
 		are disabled then it depends on \ref OOLUA_DEBUG_CHECKS as to whether
 		any error will be reported
 	*/
-//TODO update
+
 	/**	\def OOLUA_USE_EXCEPTIONS
 		\hideinitializer
 		\brief \b Default: Disabled
 		\details
 		Throws exceptions from C++ code.
 		This could be the return of a pcall, or from pulling an incorrect type
-		off the stack when \ref OOLUA_RUNTIME_CHECKS_ENABLED is enabled
+		off the stack when \ref OOLUA_RUNTIME_CHECKS_ENABLED is enabled. It also
+		prevents exceptions escaping from function proxied by the library, enabling
+		calls to such functions to be caught with pcall in Lua code.
 		\param 0 Disabled
 		\param 1 Enabled
 	*/
@@ -153,13 +155,6 @@ THE SOFTWARE.
 #	else
 #		define OOLUA_DEBUG_CHECKS 0
 #	endif
-
-/** \cond INTERNAL */
-// TODO : implement this
-#	ifndef OOLUA_STACK_NUMBER_CAN_CONVERT_TO_BOOL
-#		define OOLUA_STACK_NUMBER_CAN_CONVERT_TO_BOOL == 0
-#	endif
-/** \endcond*/
 
 	/** \def OOLUA_SANDBOX
 		\hideinitializer
