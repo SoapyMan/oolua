@@ -47,11 +47,13 @@ class Constant_functions : public CPPUNIT_NS::TestFixture
 #if OOLUA_STORE_LAST_ERROR == 1
 		CPPUNIT_TEST(callNoneConstantFunction_passedConstantInstance_callReturnsFalse);
 		CPPUNIT_TEST(callLuaAddedFunctionWhichCallsNoneConstMember_passedConstantInstance_callReturnsFalse);
+		CPPUNIT_TEST(callConstantMethodInBaseClass_usesConstantInstance_callReturnsTrue);
 #endif
 
 #if OOLUA_USE_EXCEPTIONS == 1
 		CPPUNIT_TEST(callNoneConstantFunction_passedConstantInstance_throwsRuntimeError);
 		CPPUNIT_TEST(callLuaAddedFunctionWhichCallsNoneConstMember_passedConstantInstance_callThrowsRuntimeError);
+		CPPUNIT_TEST(callConstantMethodInBaseClass_usesConstantInstance_noException);
 #endif
 	CPPUNIT_TEST_SUITE_END();
 	OOLUA::Script * m_lua;
@@ -135,6 +137,14 @@ public:
 						 "return function(object) object:lua_func() end ");
 		CPPUNIT_ASSERT_EQUAL(false, m_lua->call(1, helper.ptr_to_const));
 	}
+	void callConstantMethodInBaseClass_usesConstantInstance_callReturnsTrue()
+	{
+		DerivesToUseConstMethod instance;
+		DerivesToUseConstMethod const* const_instance = &instance;
+		OOLUA::register_class_and_bases<DerivesToUseConstMethod>(*m_lua);
+		m_lua->run_chunk("return function(obj) obj:cpp_func_const() end");
+		CPPUNIT_ASSERT_EQUAL(true, m_lua->call(1, const_instance));
+	}
 
 #endif
 
@@ -153,7 +163,18 @@ public:
 						 "return function(object) object:lua_func() end ");
 		CPPUNIT_ASSERT_THROW((m_lua->call(1, helper.ptr_to_const)), OOLUA::Runtime_error);
 	}
+
+	void callConstantMethodInBaseClass_usesConstantInstance_noException()
+	{
+		DerivesToUseConstMethod instance;
+		DerivesToUseConstMethod const* const_instance = &instance;
+		OOLUA::register_class_and_bases<DerivesToUseConstMethod>(*m_lua);
+		m_lua->run_chunk("return function(obj) obj:cpp_func_const() end");
+		CPPUNIT_ASSERT_NO_THROW(m_lua->call(1, const_instance));
+	}
+
 #endif
+
 };
 
 CPPUNIT_TEST_SUITE_REGISTRATION(Constant_functions);

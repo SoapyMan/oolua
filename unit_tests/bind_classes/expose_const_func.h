@@ -10,4 +10,7 @@ OOLUA_PROXY(Constant)
 	OOLUA_MFUNC(cpp_func)
 OOLUA_PROXY_END
 
+OOLUA_PROXY(DerivesToUseConstMethod,Constant)
+OOLUA_PROXY_END
+
 #endif

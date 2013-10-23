@@ -19,4 +19,10 @@ public:
 	MOCK_METHOD0(cpp_func, void());
 };
 
+struct DerivesToUseConstMethod : Constant
+{
+	void cpp_func(){}
+	void cpp_func_const() const{}
+};
+
 #endif

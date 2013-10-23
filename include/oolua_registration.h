@@ -222,6 +222,8 @@ namespace OOLUA
 					if the type had this identifier it would not enter this function to search
 					the heirachy tree to find another.
 					*/
+					//TODO : Hmmmm. We can detect this at compile time so we do not have to pay the
+					//cost at runtime
 					return 0;
 				}
 				else lua_pop(vm, 1);
@@ -247,7 +249,7 @@ namespace OOLUA
 
 				for (typename Proxy_class<B >::Reg_type_const *r = Proxy_class<B >::class_methods_const; r->name; ++r)
 				{
-					INTERNAL::set_function_in_table_with_upvalue(vm, r->name, &OOLUA::INTERNAL::member_caller<T, B >
+					INTERNAL::set_function_in_table_with_upvalue(vm, r->name, &OOLUA::INTERNAL::const_member_caller<T, B >
 																 , methods, reinterpret_cast<void*>(r));
 				}
 				Register_base<T
