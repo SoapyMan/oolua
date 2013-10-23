@@ -228,7 +228,16 @@ class Error_test : public CPPUNIT_NS::TestFixture
 
 		CPPUNIT_TEST(cFunctionNoReturn_throwsStdRuntimeError_exceptionDoesNotEscapePcall);
 		CPPUNIT_TEST(cFunctionWithReturn_throwsStdRuntimeError_exceptionDoesNotEscapePcall);
+
+		CPPUNIT_TEST(exception_assignStringOfLengthOnePlusNull_bufferLenIsOne);
+		CPPUNIT_TEST(exception_assignStringOfLengthOnePlusNull_bufferIndexOneIsNullToken);
+		CPPUNIT_TEST(exceptionBufferIsTrimmedCorrectly_assignStringOfOneGreaterThanExceptionBufferCanContain_memberLenEqualsBufferSizeMinusTwo);
+		CPPUNIT_TEST(exceptionBufferIsTrimmedCorrectly_assignStringOfOneGreaterThanExceptionBufferCanCotain_bufferMaxSizeMinusOneIsNullToken);
+		CPPUNIT_TEST(exceptionPopsStack_pushStringToStackAndPassVmAndAskToPopTheStack_stackSizeIsZero);
+		CPPUNIT_TEST(exceptionDoesntPopStack_pushStringToStackAndPassVm_stackSizeIsOne);
 #endif
+
+
 
 /* ====================== LuaJIT2 protected tests ===========================*/
 #if OOLUA_DEBUG_CHECKS == 1
@@ -886,8 +895,59 @@ public:
 		CPPUNIT_ASSERT_NO_THROW(m_lua->run_chunk("pcall(throwsException)"));
 	}
 
-#endif
+	void exception_assignStringOfLengthOnePlusNull_bufferLenIsOne()
+	{
+		OOLUA::Exception e("f");
+		size_t expected_value(1);
+		CPPUNIT_ASSERT_EQUAL(expected_value, e.m_len);
+	}
 
+	void exception_assignStringOfLengthOnePlusNull_bufferIndexOneIsNullToken()
+	{
+		//Logic here to make it fail.
+		//This may only fail in release as the debug runtime is nice and may intialise data Yeah!
+		//We can not know what the buffer data will contain for sure.
+		//So we assign a buffer longer than we want, correct the size member
+		//and then copy the data
+		OOLUA::Exception e("DontCare");
+		e.m_len=1;
+		OOLUA::Exception corrected(e);
+		char expected_value('\0');
+		CPPUNIT_ASSERT_EQUAL(expected_value, corrected.m_buffer[1]);
+	}
+
+	void exceptionBufferIsTrimmedCorrectly_assignStringOfOneGreaterThanExceptionBufferCanContain_memberLenEqualsBufferSizeMinusTwo()
+	{
+		char buffer[OOLUA::ERROR::size+2];
+		memset(buffer,1,OOLUA::ERROR::size);
+		buffer[OOLUA::ERROR::size+1]='\0';
+		OOLUA::Exception e(buffer);
+		size_t expected_value(OOLUA::ERROR::size-2);
+		CPPUNIT_ASSERT_EQUAL(expected_value, e.m_len);
+	}
+	void exceptionBufferIsTrimmedCorrectly_assignStringOfOneGreaterThanExceptionBufferCanCotain_bufferMaxSizeMinusOneIsNullToken()
+	{
+		char buffer[OOLUA::ERROR::size+2];
+		memset(buffer,1,OOLUA::ERROR::size);
+		buffer[OOLUA::ERROR::size+1]='\0';
+		OOLUA::Exception e(buffer);
+		char expected_value('\0');
+		CPPUNIT_ASSERT_EQUAL(expected_value, e.m_buffer[OOLUA::ERROR::size-1]);
+	}
+
+	void exceptionPopsStack_pushStringToStackAndPassVmAndAskToPopTheStack_stackSizeIsZero()
+	{
+		lua_pushliteral(*m_lua, "DontCare");
+		OOLUA::Exception e(*m_lua, static_cast<OOLUA::ERROR::PopTheStack*>(0));
+		CPPUNIT_ASSERT_EQUAL(0, lua_gettop(*m_lua));
+	}
+	void exceptionDoesntPopStack_pushStringToStackAndPassVm_stackSizeIsOne()
+	{
+		lua_pushliteral(*m_lua, "DontCare");
+		OOLUA::Exception e(*m_lua);
+		CPPUNIT_ASSERT_EQUAL(1, lua_gettop(*m_lua));
+	}
+#endif
 
 	bool isLuaJIT2()
 	{

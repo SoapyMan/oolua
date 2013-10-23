@@ -88,6 +88,7 @@ THE SOFTWARE.
 		namespace ERROR
 		{
 			struct PopTheStack{};
+			enum exception_buffer {size = 512};
 		} // namespace ERROR
 
 		struct Exception : std::exception
@@ -100,7 +101,7 @@ THE SOFTWARE.
 			char const* what() const throw();
 
 			size_t m_len;
-			char m_buffer[1024];
+			char m_buffer[ERROR::size];
 		};
 
 		struct Syntax_error : Exception

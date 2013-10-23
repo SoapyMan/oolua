@@ -32,10 +32,9 @@ namespace
 {
 	void copy_buffer(char* to, char const* from, size_t& sz)
 	{
-		to[0]='\0';
-		to[511]='\0';
-		memcpy(to, from, sz < 512 ? sz : 510);
-		sz = sz < 512 ? sz : 511;
+		sz = sz + 1 < OOLUA::ERROR::size ? sz: OOLUA::ERROR::size-2;
+		memcpy(to, from, sz);
+		to[sz]='\0';
 	}
 	size_t copy_buffer(char* to, char const* from)
 	{
