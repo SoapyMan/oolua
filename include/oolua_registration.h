@@ -103,10 +103,8 @@ namespace OOLUA
 		 */
 		template<typename T>void register_class_imp(lua_State * vm);
 
-		//TODO change to Add_base_methods
-		template<typename T, typename B>struct Add_base;
-		//TODO change to Register_base_methods
-		template<typename T, typename TL, int index, typename B>struct Register_base;
+		template<typename T, typename B>struct Add_base_methods;
+		template<typename T, typename TL, int index, typename B>struct Register_base_methods;
 
 		template<typename T, int HasNoPublicDestructor>struct set_delete_function;
 		template<typename T, bool HasNoPublicDestructor>struct set_owner_function;
@@ -238,7 +236,7 @@ namespace OOLUA
 
 
 		template<typename T, typename B>
-		struct Add_base
+		struct Add_base_methods
 		{
 			void operator()(lua_State * const vm, int const methods)
 			{
@@ -253,7 +251,7 @@ namespace OOLUA
 					INTERNAL::set_function_in_table_with_upvalue(vm, r->name, &OOLUA::INTERNAL::const_member_caller<T, B >
 																 , methods, reinterpret_cast<void*>(r));
 				}
-				Register_base<T
+				Register_base_methods<T
 							, typename Proxy_class<B>::Bases
 							, 0
 							, typename TYPELIST::At_default< typename Proxy_class<B>::Bases, 0, TYPE::Null_type >::Result
@@ -262,25 +260,25 @@ namespace OOLUA
 			}
 		};
 		template<typename T>
-		struct Add_base<T, TYPE::Null_type>
+		struct Add_base_methods<T, TYPE::Null_type>
 		{
 			void operator()(lua_State *  const /*vm*/,int const/*methods*/){}///no-op
 		};
 
 		template<typename T, typename TL, int index, typename B>
-		struct Register_base
+		struct Register_base_methods
 		{
 			void operator()(lua_State * const vm, int const methods)
 			{
-				Add_base<T, typename TYPELIST::At_default< TL, index, TYPE::Null_type >::Result> adder;
+				Add_base_methods<T, typename TYPELIST::At_default< TL, index, TYPE::Null_type >::Result> adder;
 				adder(vm, methods);
-				Register_base<T, TL, index + 1, typename TYPELIST::At_default< TL, index + 1, TYPE::Null_type >::Result> base;
+				Register_base_methods<T, TL, index + 1, typename TYPELIST::At_default< TL, index + 1, TYPE::Null_type >::Result> base;
 				base(vm, methods);
 			}
 		};
 
 		template<typename T, typename TL, int index>
-		struct Register_base<T, TL, index, TYPE::Null_type>
+		struct Register_base_methods<T, TL, index, TYPE::Null_type>
 		{
 			void operator()(lua_State * const  /*vm*/, int const /*methods*/){}///no-op
 		};
@@ -437,7 +435,7 @@ namespace OOLUA
 			}
 
 			//recursively register any base class methods
-			Register_base<Proxy_class<T>
+			Register_base_methods<Proxy_class<T>
 									, typename Proxy_class<T>::Bases
 									, 0
 									, typename TYPELIST::At_default<typename Proxy_class<T>::Bases, 0, TYPE::Null_type >::Result
@@ -485,7 +483,6 @@ namespace OOLUA
 	} // namespace INTERNAL // NOLINT
 	/** \endcond*/
 
-	// TODO this should be the default behaviour
 	template<typename T>
 	inline void register_class(lua_State * vm)
 	{
