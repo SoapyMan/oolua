@@ -135,7 +135,7 @@ THE SOFTWARE.
 
 
 //#if defined BROKEN_PREPROCESSOR
-#	if defined _MSC_VER && _MSC_VER >= 1400 && _MSC_VER <= 1700 && !defined __INTEL_COMPILER
+#	if defined _MSC_VER && _MSC_VER >= 1400 && _MSC_VER <= 1800 && !defined __INTEL_COMPILER
 	/** \cond INTERNAL
 		vs8(2005), vs9(2008), vs10(2010) and vs11(2012) should all be fine with the work around of the __VA_ARGS__ bug
 		which the compiler team will never admit to it being wrong. The fix was previously documented at the following
