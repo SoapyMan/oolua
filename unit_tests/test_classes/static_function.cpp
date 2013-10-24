@@ -227,7 +227,7 @@ public:
 
 	void staticFunction_registeredInBaseCalledInDerived_resultReturnsTrue()
 	{
-		OOLUA::register_class_and_bases<DerivedClassHasStaticFunction>(*m_lua);
+		OOLUA::register_class<DerivedClassHasStaticFunction>(*m_lua);
 		m_lua->register_class_static<ClassHasStaticFunction>("stack_count"
 															, &returns_stack_count);
 
@@ -242,7 +242,7 @@ public:
 
 	void staticFunction_addedToBaseCalledInDerived_callReturnsTrue()
 	{
-		OOLUA::register_class_and_bases<DerivedFromTwoAbstractBasesAndAbstract3>(*m_lua);
+		OOLUA::register_class<DerivedFromTwoAbstractBasesAndAbstract3>(*m_lua);
 		m_lua->register_class_static<Abstract3>("stack_count", &returns_stack_count);
 
 		m_lua->run_chunk("foo = function(obj) "
@@ -255,7 +255,7 @@ public:
 
 	void staticFunction_addedToBaseOverriddenInDerived_callsDerivedVersion()
 	{
-		OOLUA::register_class_and_bases<DerivedFromTwoAbstractBasesAndAbstract3>(*m_lua);
+		OOLUA::register_class<DerivedFromTwoAbstractBasesAndAbstract3>(*m_lua);
 		m_lua->register_class_static<Abstract3>("static_func", &staticFunction_pushes0);
 		m_lua->register_class_static<DerivedFromTwoAbstractBasesAndAbstract3>("static_func", &staticFunction_pushes1);
 
@@ -271,7 +271,7 @@ public:
 
 	void staticFunction_addedToBaseInLuaAndCalledFromDerivedClassName_callReturnsTrue()
 	{
-		OOLUA::register_class_and_bases<DerivedFromTwoAbstractBasesAndAbstract3>(*m_lua);
+		OOLUA::register_class<DerivedFromTwoAbstractBasesAndAbstract3>(*m_lua);
 		m_lua->run_chunk("function Abstract3:lua_func() return 1 end ");
 
 		m_lua->run_chunk("foo = function() "
@@ -283,7 +283,7 @@ public:
 
 	void staticData_addedOnBaseInLuaOnBase_calledOnDerived_callReturnsTrue()
 	{
-		OOLUA::register_class_and_bases<DerivedFromTwoAbstractBasesAndAbstract3>(*m_lua);
+		OOLUA::register_class<DerivedFromTwoAbstractBasesAndAbstract3>(*m_lua);
 		m_lua->run_chunk("Abstract3[\"static_data\"] = 1 ");
 
 		m_lua->run_chunk("foo = function() "
@@ -295,7 +295,7 @@ public:
 
 	void staticData_addedOnBaseInLuaOnBase_calledOnDerived_resultIsSetValue()
 	{
-		OOLUA::register_class_and_bases<DerivedFromTwoAbstractBasesAndAbstract3>(*m_lua);
+		OOLUA::register_class<DerivedFromTwoAbstractBasesAndAbstract3>(*m_lua);
 		m_lua->run_chunk("Abstract3[\"static_data\"] = 1 ");
 
 		m_lua->run_chunk("foo = function() "

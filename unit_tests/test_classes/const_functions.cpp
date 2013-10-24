@@ -141,7 +141,7 @@ public:
 	{
 		DerivesToUseConstMethod instance;
 		DerivesToUseConstMethod const* const_instance = &instance;
-		OOLUA::register_class_and_bases<DerivesToUseConstMethod>(*m_lua);
+		OOLUA::register_class<DerivesToUseConstMethod>(*m_lua);
 		m_lua->run_chunk("return function(obj) obj:cpp_func_const() end");
 		CPPUNIT_ASSERT_EQUAL(true, m_lua->call(1, const_instance));
 	}
@@ -168,7 +168,7 @@ public:
 	{
 		DerivesToUseConstMethod instance;
 		DerivesToUseConstMethod const* const_instance = &instance;
-		OOLUA::register_class_and_bases<DerivesToUseConstMethod>(*m_lua);
+		OOLUA::register_class<DerivesToUseConstMethod>(*m_lua);
 		m_lua->run_chunk("return function(obj) obj:cpp_func_const() end");
 		CPPUNIT_ASSERT_NO_THROW(m_lua->call(1, const_instance));
 	}

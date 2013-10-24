@@ -31,6 +31,7 @@
 - Added oolua_string.h/.c to make it easier to enable other string types as an integral type. \ref OOLUA::STRING
 - Bug fix. Prevent exceptions escaping from stand alone functions.
 - Bug fix. Incorrect function dispatcher being set on a cached base constant method.
+- Removed OOLUA::register_class_and_bases, OOLUA::register_class now does this.
 
 \section OOLuaChanges1-4-0 1.4.0
 - Added OOLUA_DEDUCE_FUNC(_CONST) for when there is no ambiguity for a function

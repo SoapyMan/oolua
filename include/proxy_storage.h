@@ -211,7 +211,7 @@ namespace OOLUA
 		inline Lua_ud* reset_metatable(lua_State* vm, T* ptr, bool is_const)
 		{
 			Lua_ud *ud = static_cast<Lua_ud *>(lua_touserdata(vm, -1));//ud
-			reset_userdata(ud, ptr, is_const, &requested_ud_is_a_base<T>, &OOLUA::register_class<T>);
+			reset_userdata(ud, ptr, is_const, &requested_ud_is_a_base<T>, &register_class_imp<T>);
 			//change the metatable associated with the ud
 			lua_getfield(vm, LUA_REGISTRYINDEX, OOLUA::Proxy_class<T>::class_name);
 
@@ -232,7 +232,7 @@ namespace OOLUA
 		template<typename T>
 		inline Lua_ud* add_ptr(lua_State* const vm, T* const ptr, bool is_const, Owner owner)
 		{
-			Lua_ud* ud = new_userdata(vm, ptr, is_const, &requested_ud_is_a_base<T>, &OOLUA::register_class<T>);
+			Lua_ud* ud = new_userdata(vm, ptr, is_const, &requested_ud_is_a_base<T>, &register_class_imp<T>);
 			if(owner != No_change)userdata_gc_value(ud, owner == Lua);
 
 			lua_getfield(vm, LUA_REGISTRYINDEX, OOLUA::Proxy_class<T>::class_name);

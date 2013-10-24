@@ -2,6 +2,7 @@
 #	include "common_cppunit_headers.h"
 #	include "oolua.h"
 #	include "expose_stub_classes.h"
+#	include "expose_hierarchy.h"
 
 class Module : public CppUnit::TestFixture
 {
@@ -14,7 +15,7 @@ class Module : public CppUnit::TestFixture
 #endif
 	CPPUNIT_TEST(require_returnsResultOfRequire_comparesEqualToTableInRegistry);
 	CPPUNIT_TEST(registersStub1_luaCodeReturnsTheQueryForStub1_returnsTypeTable);
-
+	CPPUNIT_TEST(register_registersTypeAndBases_returnsTableOfBaseClass);
 	CPPUNIT_TEST_SUITE_END();
 
 	OOLUA::Script * m_lua;
@@ -62,6 +63,12 @@ public:
 	{
 		m_lua->register_class<Stub1>();
 		m_lua->run_chunk("return require('OOLua').Stub1");
+		CPPUNIT_ASSERT_EQUAL(LUA_TTABLE, lua_type(*m_lua, -1));
+	}
+	void register_registersTypeAndBases_returnsTableOfBaseClass()
+	{
+		m_lua->register_class<DerivedFromTwoAbstractBasesAndAbstract3>();
+		m_lua->run_chunk("return require('OOLua').TwoAbstractBases");
 		CPPUNIT_ASSERT_EQUAL(LUA_TTABLE, lua_type(*m_lua, -1));
 	}
 };

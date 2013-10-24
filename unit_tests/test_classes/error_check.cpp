@@ -579,7 +579,7 @@ public:
 
 	void new_onAbstractClass_runChunkReturnsFalse()
 	{
-		OOLUA::register_class_and_bases<NewProblemDerived>(*m_lua);
+		OOLUA::register_class<NewProblemDerived>(*m_lua);
 		CPPUNIT_ASSERT_EQUAL(false, m_lua->run_chunk("return NewProblemAbstract.new()"));
 	}
 
@@ -820,7 +820,7 @@ public:
 
 	void new_onAbstractClass_runChunkThrowsStdRuntimeError()
 	{
-		OOLUA::register_class_and_bases<NewProblemDerived>(*m_lua);
+		OOLUA::register_class<NewProblemDerived>(*m_lua);
 		CPPUNIT_ASSERT_THROW(m_lua->run_chunk("return NewProblemAbstract.new()"), OOLUA::Runtime_error);
 	}
 

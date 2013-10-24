@@ -69,21 +69,15 @@ THE SOFTWARE.
 namespace OOLUA
 {
 	/**
-		\brief Registers the class type T with an instance of lua_State
+		\brief Registers the class type T and it's bases with an instance of lua_State
 		\tparam T Class type to register with OOLua
-		\details Registers a class type T with OOLua if there is a Proxy_class
-		for the type and the type has not already been registered with the instance.
-		\todo this should also register base classes is this not happending?
+		\details Registers a class type T for which there is a Proxy_class and also
+		registers it's bases, if it has any, with OOLua. It preforms a check to see
+		if the type has already been registered with the instance.
+		This is safe to be called multiple times with a Lua universe and safe to be
+		called with a Proxy_class which has no base classes.
 	*/
 	template<typename T>void register_class(lua_State * vm);
-
-	/**
-		\brief
-		Registers the class type \arg T and recurrisvely registers it's bases
-		\tparam T Class type to register
-		\note This is safe to call when the class has no bases.
-	 */
-	template<typename T>void register_class_and_bases(lua_State * vm);
 
 	/**
 		\brief
@@ -101,6 +95,13 @@ namespace OOLUA
 	namespace INTERNAL
 	{
 		template<typename T>struct garbage_collect;
+
+		/**
+			\brief
+			Implements the registering of a single class which is used by register_class
+			\tparam T Class type to register
+		 */
+		template<typename T>void register_class_imp(lua_State * vm);
 
 		//TODO change to Add_base_methods
 		template<typename T, typename B>struct Add_base;
@@ -362,93 +363,93 @@ namespace OOLUA
 			static void set(lua_State*  const /*vm*/, int /*methods*/){}///no-op
 		};
 
-	} // namespace INTERNAL // NOLINT
-	/**\endcond*/
 
-	template<typename T>
-	inline void register_class(lua_State * vm)
-	{
-		if(OOLUA::INTERNAL::class_name_is_already_registered(vm, Proxy_class<T>::class_name))
-			return;
-		lua_newtable(vm);
-		int methods = lua_gettop(vm);//methods
+		template<typename T>
+		inline void register_class_imp(lua_State * vm)
+		{
+			if(class_name_is_already_registered(vm, Proxy_class<T>::class_name))
+				return;
+			lua_newtable(vm);
+			int methods = lua_gettop(vm);//methods
 
-		luaL_newmetatable(vm, Proxy_class<T>::class_name);//methods mt
-		//registry[name]= mt
-		int mt = lua_gettop(vm);
+			luaL_newmetatable(vm, Proxy_class<T>::class_name);//methods mt
+			//registry[name]= mt
+			int mt = lua_gettop(vm);
 
-		// store method table in globals so that scripts can add functions written in Lua.
-		lua_pushvalue(vm, methods);
-		lua_setglobal(vm, Proxy_class<T>::class_name);
-		//global[name]=methods
+			// store method table in globals so that scripts can add functions written in Lua.
+			lua_pushvalue(vm, methods);
+			lua_setglobal(vm, Proxy_class<T>::class_name);
+			//global[name]=methods
 
-		INTERNAL::register_oolua_type(vm, Proxy_class<T>::class_name, methods);
-		//OOLua[name] = methods
+			register_oolua_type(vm, Proxy_class<T>::class_name, methods);
+			//OOLua[name] = methods
 
-		INTERNAL::set_oolua_userdata_creation_key_value_in_table(vm, mt);
+			set_oolua_userdata_creation_key_value_in_table(vm, mt);
 
-		INTERNAL::set_key_value_in_table(vm, "__index", methods, mt);
-		//mt["__index"]= methods
+			set_key_value_in_table(vm, "__index", methods, mt);
+			//mt["__index"]= methods
 
-		//allow statics and functions to be added to the userdatatype metatable
-		INTERNAL::set_key_value_in_table(vm, "__newindex", methods, mt);
-		//mt["__newindex"]= methods
+			//allow statics and functions to be added to the userdatatype metatable
+			set_key_value_in_table(vm, "__newindex", methods, mt);
+			//mt["__newindex"]= methods
 
-		INTERNAL::set_function_in_table(vm, "__index", &INTERNAL::search_in_base_classes<T>, methods);
-		//methods["__index"] = function to search bases classes for the key
+			set_function_in_table(vm, "__index", &search_in_base_classes<T>, methods);
+			//methods["__index"] = function to search bases classes for the key
 
-		INTERNAL::set_delete_function<T, INTERNAL::has_tag<Proxy_class<T>, No_public_destructor >::Result>::set(vm, mt);
+			set_delete_function<T, INTERNAL::has_tag<Proxy_class<T>, No_public_destructor >::Result>::set(vm, mt);
 
-		INTERNAL::set_create_function<T
-					, LVD::if_or<INTERNAL::has_tag<Proxy_class<T>, Abstract >::Result
-						, INTERNAL::has_tag<Proxy_class<T>, No_public_constructors >::Result
+			set_create_function<T
+					, LVD::if_or<has_tag<Proxy_class<T>, Abstract >::Result
+						, has_tag<Proxy_class<T>, No_public_constructors >::Result
 						>::value
 				>::set(vm, methods);
 
-		INTERNAL::set_owner_function<T, INTERNAL::has_tag<Proxy_class<T>, No_public_destructor >::Result>::set(vm, methods);
+			set_owner_function<T, has_tag<Proxy_class<T>, No_public_destructor >::Result>::set(vm, methods);
 
-		INTERNAL::set_equal_function<T, INTERNAL::has_tag<Proxy_class<T>, Equal_op>::Result>::set(vm, mt);
-		INTERNAL::set_less_than_function<T, INTERNAL::has_tag<Proxy_class<T>, Less_op>::Result>::set(vm, mt);
-		INTERNAL::set_less_than_or_equal_function<T, INTERNAL::has_tag<Proxy_class<T>, Less_equal_op>::Result>::set(vm, mt);
-		INTERNAL::set_add_function<T, INTERNAL::has_tag<Proxy_class<T>, Add_op>::Result>::set(vm, mt);
-		INTERNAL::set_sub_function<T, INTERNAL::has_tag<Proxy_class<T>, Sub_op>::Result>::set(vm, mt);
-		INTERNAL::set_mul_function<T, INTERNAL::has_tag<Proxy_class<T>, Mul_op>::Result>::set(vm, mt);
-		INTERNAL::set_div_function<T, INTERNAL::has_tag<Proxy_class<T>, Div_op>::Result>::set(vm, mt);
+			set_equal_function<T, has_tag<Proxy_class<T>, Equal_op>::Result>::set(vm, mt);
+			set_less_than_function<T, has_tag<Proxy_class<T>, Less_op>::Result>::set(vm, mt);
+			set_less_than_or_equal_function<T, has_tag<Proxy_class<T>, Less_equal_op>::Result>::set(vm, mt);
+			set_add_function<T, has_tag<Proxy_class<T>, Add_op>::Result>::set(vm, mt);
+			set_sub_function<T, has_tag<Proxy_class<T>, Sub_op>::Result>::set(vm, mt);
+			set_mul_function<T, has_tag<Proxy_class<T>, Mul_op>::Result>::set(vm, mt);
+			set_div_function<T, has_tag<Proxy_class<T>, Div_op>::Result>::set(vm, mt);
 
-		INTERNAL::set_class_enums<T, INTERNAL::has_tag<Proxy_class<T>, Register_class_enums>::Result>::set(vm);
+			set_class_enums<T, INTERNAL::has_tag<Proxy_class<T>, Register_class_enums>::Result>::set(vm);
 
-		// fill method table with methods from class Proxy_class<T>
-		for (typename Proxy_class<T >::Reg_type *r = Proxy_class<T >::class_methods; r->name; r++)
-		{
-			INTERNAL::set_function_in_table_with_upvalue(vm
-														 , r->name
-														 , &OOLUA::INTERNAL::member_caller<Proxy_class<T>, T>
-														 , methods
-														 , reinterpret_cast<void*>(r));
+			// fill method table with methods from class Proxy_class<T>
+			for (typename Proxy_class<T >::Reg_type *r = Proxy_class<T >::class_methods; r->name; r++)
+			{
+				set_function_in_table_with_upvalue(vm
+												 , r->name
+												 , &member_caller<Proxy_class<T>, T>
+												 , methods
+												 , reinterpret_cast<void*>(r));
+			}
+
+			// fill constant method table with methods from class Proxy_class<T>
+			for (typename Proxy_class<T >::Reg_type_const *r = Proxy_class<T >::class_methods_const; r->name; ++r)
+			{
+				set_function_in_table_with_upvalue(vm
+												 , r->name
+												 , &const_member_caller<Proxy_class<T>, T>
+												 , methods
+												 , reinterpret_cast<void*>(r));
+			}
+
+			//recursively register any base class methods
+			Register_base<Proxy_class<T>
+									, typename Proxy_class<T>::Bases
+									, 0
+									, typename TYPELIST::At_default<typename Proxy_class<T>::Bases, 0, TYPE::Null_type >::Result
+								> recursive_worker;
+			recursive_worker(vm, methods);
+
+			lua_pushvalue(vm, methods);
+			lua_setmetatable(vm, methods);//set methods as it's own metatable
+			lua_pop(vm, 2);
 		}
-
-		// fill constant method table with methods from class Proxy_class<T>
-		for (typename Proxy_class<T >::Reg_type_const *r = Proxy_class<T >::class_methods_const; r->name; ++r)
-		{
-			INTERNAL::set_function_in_table_with_upvalue(vm
-														 , r->name
-														 , &OOLUA::INTERNAL::const_member_caller<Proxy_class<T>, T>
-														 , methods
-														 , reinterpret_cast<void*>(r));
-		}
-
-		//recursively register any base class methods
-		INTERNAL::Register_base<Proxy_class<T>
-								, typename Proxy_class<T>::Bases
-								, 0
-								, typename TYPELIST::At_default<typename Proxy_class<T>::Bases, 0, TYPE::Null_type >::Result
-							> recursive_worker;
-		recursive_worker(vm, methods);
-
-		lua_pushvalue(vm, methods);
-		lua_setmetatable(vm, methods);//set methods as it's own metatable
-		lua_pop(vm, 2);
-	}
+	} // namespace INTERNAL // NOLINT
+	/**\endcond*/
 
 	template<typename T, typename K, typename V>
 	inline void register_class_static(lua_State * const vm, K const& k, V const& v)
@@ -468,7 +469,7 @@ namespace OOLUA
 		{
 			static void work(lua_State * vm)
 			{
-				register_class<Type>(vm);
+				register_class_imp<Type>(vm);
 				Register_bases_with_lua<Index+1
 								, Bases
 								, typename TYPELIST::At_default<Bases, Index+1, TYPE::Null_type>::Result
@@ -486,9 +487,9 @@ namespace OOLUA
 
 	// TODO this should be the default behaviour
 	template<typename T>
-	inline void register_class_and_bases(lua_State * vm)
+	inline void register_class(lua_State * vm)
 	{
-		register_class<T>(vm);
+		INTERNAL::register_class_imp<T>(vm);
 		INTERNAL::Register_bases_with_lua<0
 								, typename OOLUA::Proxy_class<T>::AllBases
 								, typename TYPELIST::At_default<typename OOLUA::Proxy_class<T>::AllBases, 0, TYPE::Null_type>::Result

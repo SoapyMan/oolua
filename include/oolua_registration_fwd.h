@@ -32,9 +32,6 @@ namespace OOLUA
 	template<typename T>
 	void register_class(lua_State * vm);
 
-	template<typename T>
-	void register_class_and_bases(lua_State * vm);
-
 	template<typename T, typename K, typename V>
 	void register_class_static(lua_State * const vm, K const& k, V const& v);
 

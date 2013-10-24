@@ -140,11 +140,7 @@ public:
 	void setUp()
 	{
 		m_lua = new OOLUA::Script;
-		m_lua->register_class<Abstract1>();
-		m_lua->register_class<Abstract2>();
-		m_lua->register_class<Abstract3>();
 		m_lua->register_class<Derived1Abstract1>();
-		m_lua->register_class<TwoAbstractBases>();
 		m_lua->register_class<DerivedFromTwoAbstractBasesAndAbstract3>();
 	}
 

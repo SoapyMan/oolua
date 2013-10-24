@@ -40,12 +40,12 @@ struct lua_State;
 namespace OOLUA
 {
 	/** \cond INTERNAL*/
-	/*forward declare*/
-	template<typename T>
-	void register_class(lua_State* vm);
-
 	namespace INTERNAL
 	{
+		/*forward declare*/
+		template<typename T>
+		void register_class_imp(lua_State* vm);
+
 		/**\addtogroup OOLuaClassTypeChecking
 		@{*/
 		/**
@@ -155,7 +155,7 @@ namespace OOLUA
 		inline bool ud_is_type(Lua_ud const* ud)
 		{
 			//some compilers need a hand it also enforces that the typedef in oolua_userdata is correct
-			return ud->type_check ==  static_cast<oolua_type_check_function>(&OOLUA::register_class<T>);
+			return ud->type_check ==  static_cast<oolua_type_check_function>(&register_class_imp<T>);
 		}
 		/**@}*/
 	} // namespace INTERNAL // NOLINT

@@ -377,7 +377,7 @@ public:
 	\code{.cpp}
 	void differentRootsOfaTree_twoRootsPassedToLua_luaUdComparesEqual()
 	{
-		OOLUA::register_class_and_bases<DerivedFromTwoAbstractBasesAndAbstract3>(*m_lua);
+		OOLUA::register_class<DerivedFromTwoAbstractBasesAndAbstract3>(*m_lua);
 		DerivedFromTwoAbstractBasesAndAbstract3 derived;
 		Abstract2* a2 = &derived;
 		Abstract3* a3 = &derived;
