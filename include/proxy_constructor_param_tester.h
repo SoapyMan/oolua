@@ -22,13 +22,13 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
 /**
-	\file oolua_parameter_helper.h
+	\file proxy_constructor_param_tester.h
 	\brief Helps test that a constructor parameter is of the requested type
 	so that a matching constructor can be called
 */
 
-#ifndef OOLUA_PARAMETER_HELPER_H_
-#	define OOLUA_PARAMETER_HELPER_H_
+#ifndef OOLUA_PROXY_CONSTRUCTOR_PARAM_TESTER_H_
+#	define OOLUA_PROXY_CONSTRUCTOR_PARAM_TESTER_H_
 
 #	include "proxy_userdata.h"
 #	include "lua_includes.h"
@@ -220,4 +220,4 @@ MSC_POP_COMPILER_WARNING_OOLUA
 	/** \endcond */
 } // namespace OOLUA
 
-#endif
+#endif //OOLUA_PROXY_CONSTRUCTOR_PARAM_TESTER_H_

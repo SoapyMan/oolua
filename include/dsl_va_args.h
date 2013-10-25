@@ -27,7 +27,7 @@ THE SOFTWARE.
 
 #	if defined __GNUC__
 #		pragma GCC system_header
-	#endif
+#	endif
 
 /** \file dsl_va_args.h */
 

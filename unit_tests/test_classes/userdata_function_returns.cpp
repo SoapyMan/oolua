@@ -14,6 +14,7 @@ class UserDataFunctionReturns : public CPPUNIT_NS::TestFixture
 		CPPUNIT_TEST(functionReturn_returnsPtrToInstance_gcFlagIsFalse);
 		CPPUNIT_TEST(functionReturn_returnsPtrToInstance_resultComparesEqualToInstance);
 
+		CPPUNIT_TEST(functionReturn_returnsPtrToConstantInstance_constFlagIsTrue);
 		CPPUNIT_TEST(functionReturn_returnsPtrToConstantInstance_gcFlagIsFalse);
 		CPPUNIT_TEST(functionReturn_returnsPtrToConstantInstance_resultComparesEqualToInstance);
 
@@ -251,6 +252,14 @@ public:
 		EXPECT_CALL(helper.mock, ptrConst()).Times(1).WillOnce(::testing::Return<Stub1 const*>(&helper.return_stub));
 		helper.call_object_method("ptrConst");
 		assert_that_tops_gc_flag_is(false);
+	};
+
+	void functionReturn_returnsPtrToConstantInstance_constFlagIsTrue()
+	{
+		DefaultTraitHelper helper(m_lua);
+		EXPECT_CALL(helper.mock, ptrConst()).Times(1).WillOnce(::testing::Return<Stub1 const*>(&helper.return_stub));
+		helper.call_object_method("ptrConst");
+		assert_that_tops_const_flag_is(true);
 	};
 
 	void functionReturn_returnsPtrToConstantInstance_resultComparesEqualToInstance()
