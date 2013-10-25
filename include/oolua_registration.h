@@ -211,6 +211,15 @@ namespace OOLUA
 		template<typename T>
 		int search_in_base_classes(lua_State* vm)
 		{
+			return R_Base_looker<T, typename Proxy_class<T>::Bases, 0
+									, typename TYPELIST::At_default<typename Proxy_class<T>::Bases
+									, 0
+									, TYPE::Null_type>::Result >::findInBase(vm);
+		}
+
+		template<typename T>
+		int search_in_base_classes_yet_prevent_new(lua_State* vm)
+		{
 			if( lua_type(vm, -1) == LUA_TSTRING )
 			{
 				OOLUA_PUSH_CARRAY(vm, OOLUA::INTERNAL::new_str);
@@ -221,8 +230,6 @@ namespace OOLUA
 					if the type had this identifier it would not enter this function to search
 					the heirachy tree to find another.
 					*/
-					//TODO : Hmmmm. We can detect this at compile time so we do not have to pay the
-					//cost at runtime
 					return 0;
 				}
 				else lua_pop(vm, 1);
@@ -233,6 +240,23 @@ namespace OOLUA
 									, TYPE::Null_type>::Result >::findInBase(vm);
 		}
 
+		template<typename T, int HasNoPublicConstructors>
+		struct set_base_lookup_function
+		{
+			static void set(lua_State* vm, int methods)
+			{
+				set_function_in_table(vm, "__index", &search_in_base_classes<T>, methods);
+			}
+		};
+
+		template<typename T>
+		struct set_base_lookup_function<T, 1>
+		{
+			static void set(lua_State* vm, int methods)
+			{
+				set_function_in_table(vm, "__index", &search_in_base_classes_yet_prevent_new<T>, methods);
+			}
+		};
 
 
 		template<typename T, typename B>
@@ -391,7 +415,11 @@ namespace OOLUA
 			set_key_value_in_table(vm, "__newindex", methods, mt);
 			//mt["__newindex"]= methods
 
-			set_function_in_table(vm, "__index", &search_in_base_classes<T>, methods);
+			set_base_lookup_function<T
+					, LVD::if_or<has_tag<Proxy_class<T>, Abstract >::Result
+						, has_tag<Proxy_class<T>, No_public_constructors >::Result
+						>::value
+				>::set(vm, methods);
 			//methods["__index"] = function to search bases classes for the key
 
 			set_delete_function<T, INTERNAL::has_tag<Proxy_class<T>, No_public_destructor >::Result>::set(vm, mt);
