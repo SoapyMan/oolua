@@ -36,7 +36,7 @@ THE SOFTWARE.
 #	include "proxy_tag_info.h"
 #	include "proxy_userdata.h"
 #	include "proxy_stack_helper.h"
-#	include "oolua_parameter_helper.h"
+#	include "proxy_constructor_param_tester.h"
 #	include "type_converters.h"
 
 #include "oolua_boilerplate.h"

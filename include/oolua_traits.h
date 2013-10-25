@@ -452,7 +452,6 @@ The general naming convention for traits is:\n
 	{
 		typedef T type;
 		typedef typename LVD::raw_type<T>::type raw;
-		//TODO : A Lua owned type can not be integral why is this used?
 		typedef typename INTERNAL::Pull_type_<raw, T, LVD::is_integral_type<raw>::value >::type pull_type;
 		enum { in = 0};
 		enum { out = 1};
@@ -512,7 +511,6 @@ The general naming convention for traits is:\n
 	{
 		typedef T type;
 		typedef typename LVD::raw_type<T>::type raw;
-		//TODO : A Lua owned type can not be integral, why is this used?
 		typedef typename INTERNAL::Pull_type_<raw, T, LVD::is_integral_type<raw>::value >::type pull_type;
 		enum { in = 0};
 		enum { out = 1};
@@ -538,7 +536,6 @@ The general naming convention for traits is:\n
 	{
 		typedef T type;
 		typedef typename LVD::raw_type<T>::type raw;
-		//TODO : A C++ owned type can not be integral, why is this used?
 		typedef typename INTERNAL::Pull_type_<raw, T, LVD::is_integral_type<raw>::value>::type pull_type;
 		enum { in = 1 };
 		enum { out = 0 };
@@ -561,7 +558,6 @@ The general naming convention for traits is:\n
 	{
 		typedef T type;
 		typedef typename LVD::raw_type<T>::type raw;
-		//TODO : A Lua owned type can not be integral, why is this used?
 		typedef typename INTERNAL::Pull_type_<raw, T, LVD::is_integral_type<raw>::value >::type pull_type;
 		enum { in = 0};
 		enum { out = 1};
