@@ -72,7 +72,6 @@
 #	include "proxy_function_exports.h"
 #	include "oolua_version.h"
 #	include "oolua_error.h"
-//#	include "oolua_traits.h"
 #	include "oolua_stack.h"
 #	include "oolua_script.h"
 #	include "oolua_open.h"
@@ -80,7 +79,7 @@
 #	include "oolua_registration.h"
 #	include "oolua_table.h"
 #	include "oolua_ref.h"
-
+#	include "oolua_helpers.h"
 
 /**
 	\namespace OOLUA
@@ -115,12 +114,7 @@ namespace OOLUA
 		\param[in] name String which is used for the global name
 		\param[in] instance The lua_CFuntion which will be set at the global value for name
 	*/
-	inline bool set_global(lua_State* vm, char const* name, lua_CFunction instance)
-	{
-		lua_pushcclosure(vm, instance, 0);
-		lua_setglobal(vm, name);
-		return true;
-	}
+	bool set_global(lua_State* vm, char const* name, lua_CFunction instance);
 
 	/**
 		\brief Helper function to set a Lua global variable to nil.
@@ -143,13 +137,6 @@ namespace OOLUA
 		lua_getglobal(vm, name);
 		return OOLUA::pull(vm, instance);
 	}
-
-	/** \brief Uses the Lua C API to check if it is valid to move data between the states
-		\param[in] vm0
-		\param[in] vm1
-		\returns true is vm0 and vm1 are different yet related states, else false
-	*/
-	bool can_xmove(lua_State* vm0, lua_State* vm1);
 
 } // namespace OOLUA
 

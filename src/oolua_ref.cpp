@@ -25,10 +25,10 @@ THE SOFTWARE.
 #include "oolua_ref.h"
 #include "oolua_config.h"
 #include "oolua_error.h"
+#include "oolua_helpers.h"
 
 namespace OOLUA
 {
-	bool can_xmove(lua_State* vm0, lua_State* vm1);
 	namespace INTERNAL
 	{
 		bool handle_unrelated_states(lua_State* const from, lua_State* const to)

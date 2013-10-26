@@ -33,7 +33,6 @@ THE SOFTWARE.
 
 #include "lua_includes.h"
 
-
 #ifdef __GNUC__
 #	define OOLUA_DEFAULT __attribute__ ((visibility("default")))
 #else
@@ -52,6 +51,7 @@ namespace OOLUA
 	}//namespace INTERNAL //NOLINT
 	/** \endcond */
 
+	bool can_xmove(lua_State* vm0, lua_State* vm1);
 
 //TODO consider renaming to OOLUA::Ref
 
@@ -111,7 +111,23 @@ namespace OOLUA
 		Lua_ref();
 
 		//unimplemented
-		Lua_ref& operator =(Lua_ref const& /*rhs*/);
+		Lua_ref& operator = (Lua_ref const& /*rhs*/);
+
+		/**
+			\brief Equality operator for references of the same type
+			\details
+			A reference has a type, validity and can be bound to a lua_State. \n
+			To be considered equal:
+			\li The types must match
+			\li Both operands lua_State's must compare equal or be part of the same Universe
+			\li The references must compare equal via lua_rawequal \n
+			Any other combination will return false.
+			\param rhs The right hand side operand for the operation
+			\return bool indicating the comparison result
+			\note lua_rawequal is used for comparison so no metamethod is considered
+			in the equality.
+		*/
+		bool operator == (Lua_ref const& rhs);
 
 		/**
 			\brief
@@ -155,7 +171,6 @@ namespace OOLUA
 		void swap(Lua_ref& rhs);
 
 		/** \cond INTERNAL*/
-
 		bool push(lua_State* const vm)const;
 		bool pull(lua_State* const vm) OOLUA_DEFAULT;
 		bool lua_push(lua_State* const vm)const;
@@ -212,6 +227,21 @@ namespace OOLUA
 			lua_rawgeti(m_lua, LUA_REGISTRYINDEX, rhs.m_ref);
 			m_ref = luaL_ref(m_lua, LUA_REGISTRYINDEX);
 		}
+	}
+
+	template<int ID>
+	bool Lua_ref<ID>::operator == (Lua_ref<ID> const& rhs)
+	{
+		if(!valid() && !rhs.valid()) return m_lua == rhs.m_lua;
+		else if(m_lua == rhs.m_lua || can_xmove(m_lua, rhs.m_lua))
+		{
+			lua_rawgeti(m_lua, LUA_REGISTRYINDEX, m_ref);
+			lua_rawgeti(m_lua, LUA_REGISTRYINDEX, rhs.m_ref);
+			bool result(!!lua_rawequal(m_lua,-1,-2));
+			lua_pop(m_lua,2);
+			return result;
+		}
+		return false;
 	}
 
 	template<int ID>
@@ -348,6 +378,16 @@ namespace OOLUA
 #undef oolua_err_get
 	}
 	/** \endcond*/
+
+	/**
+		\brief Equality operator for reference types that do not match
+		\note This always returns false.
+	*/
+	template<int ID1,int ID2>
+	inline bool operator == (Lua_ref<ID1> const& /*lhs*/, Lua_ref<ID2> const& /*rhs*/)
+	{
+		return false;
+	}
 
 	//TODO : consider renaming OOLUA::Table_ref?
 	//Does "Lua" part does add readability? For example why using the DSL? Hmm
