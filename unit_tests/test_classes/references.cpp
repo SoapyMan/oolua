@@ -36,8 +36,8 @@ public:
 	void funcRefs_refsToSameFunction_equalityReturnsTrue()
 	{
 		m_lua->load_chunk("return ");
-		lua_pushvalue(*m_lua,1);
-		OOLUA::Lua_func_ref one,two;
+		lua_pushvalue(*m_lua, 1);
+		OOLUA::Lua_func_ref one, two;
 		m_lua->pull(one);
 		m_lua->pull(two);
 		CPPUNIT_ASSERT_EQUAL(true, one == two);
@@ -47,7 +47,7 @@ public:
 	{
 		m_lua->load_chunk("return ");
 		m_lua->load_chunk("return ");
-		OOLUA::Lua_func_ref one,two;
+		OOLUA::Lua_func_ref one, two;
 		m_lua->pull(one);
 		m_lua->pull(two);
 		CPPUNIT_ASSERT_EQUAL(false, one == two);
@@ -56,8 +56,8 @@ public:
 	void funcRefs_equalityCleansTheStack_stackSizeIsZero()
 	{
 		m_lua->load_chunk("return ");
-		lua_pushvalue(*m_lua,1);
-		OOLUA::Lua_func_ref one,two;
+		lua_pushvalue(*m_lua, 1);
+		OOLUA::Lua_func_ref one, two;
 		m_lua->pull(one);
 		m_lua->pull(two);
 		bool dummy_result(one == two);
@@ -67,7 +67,7 @@ public:
 
 	void funcRefs_twoDifferentFromRelatedStates_equalityReturnsFalse()
 	{
-		OOLUA::Lua_func_ref one,two;
+		OOLUA::Lua_func_ref one, two;
 		m_lua->load_chunk("return ");
 		m_lua->pull(one);
 
@@ -80,7 +80,7 @@ public:
 
 	void funcRefs_sameFunctionInDifferentYetRelatedStates_equalityReturnsTrue()
 	{
-		OOLUA::Lua_func_ref one,two;
+		OOLUA::Lua_func_ref one, two;
 		m_lua->load_chunk("return ");
 		m_lua->pull(one);
 

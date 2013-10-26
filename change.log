@@ -32,6 +32,9 @@
 - Bug fix. Prevent exceptions escaping from stand alone functions.
 - Bug fix. Incorrect function dispatcher being set on a cached base constant method.
 - Removed OOLUA::register_class_and_bases, OOLUA::register_class now does this.
+- Added Equality operator for \ref Lua_ref
+- Added \ref OOLUA::idxs_equal to compare stack indices, may take metamethods into consideration,
+compatible with Lua 5.1 and 5.2
 
 \section OOLuaChanges1-4-0 1.4.0
 - Added OOLUA_DEDUCE_FUNC(_CONST) for when there is no ambiguity for a function

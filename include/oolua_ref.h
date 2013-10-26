@@ -233,12 +233,12 @@ namespace OOLUA
 	bool Lua_ref<ID>::operator == (Lua_ref<ID> const& rhs)
 	{
 		if(!valid() && !rhs.valid()) return m_lua == rhs.m_lua;
-		else if(m_lua == rhs.m_lua || can_xmove(m_lua, rhs.m_lua))
+		else if (m_lua == rhs.m_lua || can_xmove(m_lua, rhs.m_lua))
 		{
 			lua_rawgeti(m_lua, LUA_REGISTRYINDEX, m_ref);
 			lua_rawgeti(m_lua, LUA_REGISTRYINDEX, rhs.m_ref);
-			bool result(!!lua_rawequal(m_lua,-1,-2));
-			lua_pop(m_lua,2);
+			bool result(!!lua_rawequal(m_lua, -1, -2));
+			lua_pop(m_lua, 2);
 			return result;
 		}
 		return false;
@@ -383,15 +383,12 @@ namespace OOLUA
 		\brief Equality operator for reference types that do not match
 		\note This always returns false.
 	*/
-	template<int ID1,int ID2>
+	template<int ID1, int ID2>
 	inline bool operator == (Lua_ref<ID1> const& /*lhs*/, Lua_ref<ID2> const& /*rhs*/)
 	{
 		return false;
 	}
 
-	//TODO : consider renaming OOLUA::Table_ref?
-	//Does "Lua" part does add readability? For example why using the DSL? Hmm
-	//I have already dropped it from Table.
 	/** \typedef Lua_table_ref
 		\brief Typedef helper for a LUA_TTABLE registry reference
 	 */
