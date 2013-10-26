@@ -114,22 +114,6 @@ namespace OOLUA
 		Lua_ref& operator = (Lua_ref const& /*rhs*/);
 
 		/**
-			\brief Equality operator for references of the same type
-			\details
-			A reference has a type, validity and can be bound to a lua_State. \n
-			To be considered equal:
-			\li The types must match
-			\li Both operands lua_State's must compare equal or be part of the same Universe
-			\li The references must compare equal via lua_rawequal \n
-			Any other combination will return false.
-			\param rhs The right hand side operand for the operation
-			\return bool indicating the comparison result
-			\note lua_rawequal is used for comparison so no metamethod is considered
-			in the equality.
-		*/
-		bool operator == (Lua_ref const& rhs);
-
-		/**
 			\brief
 			Creates a copy of rhs
 			\details
@@ -378,16 +362,6 @@ namespace OOLUA
 #undef oolua_err_get
 	}
 	/** \endcond*/
-
-	/**
-		\brief Equality operator for reference types that do not match
-		\note This always returns false.
-	*/
-	template<int ID1, int ID2>
-	inline bool operator == (Lua_ref<ID1> const& /*lhs*/, Lua_ref<ID2> const& /*rhs*/)
-	{
-		return false;
-	}
 
 	/** \typedef Lua_table_ref
 		\brief Typedef helper for a LUA_TTABLE registry reference
