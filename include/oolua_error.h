@@ -22,6 +22,16 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
 
+/**
+	\file oolua_error.h
+	\brief Generic header to be included when handling errors.
+	\details When the library is compiled with \ref OOLUA_USE_EXCEPTIONS == 1
+	it will include the \ref oolua_exception.h header and provide dummy
+	implemenations for OOLUA::get_last_error and OOLUA::reset_error_value.
+	When compiled with \ref OOLUA_STORE_LAST_ERROR == 1 it provides implements
+	for \ref OOLUA::get_last_error and \ref OOLUA::reset_error_value.
+	\see \ref OOLuaConfig
+*/
 #ifndef OOLUA_ERROR_H_
 #	define OOLUA_ERROR_H_
 

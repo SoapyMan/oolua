@@ -24,6 +24,9 @@ find ./ -name "*.Doxyfile" -print0  | xargs -0 rm -Rf
 find ./ -name "*.dox" -print0  | xargs -0 rm -Rf 
 find ./ -name ".svn" -print0  | xargs -0 rm -Rf 
 find ./ -name ".DS_Store" -print0  | xargs -0 rm -Rf 
+find ./ -name ".hg" -print0 | xargs -0 rm -Rf
+find ./ -name ".hgignore" -print0 | xargs -0 rm -Rf
+find ./ -name ".hgtags" -print0 | xargs -0 rm -Rf
 
 
 cd profile

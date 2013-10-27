@@ -22,6 +22,10 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
 
+/**
+	\file oolua_pull.h
+	Implements the Lua stack operation OOLUA::pull.
+*/
 #ifndef OOLUA_PULL_H_
 #	define OOLUA_PULL_H_
 

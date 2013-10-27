@@ -22,9 +22,13 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
 
-///////////////////////////////////////////////////////////////////////////////
-///  @file oolua_exception.h
-///////////////////////////////////////////////////////////////////////////////
+/**
+	\file oolua_exception.h
+	Declares the exceptions which are used by OOLua when \ref OOLUA_USE_EXCEPTIONS
+	is set to one.
+	\see \ref OOLuaConfig
+	\see \ref OOLuaExceptionClasses
+*/
 #ifndef OOLUA_EXCEPTION_H_
 #	define OOLUA_EXCEPTION_H_
 

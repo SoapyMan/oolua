@@ -22,12 +22,15 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
 
+/** \cond INTERNAL*/
 /**
 	@file class_from_stack.h
 	\brief Retrieves a typed pointer from a potential userdata on the stack
 	\details Preforms error config dependant checks in a attempt to return a
 	typed pointer from a userdata which resides on the stack.
 */
+/** \endcond */
+
 #ifndef OOLUA_CLASS_FROM_STACK_H_
 #	define OOLUA_CLASS_FROM_STACK_H_
 

@@ -22,6 +22,11 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
 
+/**
+	\file oolua_dsl.h
+	Header which provides only what is needed for a class to be proxied using
+	the DSL.
+*/
 #ifndef OOLUA_DSL_H_
 #	define OOLUA_DSL_H_
 

@@ -23,7 +23,7 @@ THE SOFTWARE.
 */
 /**
 	\file proxy_member_function.h
-	\brief Internal macros wbich generate proxy member functions
+	\brief Internal macros which generate proxy member functions
 */
 
 #ifndef OOLUA_PROXY_MEMBER_FUNCTION_H_

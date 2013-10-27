@@ -116,7 +116,7 @@ namespace OOLUA
 		/**@}*/
 
 		/**@{*/
-#if OOLUA_USE_EXCEPTIONS == 1
+#if OOLUA_USE_EXCEPTIONS == 1 || OOLUA_DOXYGEN_IS_PROCESSING == 999
 		/**
 			\brief Function which throws on an error
 			\note This function is only defined when exceptions are enable for the library

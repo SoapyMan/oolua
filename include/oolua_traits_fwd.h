@@ -22,6 +22,11 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
 
+/**
+	\file oolua_traits_fwd.h
+	Forward declarations of \ref OOLuaTraits
+*/
+
 #ifndef OOLUA_TRAITS_FWD_H_
 #	define OOLUA_TRAITS_FWD_H_
 

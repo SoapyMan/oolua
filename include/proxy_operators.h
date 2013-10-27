@@ -25,7 +25,7 @@ THE SOFTWARE.
 /**
 	\file proxy_operators.h
 	\details Defines operators which will be made available in scripts when a
-	Proxy_class contains \ref OperatorTags "operator tags"
+	\ref OOLUA::Proxy_class contains \ref OperatorTags "operator tags"
 */
 
 #ifndef OOLUA_PROXY_OPERATORS_H_

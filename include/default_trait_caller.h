@@ -25,7 +25,7 @@ THE SOFTWARE.
 #ifndef DEFAULT_TRAIT_CALLER_H_
 #	define DEFAULT_TRAIT_CALLER_H_
 
-//* \cond INTERNAL*/
+/** \cond INTERNAL*/
 
 /**
 	\file default_trait_caller.h

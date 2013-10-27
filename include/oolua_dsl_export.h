@@ -21,7 +21,11 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
-
+/**
+	\file oolua_dsl_export.h
+	Header to be used in conjunction with oolua_dsl.h when exporting proxies
+	using the DSL.
+*/
 #ifndef OOLUA_DSL_EXPORT_H_
 #	define OOLUA_DS_EXPORT_H_
 

@@ -214,21 +214,6 @@ namespace OOLUA
 	}
 
 	template<int ID>
-	bool Lua_ref<ID>::operator == (Lua_ref<ID> const& rhs)
-	{
-		if(!valid() && !rhs.valid()) return m_lua == rhs.m_lua;
-		else if (m_lua == rhs.m_lua || can_xmove(m_lua, rhs.m_lua))
-		{
-			lua_rawgeti(m_lua, LUA_REGISTRYINDEX, m_ref);
-			lua_rawgeti(m_lua, LUA_REGISTRYINDEX, rhs.m_ref);
-			bool result(!!lua_rawequal(m_lua, -1, -2));
-			lua_pop(m_lua, 2);
-			return result;
-		}
-		return false;
-	}
-
-	template<int ID>
 	Lua_ref<ID>::~Lua_ref()
 	{
 		release();

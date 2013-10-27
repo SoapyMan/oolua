@@ -24,13 +24,13 @@ THE SOFTWARE.
 
 /**
 	\file oolua_stack.h
-	\brief Provides implementations for the function declared in fwd_push_pull.h
+	\brief Makes available implementations for the stack operations OOLUA::push
+	and OOLUA::pull, which have forward declarations in oolua_stack_fwd.h
 */
 #ifndef OOLUA_STACK_H_
 #	define OOLUA_STACK_H_
 
 #	include "oolua_stack_fwd.h"
-//#	include "oolua_string.h"
 #	include "oolua_push.h"
 #	include "oolua_pull.h"
 #	include "stack_get.h"

@@ -22,6 +22,11 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
 
+/**
+	\file oolua_registration_fwd.h
+	Forward declarations of public API functions used for registering a class
+	or statics for a class type.
+*/
 #ifndef OOLUA_FWD_REGISTRATION_FWD_H_
 #	define OOLUA_FWD_REGISTRATION_FWD_H_
 

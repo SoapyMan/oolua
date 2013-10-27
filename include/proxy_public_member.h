@@ -32,7 +32,6 @@ THE SOFTWARE.
 #	define OOLUA_PROXY_PUBLIC_MEMBER_H_
 
 #include "oolua_stack_fwd.h"
-//#include "oolua_traits.h"
 #include "proxy_test.h"
 #include "lvd_type_traits.h"
 /** \cond INTERNAL */
@@ -71,9 +70,6 @@ namespace OOLUA
 					//can not have a pointer to reference.
 					//T will either be a pointer to type
 					//or type
-					//OOLUA::INTERNAL::is_param_by_value<T>::value
-//					&& has_a_proxy_type<typename OOLUA::INTERNAL::Raw_type<T>::type >::value >
-
 					LVD::by_value<T>::value
 					&& has_a_proxy_type<typename LVD::raw_type<T>::type >::value >
 						::push(vm, input);
