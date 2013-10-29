@@ -85,6 +85,8 @@ THE SOFTWARE.
 #	if OOLUA_USE_EXCEPTIONS == 1
 
 #	include <exception>
+#	include <cstddef>
+
 	struct lua_State;
 
 	namespace OOLUA
