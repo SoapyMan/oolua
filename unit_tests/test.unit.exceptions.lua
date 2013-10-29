@@ -6,20 +6,20 @@ create_package(name,root,"ConsoleApp")
 
 configuration {}
 
-files 
-{ 
-    	root .. "/src/*.cpp",
-    	root .. "/include/*.h",
-    	root .. "unit_tests/test_classes/common_cppunit_headers.h",
-    	root .. "unit_tests/main.cpp",
-    	root .. "unit_tests/bind_classes/*.h",
-    	root .. "unit_tests/bind_classes/*.cpp",
-		root .. "unit_tests/cpp_classes/*.h",
-		root .. "unit_tests/cpp_classes/*.cpp",
-		root .. "unit_tests/test_classes/*h",
-		root .. "unit_tests/test_classes/*.cpp"
+files
+{
+	root .. "/src/*.cpp",
+	root .. "/include/*.h",
+	root .. "unit_tests/test_classes/common_cppunit_headers.h",
+	root .. "unit_tests/main.cpp",
+	root .. "unit_tests/bind_classes/*.h",
+	root .. "unit_tests/bind_classes/*.cpp",
+	root .. "unit_tests/cpp_classes/*.h",
+	root .. "unit_tests/cpp_classes/*.cpp",
+	root .. "unit_tests/test_classes/*h",
+	root .. "unit_tests/test_classes/*.cpp"
 }
-includedirs 
+includedirs
 {
 	"include/cppunit",
 	"include/gmock",
@@ -31,16 +31,15 @@ includedirs
 	root .. "unit_tests/bind_classes",
 	root .. "unit_tests/cpp_classes",
 	root .. "unit_tests/test_classes",
---	"/usr/local/include/lua52",
-} 
+}
 
 
-defines 
+defines
 {
 	"OOLUA_RUNTIME_CHECKS_ENABLED=1",
 	"OOLUA_STD_STRING_IS_INTEGRAL=0",
 	"OOLUA_SAFE_ID_COMPARE=1",
-	
+
 	"OOLUA_STORE_LAST_ERROR=0",
 	"OOLUA_USE_EXCEPTIONS=1",
 	"OOLUA_USE_PRECOMPILED_HEADER"
