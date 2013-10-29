@@ -14,7 +14,6 @@ class Construct : public CPPUNIT_NS::TestFixture
 {
 	CPPUNIT_TEST_SUITE(Construct);
 	CPPUNIT_TEST(new_luaCreatesInstanceThenReturnsIt_returnIsNoneNull);
-	CPPUNIT_TEST(new_luaCreatesInstance_noException);
 
 	CPPUNIT_TEST(register_noDefaultConstructor_compiles);
 
@@ -65,6 +64,7 @@ class Construct : public CPPUNIT_NS::TestFixture
 
 
 #if OOLUA_USE_EXCEPTIONS == 1
+	CPPUNIT_TEST(new_luaCreatesInstance_noException);
 	CPPUNIT_TEST(new_twoParamConstructorIntAndBoolPassedStringAsFirstParam_throwsRuntimeError);
 	CPPUNIT_TEST(new_oneParamConstructorPassingAnInvalidParam_throwsRuntimeError);
 	CPPUNIT_TEST(new_twoParamConstructorStub1AndInvalid_throwsRuntimeError);
@@ -140,22 +140,6 @@ public:
 		CPPUNIT_ASSERT_EQUAL(true, res.m_ptr != 0);
 		delete res.m_ptr;
 		/**[ExampleCppAcquirePtr]*/
-	}
-	/*[MinimalProxyClassUsage]*/
-	void new_luaCreatesInstance_noException()
-	{
-		CPPUNIT_ASSERT_NO_THROW(m_lua->run_chunk("Stub1.new()"));
-	}
-	/**[MinimalProxyClassUsage]*/
-
-	void createAndReturnStub(OOLUA::Script *lua)
-	{
-		std::string foo(\
-			"createAndReturn = function() \n"
-				"return Stub1.new() \n"
-			"end");
-		lua->run_chunk(foo);
-		CPPUNIT_ASSERT_NO_THROW(lua->call("createAndReturn"));
 	}
 
 	void register_noDefaultConstructor_compiles()
@@ -447,6 +431,21 @@ public:
 
 
 #if OOLUA_USE_EXCEPTIONS == 1
+	void createAndReturnStub(OOLUA::Script *lua)
+	{
+		std::string foo(
+			"createAndReturn = function() "
+				"return Stub1.new() "
+			"end");
+		lua->run_chunk(foo);
+		CPPUNIT_ASSERT_NO_THROW(lua->call("createAndReturn"));
+	}
+	/*[MinimalProxyClassUsage]*/
+	void new_luaCreatesInstance_noException()
+	{
+		CPPUNIT_ASSERT_NO_THROW(m_lua->run_chunk("Stub1.new()"));
+	}
+	/**[MinimalProxyClassUsage]*/
 
 	void new_twoParamConstructorIntAndBoolPassedStringAsFirstParam_throwsRuntimeError()
 	{

@@ -34,7 +34,9 @@ OOLUA_EXPORT_FUNCTIONS_CONST(B)
 class UserData : public CPPUNIT_NS::TestFixture
 {
 	CPPUNIT_TEST_SUITE(UserData);
+#	if OOLUA_USING_EXCEPTIONS == 1
 		CPPUNIT_TEST(cppMethodCall_passTwoInstancesTwice_noException);
+#	endif
 	CPPUNIT_TEST_SUITE_END();
 
 	OOLUA::Script * m_lua;
@@ -53,7 +55,7 @@ public:
 	{
 		delete m_lua;
 	}
-
+#	if OOLUA_USING_EXCEPTIONS == 1
 	void cppMethodCall_passTwoInstancesTwice_noException()
 	{
 		m_lua->run_chunk(\
@@ -65,6 +67,7 @@ public:
 		B b;
 		CPPUNIT_ASSERT_NO_THROW(m_lua->call("foo", &a, &b, &a, &b));
 	}
+#	endif
 };
 
 CPPUNIT_TEST_SUITE_REGISTRATION(UserData);
