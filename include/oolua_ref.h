@@ -113,8 +113,15 @@ namespace OOLUA
 		 */
 		Lua_ref();
 
-		//unimplemented
-		Lua_ref& operator = (Lua_ref const& /*rhs*/);
+		/**
+			\brief
+			Makes this instance a copy of rhs.
+			\param[in] rhs The instance to make a copy of
+			\note Even self assignment makes a copy, yet it will refer to the same
+			actual Lua type. It doesn't seem correct for every assignment to pay for
+			a branch just to keep the internal reference id the same.
+		*/
+		Lua_ref& operator = (Lua_ref const& rhs);
 
 		/**
 			\brief
@@ -225,6 +232,14 @@ namespace OOLUA
 	Lua_ref<ID>::~Lua_ref()
 	{
 		release();
+	}
+
+	template<int ID>
+	Lua_ref<ID>& Lua_ref<ID>::operator = (Lua_ref<ID> const& rhs)
+	{
+		Lua_ref<ID> temp(rhs);
+		temp.swap(*this);
+		return *this;
 	}
 
 	template<int ID>

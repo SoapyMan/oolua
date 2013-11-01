@@ -33,6 +33,9 @@ class Lua_reference : public CppUnit::TestFixture
 		CPPUNIT_TEST(swap_afterSwap_lhsStateBeforeSwapIsAssignedToRhsState);
 		CPPUNIT_TEST(swap_afterSwap_lhsRefBeforeSwapIsAssignedToRhsRef);
 
+		CPPUNIT_TEST(assignment_selfAssignmentOnValidRef_refIsRegistryCopyOfOrginalValue);
+		CPPUNIT_TEST(assignment_assignmentToValidRef_registryNoLongerContainsTheValidRef);
+		CPPUNIT_TEST(assignment_assignmentOfValidRefToInvalid_refIsRegistryCopyOfInput);
 	CPPUNIT_TEST_SUITE_END();
 	OOLUA::Script* m_lua;
 public:
@@ -48,6 +51,11 @@ public:
 		delete m_lua;
 	}
 
+	void change_an_invalid_reference_to_valid(OOLUA::Lua_func_ref& ref)
+	{
+		m_lua->load_chunk("return ");
+		ref.set_ref(m_lua->state(), luaL_ref(*m_lua, LUA_REGISTRYINDEX));		
+	}
 	void defaultConstructor_storedStateEqualsNull()
 	{
 		OOLUA::Lua_func_ref r;
@@ -224,5 +232,43 @@ public:
 		CPPUNIT_ASSERT_EQUAL(lhs_ref_before_swap, rhs.ref());
 	}
 
+	void assignment_selfAssignmentOnValidRef_refIsRegistryCopyOfOrginalValue()
+	{
+		m_lua->load_chunk("return ");
+		OOLUA::Lua_func_ref lhs;
+		m_lua->pull(lhs);
+		
+		//put the instance on the stack to compare after the assignment
+		int const ref_before = lhs.ref();
+		lua_rawgeti(*m_lua, LUA_REGISTRYINDEX, ref_before);
+		
+		lhs = lhs;
+		lua_rawgeti(*m_lua, LUA_REGISTRYINDEX, lhs.ref());
+		CPPUNIT_ASSERT_EQUAL(1, lua_rawequal(*m_lua, -1, -2));
+	}
+
+	void assignment_assignmentToValidRef_registryNoLongerContainsTheValidRef()
+	{
+		OOLUA::Lua_func_ref lhs;
+		change_an_invalid_reference_to_valid(lhs);
+
+		int const ref_before = lhs.ref();
+		OOLUA::Lua_func_ref rhs;
+		lhs = rhs;
+		lua_rawgeti(*m_lua, LUA_REGISTRYINDEX, ref_before);
+		CPPUNIT_ASSERT_EQUAL(LUA_TNIL, lua_type(*m_lua, -1));
+	}
+
+	void assignment_assignmentOfValidRefToInvalid_refIsRegistryCopyOfInput()
+	{
+		OOLUA::Lua_func_ref lhs;
+		OOLUA::Lua_func_ref rhs;
+		change_an_invalid_reference_to_valid(rhs);
+		lhs = rhs;
+		lua_rawgeti(*m_lua, LUA_REGISTRYINDEX, lhs.ref());
+		lua_rawgeti(*m_lua, LUA_REGISTRYINDEX, rhs.ref());
+
+		CPPUNIT_ASSERT_EQUAL(1, lua_rawequal(*m_lua, -1, -2));
+	}
 };
 CPPUNIT_TEST_SUITE_REGISTRATION(Lua_reference);
