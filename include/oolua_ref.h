@@ -91,9 +91,11 @@ namespace OOLUA
 		/**
 			\brief
 			Sets the lua_State and reference for the instance
-			\note this does not preform any validation on the parameters and it
+			\note This does not preform any validation on the parameters and it
 			is perfectly acceptable to pass parameters such that a call to
 			valid will return false.
+			\param[in] vm lua_State for which the ref is coupled with.
+			\param[in] ref Registry reference or registry special value for this instance.
 		*/
 		Lua_ref(lua_State* const vm, int const& ref);
 
@@ -101,6 +103,7 @@ namespace OOLUA
 			\brief
 			Sets the lua_State for the instance and initialises the instance
 			so that a call to valid will return false.
+			\param[in] vm lua_State for which this instance is coupled with.
 		*/
 		explicit Lua_ref(lua_State* const vm);
 
@@ -120,12 +123,13 @@ namespace OOLUA
 			If rhs is valid then creates a new Lua reference to the value which rhs
 			refers to, otherwise it initialises this instance so that a \ref Lua_ref::valid
 			call returns false.
+			\param[in] rhs Reference for which this instance will initialise its internal state from.
 		 */
 		Lua_ref(Lua_ref const& rhs) OOLUA_DEFAULT;
 
 		/**
 			\brief
-			Destructor which releases a valid reference.
+			Destructor which releases a valid reference, removing the value from the registry
 		*/
 		~Lua_ref()OOLUA_DEFAULT;
 
@@ -141,6 +145,8 @@ namespace OOLUA
 			\details
 			Releases any currently stored reference and takes ownership of the passed
 			reference.
+			\param[in] vm lua_State to associated the reference with.
+			\param[in] ref Registry reference id for which the instance takes ownership of.
 		*/
 		void set_ref(lua_State* const vm, int const& ref)OOLUA_DEFAULT;
 
@@ -151,6 +157,8 @@ namespace OOLUA
 			Swaps the lua_State and reference with rhs, this is a
 			simple swap and does not call luaL_ref therefore it will not
 			create any new references.
+			\param[inout] Reference which will re-initialise this instance's state and which
+				will receive the internal state of this instance as it was before the swap.
 		*/
 		void swap(Lua_ref& rhs);
 
@@ -169,7 +177,7 @@ namespace OOLUA
 
 		/**
 			\brief
-			Returns the integer Lua reference value.
+			Returns the integer Lua registry reference value.
 		*/
 		int const& ref()const;
 	private:
