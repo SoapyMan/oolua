@@ -122,7 +122,9 @@ namespace OOLUA
 			OOLUA_INTERNAL_FUNC_OPERATORS
 		/**@}*/
 
-		/** \brief Sets the state in which functions will be called*/
+		/** \brief Sets the state in which functions will be called
+			\param[in] vm The state to bind to the instance.
+		*/
 		void bind_script(lua_State* const vm);
 	private:
 		int get_top();

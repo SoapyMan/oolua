@@ -49,7 +49,7 @@ namespace OOLUA
 
 		Script provides the following :
 		\li Scopes a lua_State pointer
-		\li Provides access to the lua_State pointer via a \ref OOLUA::Script::operator "cast operator" and \ref OOLUA::Script::state "function"
+		\li Provides access to the lua_State pointer via a \ref OOLUA::Script::operator  "cast operator" and \ref OOLUA::Script::state "function"
 		\li Provides methods to \ref OOLUA::Script::register_class "register" types
 		\li Binds a \ref OOLUA::Lua_function "Lua_function" instance to \ref OOLUA::Script::call "call" functions
 		\li Has member functions for a little state management

@@ -340,9 +340,10 @@ namespace OOLUA
 
 	/**
 		\brief Creates a new valid \ref OOLUA::Table
-		\param [in] vm
-		\param [inout] t
-		\post stack is the same on exit as entry
+		\param [in] vm The lua_State in which to create the table.
+		\param [inout] t Table which will hold the newly created valid table.
+		\post stack is the same on exit as entry and t will be an instance on which
+		valid returns true.
 
 	*/
 	void new_table(lua_State* vm, OOLUA::Table& t);
@@ -350,6 +351,8 @@ namespace OOLUA
 	/**
 		\brief Creates a new valid \ref OOLUA::Table "Table"
 		\post stack is the same on exit as entry
+		\param[in] vm The lua_State in which to create the table
+		\return A newly constructed Table on which valid will return true.
 	*/
 	OOLUA::Table new_table(lua_State* vm);
 

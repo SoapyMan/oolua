@@ -71,13 +71,14 @@ THE SOFTWARE.
 		The module returns a table with the following functions \n
 		\snippet oolua_generate.lua GenModuleReturn
 
-		\fn function gen(options,path)
+		\fn function gen(options, path)
 		\param options [optional] Defaults to the library \ref defaults
 		\param path [optional] Defaults to the current working directory
 		\brief Generate boilerplate header files
 		\details Generates boilerplate C++ files code required for OOLua using the passed options
 		or if an option is not present then the default is used. If Path is not nil then it is
 		required to be a string which is slash postfixed.
+
 
 		\fn function default_details()
 		\brief Returns the library defaults and details

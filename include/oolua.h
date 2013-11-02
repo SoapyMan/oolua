@@ -5,22 +5,24 @@
 
 /**
 	\mainpage
-
 	\section OOLuaIntroduction Introduction
-	\subsection OOLuaHipster Hipster
-	OOLua is cross platform, test driven, dependancy free Open Source library which uses C++03
-	template meta-programming and pre-processor magic to generate non intrusive proxies that
-	provide a fast bridge for the interaction of C++ classes with Lua; in addition it also
-	provides a thin abstraction layer for interfacing with the Lua stack. It supports multiple
-	inheritance C++ classes without using C++ RTTI and does not use exceptions by default
-	although they are easily enabled.
+	OOLua is cross platform, test driven, dependency free and Open Source library. It uses C++03
+	template meta-programming and pre-processor magic internally, which can be used to generate
+	none intrusive proxies that provide a fast bridge for the interaction of C++ classes and functions
+	with Lua.
+	<p>
+	The library provides multiple inheritance C++ classes without using C++'s RTTI,
+	can be compiled either with or without exception support and is easily configurable.
+	OOLua also provides a thin and simple abstraction layer for interfacing with the Lua stack and
+	types in a type safe manner, whilst also supporting a means to bypass the type safety using the Lua
+	light userdata type. The library can be use in a pick and mix fashion or in its entirety, whilst
+	still using the Lua C API.
 
-	\subsection OOLuaNormal Normal
-	OOLua is a library which makes it easy to use C++ classes in Lua and also operating
-	on the stack using a typed interface for common operations.
+	OOLua is developed by Liam Devine who has over ten years experience using the Lua programming
+	language, having what he considers a deep understanding of both it and also C++.
 
-	This is not a fully original work, instead it builds on ideas from binding
-	classes using <a href="http://lua-users.org/wiki/CppBindingWithLunar" target="_blank">Lunar</a>
+	This is not a fully original work and was originally based on ideas from binding classes using
+	the famous <a href="http://lua-users.org/wiki/CppBindingWithLunar" target="_blank">Lunar</a>
 	and <a href="http://www.lua.org/notes/ltn005.html" target="_blank">Lua Technical Note 5</a>.
 
 	\section OOLuaCompatibility Lua compatibility

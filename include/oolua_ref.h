@@ -174,7 +174,7 @@ namespace OOLUA
 			Swaps the lua_State and reference with rhs, this is a
 			simple swap and does not call luaL_ref therefore it will not
 			create any new references.
-			\param[inout] Reference which will re-initialise this instance's state and which
+			\param[inout] rhs Reference which will re-initialise this instance's state and which
 				will receive the internal state of this instance as it was before the swap.
 		*/
 		void swap(Lua_ref& rhs);

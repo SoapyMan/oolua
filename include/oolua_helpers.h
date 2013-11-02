@@ -33,11 +33,12 @@ namespace OOLUA
 {
 	/**
 		Compares two valid indices on the stack of vm.
-		\details This takes into consideration metamethods for the indices
-		\param[in] vm The lua_State in which to prefer the operation
+		\details Compares the two indicies which will take into consideration
+		metamethods when present for the types.
+		\param[in] vm The lua_State in which to preform the operation
 		\param[in] idx0 Valid stack index
 		\param[in] idx1 Valid stack index
-		\return boolean Result of the comparison
+		\return bool Result of the comparison
 	*/
 	bool idxs_equal(lua_State* vm, int idx0, int idx1);
 
@@ -53,7 +54,7 @@ namespace OOLUA
 
 		\param[in] vm0
 		\param[in] vm1
-		\returns true is vm0 and vm1 are different yet none NULL related states, else false
+		\returns true if vm0 and vm1 are different yet none NULL related states, else false
 	*/
 	bool can_xmove(lua_State* vm0, lua_State* vm1);
 } //namespace OOLUA

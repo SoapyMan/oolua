@@ -22,6 +22,10 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
 
+/**
+	\file oolua_string.h
+	\brief
+*/
 #ifndef OOLUA_STRING_H_
 #	define OOLUA_STRING_H_
 
@@ -39,7 +43,10 @@ namespace OOLUA
 		\details
 		I would really like to be able to forward declare string types in a cross
 		platform way; for example when using GCC we could, but really shouldn't,
-		use bits/stringfwd.h
+		use bits/stringfwd.h however this is not possible. Instead this file and it's
+		accompanying source file, oolua_string.cpp, provide a way to not include the
+		string header through out the library DSL headers, yet still be able to use a
+		string class when needed.
 	*/
 	namespace STRING
 	{
@@ -59,7 +66,14 @@ namespace OOLUA
 {
 	namespace STRING
 	{
-
+/**
+	\brief Creatures a structure that enables checking a class type for a specific
+	function signature which has a specific name.
+	\hideinitializer
+	\param StructName The name of the structure this macro will create.
+	\param MethodSignature The signature the checker will look for.
+	\param MethodName The function's name which has the MethodSignature
+*/
 #define OOLUA_CLASS_OR_BASE_CONTAINS_METHOD(StructName, MethodSignature, MethodName) \
 		template<typename Type> \
 		struct StructName \
@@ -74,8 +88,11 @@ namespace OOLUA
 			enum {value = sizeof(check<Type>(0)) == sizeof(yes)}; \
 		};
 
-/*
-	std::string
+/**
+	\struct OOLUA::STRING::only_std_string_conforming_with_c_str_method
+	\brief
+	Defines the structure which checks for the method "c_str" which conforms to
+	the std::string signature.
 */
 OOLUA_CLASS_OR_BASE_CONTAINS_METHOD(only_std_string_conforming_with_c_str_method
 								, char const* (U::*)()const
@@ -116,9 +133,11 @@ OOLUA_CLASS_OR_BASE_CONTAINS_METHOD(is_qstring
 */
 
 		/**
+			\struct OOLUA::STRING::is_integral_string_class
 			\brief Preforms the check on the type without including the string header
 			\details To add a different string class type, see the commented out macros
 			in oolua_string.h.
+			\see \ref OOLUA_STD_STRING_IS_INTEGRAL
 		*/
 		template<typename T>
 		struct is_integral_string_class

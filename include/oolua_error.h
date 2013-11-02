@@ -27,8 +27,8 @@ THE SOFTWARE.
 	\brief Generic header to be included when handling errors.
 	\details When the library is compiled with \ref OOLUA_USE_EXCEPTIONS == 1
 	it will include the \ref oolua_exception.h header and provide dummy
-	implemenations for OOLUA::get_last_error and OOLUA::reset_error_value.
-	When compiled with \ref OOLUA_STORE_LAST_ERROR == 1 it provides implements
+	implementations for OOLUA::get_last_error and OOLUA::reset_error_value.
+	When compiled with \ref OOLUA_STORE_LAST_ERROR == 1 it provides implementations
 	for \ref OOLUA::get_last_error and \ref OOLUA::reset_error_value.
 	\see \ref OOLuaConfig
 */
