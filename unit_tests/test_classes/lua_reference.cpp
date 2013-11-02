@@ -36,6 +36,16 @@ class Lua_reference : public CppUnit::TestFixture
 		CPPUNIT_TEST(assignment_selfAssignmentOnValidRef_refIsRegistryCopyOfOrginalValue);
 		CPPUNIT_TEST(assignment_assignmentToValidRef_registryNoLongerContainsTheValidRef);
 		CPPUNIT_TEST(assignment_assignmentOfValidRefToInvalid_refIsRegistryCopyOfInput);
+
+
+		CPPUNIT_TEST(equality_twoInvalidReferences_returnsTrue);
+		CPPUNIT_TEST(equality_invalidRefAndValidRef_returnsfalse);
+		CPPUNIT_TEST(equality_validRefAndInvalidRef_returnsfalse);
+		CPPUNIT_TEST(equality_twoCopiesOfSameRef_returnsTrue);
+		CPPUNIT_TEST(equality_twoDifferentRefs_returnsFalse);
+		CPPUNIT_TEST(equality_twoDifferentRefsFromDifferentStatesInTheSameUniverse_returnsFalse);
+		CPPUNIT_TEST(equality_sameRefFromDifferentStatesInTheSameUniverse_returnsTrue);
+		CPPUNIT_TEST(equality_twoDifferentRefsFromDifferentUniverses_returnsFalse);
 	CPPUNIT_TEST_SUITE_END();
 	OOLUA::Script* m_lua;
 public:
@@ -54,7 +64,7 @@ public:
 	void change_an_invalid_reference_to_valid(OOLUA::Lua_func_ref& ref)
 	{
 		m_lua->load_chunk("return ");
-		ref.set_ref(m_lua->state(), luaL_ref(*m_lua, LUA_REGISTRYINDEX));		
+		ref.set_ref(m_lua->state(), luaL_ref(*m_lua, LUA_REGISTRYINDEX));
 	}
 	void defaultConstructor_storedStateEqualsNull()
 	{
@@ -237,11 +247,11 @@ public:
 		m_lua->load_chunk("return ");
 		OOLUA::Lua_func_ref lhs;
 		m_lua->pull(lhs);
-		
+
 		//put the instance on the stack to compare after the assignment
 		int const ref_before = lhs.ref();
 		lua_rawgeti(*m_lua, LUA_REGISTRYINDEX, ref_before);
-		
+
 		lhs = lhs;
 		lua_rawgeti(*m_lua, LUA_REGISTRYINDEX, lhs.ref());
 		CPPUNIT_ASSERT_EQUAL(1, lua_rawequal(*m_lua, -1, -2));
@@ -269,6 +279,79 @@ public:
 		lua_rawgeti(*m_lua, LUA_REGISTRYINDEX, rhs.ref());
 
 		CPPUNIT_ASSERT_EQUAL(1, lua_rawequal(*m_lua, -1, -2));
+	}
+	void equality_twoInvalidReferences_returnsTrue()
+	{
+		OOLUA::Lua_func_ref lhs, rhs;
+		CPPUNIT_ASSERT_EQUAL(true, lhs == rhs);
+	}
+
+	void equality_invalidRefAndValidRef_returnsfalse()
+	{
+		OOLUA::Lua_func_ref lhs, rhs;
+		change_an_invalid_reference_to_valid(rhs);
+		CPPUNIT_ASSERT_EQUAL(false, lhs == rhs);
+	}
+	void equality_validRefAndInvalidRef_returnsfalse()
+	{
+		OOLUA::Lua_func_ref lhs, rhs;
+		change_an_invalid_reference_to_valid(lhs);
+		CPPUNIT_ASSERT_EQUAL(false, lhs == rhs);
+	}
+
+	void equality_twoCopiesOfSameRef_returnsTrue()
+	{
+		OOLUA::Lua_func_ref lhs, rhs;
+		change_an_invalid_reference_to_valid(rhs);
+		lhs = rhs;
+		CPPUNIT_ASSERT_EQUAL(true, lhs == rhs);
+	}
+
+	void equality_twoDifferentRefs_returnsFalse()
+	{
+		OOLUA::Lua_func_ref lhs, rhs;
+		change_an_invalid_reference_to_valid(lhs);
+		change_an_invalid_reference_to_valid(rhs);
+
+		CPPUNIT_ASSERT_EQUAL(false, lhs == rhs);
+	}
+
+	void equality_twoDifferentRefsFromDifferentStatesInTheSameUniverse_returnsFalse()
+	{
+		OOLUA::Lua_func_ref lhs, rhs;
+		change_an_invalid_reference_to_valid(lhs);
+
+		lua_State* s = lua_newthread(m_lua->state());
+		OOLUA::load_chunk(s, "return ");
+		rhs.set_ref(s, luaL_ref(s, LUA_REGISTRYINDEX));
+
+		CPPUNIT_ASSERT_EQUAL(false, lhs == rhs);
+	}
+
+	void equality_sameRefFromDifferentStatesInTheSameUniverse_returnsTrue()
+	{
+		OOLUA::Lua_func_ref lhs, rhs;
+		change_an_invalid_reference_to_valid(lhs);
+
+		lua_State* s = lua_newthread(m_lua->state());//also pushed it onto the stack
+
+		lua_rawgeti(lhs.state(), LUA_REGISTRYINDEX, lhs.ref());
+		lua_xmove(m_lua->state(), s, 1);
+		rhs.set_ref(s, luaL_ref(s, LUA_REGISTRYINDEX));
+
+		CPPUNIT_ASSERT_EQUAL(true, lhs == rhs);
+	}
+
+	void equality_twoDifferentRefsFromDifferentUniverses_returnsFalse()
+	{
+		OOLUA::Script other_universe; //must outlive the reference
+
+		OOLUA::Lua_func_ref lhs, rhs;
+		change_an_invalid_reference_to_valid(lhs);
+
+		other_universe.load_chunk("return ");
+		rhs.set_ref(other_universe, luaL_ref(other_universe, LUA_REGISTRYINDEX));
+		CPPUNIT_ASSERT_EQUAL(false, lhs == rhs);
 	}
 };
 CPPUNIT_TEST_SUITE_REGISTRATION(Lua_reference);

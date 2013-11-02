@@ -125,6 +125,16 @@ namespace OOLUA
 
 		/**
 			\brief
+			Compares this instance reference with the right hand side operand.
+			\param[in] rhs Right hand side operand for the operator.
+			\return bool Result of the comparison.
+			\note An invalid reference compares equal any other invalid reference
+			regardless of the lua_State members.
+		*/
+		bool operator == (Lua_ref const& rhs) const;
+
+		/**
+			\brief
 			Creates a copy of rhs
 			\details
 			If rhs is valid then creates a new Lua reference to the value which rhs
@@ -240,6 +250,21 @@ namespace OOLUA
 		Lua_ref<ID> temp(rhs);
 		temp.swap(*this);
 		return *this;
+	}
+
+	template<int ID>
+	bool Lua_ref<ID>::operator == (Lua_ref<ID> const& rhs) const
+	{
+		if (!valid() || !rhs.valid()) return valid() == rhs.valid();
+		else if (m_lua == rhs.state() || can_xmove(m_lua, rhs.state()))
+		{
+			lua_rawgeti(m_lua, LUA_REGISTRYINDEX, m_ref);
+			lua_rawgeti(m_lua, LUA_REGISTRYINDEX, rhs.m_ref);
+			bool const result = !!lua_rawequal(m_lua, -1, -2);
+			lua_pop(m_lua, 2);
+			return result;
+		}
+		return false;
 	}
 
 	template<int ID>
