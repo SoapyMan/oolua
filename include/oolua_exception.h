@@ -24,7 +24,7 @@ THE SOFTWARE.
 
 /**
 	\file oolua_exception.h
-	Declares the exceptions which are used by OOLua when \ref OOLUA_USE_EXCEPTIONS
+	\brief Declares the exceptions which are used by OOLua when \ref OOLUA_USE_EXCEPTIONS
 	is set to one.
 	\see \ref OOLuaConfig
 	\see \ref OOLuaExceptionClasses

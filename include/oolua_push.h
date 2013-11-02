@@ -23,7 +23,7 @@ THE SOFTWARE.
 */
 /**
 	\file oolua_push.h
-	Implements the Lua stack operation OOLUA::pull.
+	\brief Implements the Lua stack operation OOLUA::pull.
 */
 #ifndef OOLUA_PUSH_H
 #	define OOLUA_PUSH_H

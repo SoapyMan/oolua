@@ -22,9 +22,11 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
 
-///////////////////////////////////////////////////////////////////////////////
-///  @file proxy_stack_helper.h
-///////////////////////////////////////////////////////////////////////////////
+/**
+	\file proxy_stack_helper.h
+	\brief Helpers for the DSL which are allowed to do things the Public API
+	is not.
+*/
 #ifndef OOLUA_PROXY_STACK_HELPER_H_
 #	define OOLUA_PROXY_STACK_HELPER_H_
 

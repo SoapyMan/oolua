@@ -23,6 +23,8 @@ THE SOFTWARE.
 */
 /**
 	\file oolua_helpers.h
+	\brief Provides an index equal function which is multi Lua version compatible
+	and a Lua Universe checking function.
 */
 #ifndef OOLUA_HELPERS_H_
 #	define OOLUA_HELPERS_H_

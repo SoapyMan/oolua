@@ -22,12 +22,13 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
 
-///////////////////////////////////////////////////////////////////////////////
-///  @file proxy_class.h
-///  Defines the class, its bases in the hierarchical tree. The classes name
-///  an array used to hold the functions its make available to the script and
-///  C++ special member functions
-///////////////////////////////////////////////////////////////////////////////
+/**
+	\file proxy_class.h
+	\brief Defines \ref OOLUA::Proxy_class, it's bases in the hierarchical tree and internal details.
+	\details Defines the class, its bases in the hierarchical tree. The classes name
+	an array used to hold the functions its make available to the script and
+	C++ special member functions
+*/
 
 #ifndef CPP_PROXY_CLASS
 #	define CPP_PROXY_CLASS

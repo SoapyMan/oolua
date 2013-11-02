@@ -1,6 +1,7 @@
 
 /**
 	\file oolua_registration.h
+	\brief Implements the public API register functions and internal workers.
 	\details
 	\copyright
 	The MIT License\n
@@ -76,6 +77,7 @@ namespace OOLUA
 		if the type has already been registered with the instance.
 		This is safe to be called multiple times with a Lua universe and safe to be
 		called with a Proxy_class which has no base classes.
+		\param[in] vm Universe to register the class with.
 	*/
 	template<typename T>void register_class(lua_State * vm);
 
@@ -85,9 +87,12 @@ namespace OOLUA
 		\tparam T Class type to register the static for
 		\tparam K Key
 		\tparam V Value
+		\param[in] vm lua_State
+		\param[in] key Key to register in type T,
+		\param[in] value The data to assocaite with key in the class type T.
 	*/
 	template<typename T, typename K, typename V>
-	void register_class_static(lua_State * const vm, K const& k, V const& v);
+	void register_class_static(lua_State * const vm, K const& key, V const& value);
 
 
 

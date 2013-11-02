@@ -29,7 +29,9 @@ THE SOFTWARE.
 #		pragma GCC system_header
 #	endif
 
-/** \file dsl_va_args.h */
+/** \file dsl_va_args.h
+	\brief Provides alot of the DSL procedures which make use of  \_\_VA_ARGS\_\_
+*/
 
 /** \cond INTERNAL
 	The only difference between the code at the following URL and used below, is

@@ -2,6 +2,8 @@
 //some things which otherwise it can not do.
 /**
 	\file only_for_doxygen.h
+	\brief This file is not part of OOLua, the only reason for it is to allow
+	doxygen to document some things which otherwise it can not do.
 */
 /**
 	\brief Lua's C function signature.

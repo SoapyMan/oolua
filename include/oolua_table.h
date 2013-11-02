@@ -24,7 +24,7 @@ THE SOFTWARE.
 
 /**
 	\file oolua_table.h
-	\details Wrapper around a table in Lua which allows easy usage.
+	\brief Interface for the Lua unordered and ordered associative container.
 */
 
 #ifndef OOLUA_TABLE_H_
@@ -362,9 +362,9 @@ namespace OOLUA
 		\param table
 		\details
 		Declares:
-		\li \verbatim int  _i_index_ \endverbatim	: Current index into the array
-		\li \verbatim int const _oolua_array_index_ \endverbatim	: Stack index at which table is located
-		\li \verbatim lua_State* lvm \endverbatim	: The vm associated with the table
+		\li int  \_i_index\_ : Current index into the array
+		\li int const \_oolua_array_index\_  : Stack index at which table is located
+		\li lua_State* lvm : The vm associated with the table
 
 		\note
 		Returning from inside of the loop will not leave the stack clean
@@ -419,8 +419,8 @@ namespace OOLUA
 		string and you retrieve a string from the stack with lua_tostring, this will alter
 		the vm's stack entry.\n
 		Declares:
-		\li \verbatim int const  _oolua_table_index_ \endverbatim : Stack index at which table is located
-		\li \verbatim lua_State* lvm \endverbatim : The vm associated with the table
+		\li int const \_oolua_table_index\_  : Stack index at which table is located
+		\li lua_State* lvm : The vm associated with the table
 
 		usage:
 		\code{.cpp}

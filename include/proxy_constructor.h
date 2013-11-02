@@ -27,6 +27,7 @@ THE SOFTWARE.
 
 /**
 	\file proxy_constructor.h
+	\brief Implements Proxy_class constructor handlers and the constructor block.
 */
 
 #	include "lua_includes.h"

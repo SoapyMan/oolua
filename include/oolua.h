@@ -1,6 +1,7 @@
 /**
 	\file oolua.h
-	Header file for Object Oriented Lua.
+	\brief Kitchen sink header file for Object Oriented Lua. Which could be a good
+	candidate for a PCH.
 */
 
 /**

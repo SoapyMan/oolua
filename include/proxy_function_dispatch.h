@@ -23,6 +23,9 @@ THE SOFTWARE.
 */
 /**
 	\file proxy_function_dispatch.h
+	\brief Provides the templated functions which are bound to Lua matching the
+	lua_CFunction signature, which dispatch control to the correct Proxy_class
+	functions.
 */
 #ifndef OOLUA_PROXY_FUNCTION_DISPATCH_H_
 #	define OOLUA_PROXY_FUNCTION_DISPATCH_H_

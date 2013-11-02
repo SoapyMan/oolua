@@ -24,7 +24,7 @@ THE SOFTWARE.
 
 /**
 	\file oolua_stack_fwd.h
- 	Forward declarations of the push and pull methods, which provide simple
+ 	\brief Forward declarations of the push and pull methods, which provide simple
  	interaction with the Lua stack.
 */
 

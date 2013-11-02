@@ -24,7 +24,7 @@ THE SOFTWARE.
 
 /**
 	\file oolua_traits_fwd.h
-	Forward declarations of \ref OOLuaTraits
+	\brief Forward declarations of \ref OOLuaTraits
 */
 
 #ifndef OOLUA_TRAITS_FWD_H_

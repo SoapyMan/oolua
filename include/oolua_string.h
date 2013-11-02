@@ -24,7 +24,8 @@ THE SOFTWARE.
 
 /**
 	\file oolua_string.h
-	\brief
+	\brief Provides a method of not including the string header in DSL header
+	files and allows other string types to be easily intergrated.
 */
 #ifndef OOLUA_STRING_H_
 #	define OOLUA_STRING_H_

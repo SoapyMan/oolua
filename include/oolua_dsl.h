@@ -24,7 +24,7 @@ THE SOFTWARE.
 
 /**
 	\file oolua_dsl.h
-	Header which provides only what is needed for a class to be proxied using
+	\brief Header which provides only what is needed for a class to be proxied using
 	the DSL.
 */
 #ifndef OOLUA_DSL_H_

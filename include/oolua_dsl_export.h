@@ -23,7 +23,7 @@ THE SOFTWARE.
 */
 /**
 	\file oolua_dsl_export.h
-	Header to be used in conjunction with oolua_dsl.h when exporting proxies
+	\brief Header to be used in conjunction with oolua_dsl.h when exporting proxies
 	using the DSL.
 */
 #ifndef OOLUA_DSL_EXPORT_H_

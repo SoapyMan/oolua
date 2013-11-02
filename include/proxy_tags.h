@@ -22,10 +22,11 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
 
-///////////////////////////////////////////////////////////////////////////////
-///  @file proxy_tags.h
-///  Possible members for the Proxy_class \ref OOLUA_TAGS "Tag block"
-///////////////////////////////////////////////////////////////////////////////
+/**
+	\file proxy_tags.h
+	\brief Possible members for the Proxy_class \ref OOLUA_TAGS "Tag block"
+*/
+
 #ifndef OOLUA_PROXY_TAGS_H_
 # define OOLUA_PROXY_TAGS_H_
 

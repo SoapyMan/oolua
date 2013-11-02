@@ -1,5 +1,6 @@
 /**
 	\file type_list.h
+	\brief Loki Type_list from Andrei Alexandrescu's book Modern C++ Design
 	\details
 	\copyright
 	The Loki Library \n

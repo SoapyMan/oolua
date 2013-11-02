@@ -24,7 +24,7 @@ THE SOFTWARE.
 
 /**
 	\file oolua_config.h
-	Configuration options for the OOLua library.
+	\brief Configuration options for the OOLua library.
 */
 #ifndef OOLUA_CONFIG_H_
 #	define OOLUA_CONFIG_H_
