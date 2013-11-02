@@ -1,5 +1,10 @@
 #!/bin/bash
 cd ..
+
+if [ ! -d build_logs ]; then
+	mkdir build_logs
+fi
+
 ./dev/cpplint.py --filter=\
 -whitespace/tab\
 ,-whitespace/braces\
