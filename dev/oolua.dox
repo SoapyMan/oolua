@@ -18,14 +18,14 @@
 	\namespace OOLUA::INTERNAL
 	\brief This is an implementation namespace for the library, which is not intended for general
 	usage
-	\endcond INTERNAL
+	\endcond
 */
 /**
 	\cond INTERNAL
 	\namespace OOLUA::INTERNAL::LUA_CALLED
 	\brief This is an implementation namespace for the library which is not intended for general
 	usage
-	\endcond INTERNAL
+	\endcond
 */
 
 /**
