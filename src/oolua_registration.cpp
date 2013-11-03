@@ -50,13 +50,13 @@ namespace OOLUA
 			lua_pushstring(vm, func_name);
 			lua_pushlightuserdata(vm, upvalue);
 			lua_pushcclosure(vm, func, 1);
-			lua_settable(vm, tableIndex);
+			lua_rawset(vm, tableIndex);
 		}
 		void set_function_in_table(lua_State* vm, char const* func_name, lua_CFunction func, int tableIndex)
 		{
 			lua_pushstring(vm, func_name);
 			lua_pushcclosure(vm, func, 0);
-			lua_settable(vm, tableIndex);
+			lua_rawset(vm, tableIndex);
 		}
 
 		void set_oolua_userdata_creation_key_value_in_table(lua_State* vm, int tableIndex)
@@ -64,7 +64,7 @@ namespace OOLUA
 #if OOLUA_CHECK_EVERY_USERDATA_IS_CREATED_BY_OOLUA == 1 && OOLUA_USERDATA_OPTIMISATION == 0
 			lua_pushlightuserdata(vm, lua_topointer(vm, LUA_REGISTRYINDEX));
 			lua_pushboolean(vm, 1);
-			lua_settable(vm, tableIndex);
+			lua_rawset(vm, tableIndex);
 #else
 			(void)vm;
 			(void)tableIndex;
@@ -75,7 +75,7 @@ namespace OOLUA
 		{
 			lua_pushstring(vm, key_name);
 			lua_pushvalue(vm, valueIndex);
-			lua_settable(vm, tableIndex);
+			lua_rawset(vm, tableIndex);
 		}
 
 		int check_for_key_in_stack_top(lua_State* vm)
@@ -106,6 +106,18 @@ namespace OOLUA
 			return false;
 		}
 
+		int info(lua_State* vm, int const index, int const id)
+		{
+			if(lua_getmetatable(vm, index))
+			{
+				lua_pushinteger(vm, id);
+				lua_rawget(vm, -2);
+				lua_CFunction func = lua_tocfunction(vm, -1);
+				lua_pop(vm, 2);
+				return func ? func(vm) : 0;
+			}
+			return 0;
+		}
 	} // namespace INTERNAL // NOLINT
 	/**\endcond*/
 } // namespace OOLUA

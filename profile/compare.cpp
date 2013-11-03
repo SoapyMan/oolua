@@ -90,7 +90,7 @@ int main()
 
 
 
-#ifdef MFUNC_TEST	
+#ifdef MFUNC_TEST
 	{
 		OOLUA::Script L;
 		L.register_class<Set_get>();
@@ -101,7 +101,7 @@ int main()
 #ifdef VFUNC_TEST
 	{
 		OOLUA::Script L;
-		OOLUA::register_class_and_bases<ProfileMultiBases>(L);
+		OOLUA::register_class<ProfileMultiBases>(L);
 		run_compare(L,"vfunc","OOLua");
 	}
 #endif
@@ -109,7 +109,7 @@ int main()
 #ifdef CLASS_PARAM_IMPLICIT_CAST_TEST
 	{
 		OOLUA::Script L;
-		OOLUA::register_class_and_bases<ProfileMultiBases>(L);
+		OOLUA::register_class<ProfileMultiBases>(L);
 		run_compare(L,"class_param","OOLua");
 	}
 #endif

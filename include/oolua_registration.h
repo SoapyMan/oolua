@@ -129,15 +129,19 @@ namespace OOLUA
 		int check_for_key_in_stack_top(lua_State* vm);
 
 		bool class_name_is_already_registered(lua_State* vm, char const* name);
-
+		int info(lua_State* vm, int const index, int const id);
 		template<typename T, int HasRegisterEnumsTag>struct set_class_enums;
 
 		int get_oolua_module(lua_State* vm);
 		void register_oolua_type(lua_State* vm, char const* name, int const stack_index);
+
+		template<typename T>
+		void sets_oolua_userdata_creation_key_value_in_table(lua_State* vm, int const table);
 	} //namespace INTERNAL // NOLINT
 
 	namespace INTERNAL
 	{
+
 		template<typename T>
 		struct garbage_collect
 		{
@@ -163,6 +167,17 @@ namespace OOLUA
 				Proxy_class<T>::oolua_enums(vm);
 			}
 		};
+
+		template<typename TL, int Index, typename T>
+		struct info_getter;
+
+		template<typename T>
+		inline int top(lua_State* vm)
+		{
+			lua_checkstack(vm, 1);
+			lua_pushstring(vm, Proxy_class<T>::class_name);
+			return 1;
+		}
 
 		template<typename T, int HasNoPublicDestructor>
 		struct set_delete_function
@@ -191,7 +206,6 @@ namespace OOLUA
 			}
 		};
 
-
 		template<typename T, typename Bases, int Index, typename BaseAtIndex>
 		struct R_Base_looker
 		{
@@ -203,6 +217,17 @@ namespace OOLUA
 								>::findInBase(vm);
 			}
 		};
+
+		template<typename T>
+		inline int middle(lua_State* vm)
+		{
+			top<T>(vm);
+			info_getter< typename Proxy_class<T>::Bases
+						, 0
+						, typename TYPELIST::At_default<typename Proxy_class<T>::Bases, 0, TYPE::Null_type >::Result
+						>::add(vm);
+				return TYPELIST::Length<typename Proxy_class<T>::Bases>::value + 1;
+		}
 
 		template<typename T, typename Bases, int Index>
 		struct R_Base_looker<T, Bases, Index, TYPE::Null_type>
@@ -220,6 +245,17 @@ namespace OOLUA
 									, typename TYPELIST::At_default<typename Proxy_class<T>::Bases
 									, 0
 									, TYPE::Null_type>::Result >::findInBase(vm);
+		}
+
+		template<typename T>
+		static int bottom(lua_State* vm)
+		{
+			top<T>(vm);
+			info_getter< typename Proxy_class<T>::AllBases
+						, 0
+						, typename TYPELIST::At_default<typename Proxy_class<T>::AllBases, 0, TYPE::Null_type >::Result
+						>::add(vm);
+			return TYPELIST::Length<typename Proxy_class<T>::AllBases>::value + 1;
 		}
 
 		template<typename T>
@@ -245,6 +281,7 @@ namespace OOLUA
 									, TYPE::Null_type>::Result >::findInBase(vm);
 		}
 
+
 		template<typename T, int HasNoPublicConstructors>
 		struct set_base_lookup_function
 		{
@@ -262,7 +299,6 @@ namespace OOLUA
 				set_function_in_table(vm, "__index", &search_in_base_classes_yet_prevent_new<T>, methods);
 			}
 		};
-
 
 		template<typename T, typename B>
 		struct Add_base_methods
@@ -288,6 +324,7 @@ namespace OOLUA
 				b(vm, methods);
 			}
 		};
+
 		template<typename T>
 		struct Add_base_methods<T, TYPE::Null_type>
 		{
@@ -311,6 +348,21 @@ namespace OOLUA
 		{
 			void operator()(lua_State * const  /*vm*/, int const /*methods*/){}///no-op
 		};
+
+		template<typename T>
+		void sets_oolua_userdata_creation_key_value_in_table(lua_State* vm, int const table)
+		{
+			lua_pushinteger(vm, 1);
+			lua_pushcclosure(vm, top<T>, 0);
+			lua_rawset(vm, table);
+			lua_pushinteger(vm, 2);
+			lua_pushcclosure(vm, middle<T>, 0);
+			lua_rawset(vm, table);
+			lua_pushinteger(vm, 3);
+			lua_pushcclosure(vm, bottom<T>, 0);
+			lua_rawset(vm, table);
+			set_oolua_userdata_creation_key_value_in_table(vm, table);
+		}
 
 		template<typename T>
 		struct class_or_base_has_ctor_block
@@ -338,6 +390,26 @@ namespace OOLUA
 		struct proxy_class_has_correct_ctor_block
 		{
 			enum { value = ctor_block_is_same<T, class_or_base_has_ctor_block<T>::value >::value  };
+		};
+
+		template<typename TL, int Index, typename T>
+		struct info_getter
+		{
+			static void add(lua_State* vm)
+			{
+				top<T>(vm);
+				info_getter<TL
+						, Index+1
+						, typename TYPELIST::At_default<TL, Index+1, TYPE::Null_type>::Result
+					>::add(vm);
+			}
+		};
+
+		template<typename TL, int Index>
+		struct info_getter<TL, Index, TYPE::Null_type>
+		{
+			static void add(lua_State* /*vm*/)
+			{}
 		};
 
 		template<typename T, bool IsAbstractOrNoConstructors>
@@ -411,7 +483,7 @@ namespace OOLUA
 			register_oolua_type(vm, Proxy_class<T>::class_name, methods);
 			//OOLua[name] = methods
 
-			set_oolua_userdata_creation_key_value_in_table(vm, mt);
+			sets_oolua_userdata_creation_key_value_in_table<T>(vm, mt);
 
 			set_key_value_in_table(vm, "__index", methods, mt);
 			//mt["__index"]= methods

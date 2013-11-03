@@ -40,10 +40,10 @@ echo "Running Lua 5.2.2 tests"
 ./${test_script}_tests.sh
 
 #setup_headers_and_library luajit-2.0 libluajit-5.1.2.0.0.a
-setup_headers_and_library luajit-2.0 libluajit-5.1.2.0.1.a
+setup_headers_and_library luajit-2.0 libluajit-5.1.2.0.2.a
 #OSX x86_64 executables which use LuaJIT require rebasing so that the JIT allocator can use the lowest 2GB
 export LUAJIT_REBASE=1
-echo "Running LuaJIT 2.0.0 tests"
+echo "Running LuaJIT 2.0.2 tests"
 ./${test_script}_tests.sh
 unset LUAJIT_REBASE
 
