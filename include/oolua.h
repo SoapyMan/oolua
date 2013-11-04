@@ -20,7 +20,7 @@
 	still using the Lua C API.
 
 	OOLua is developed by Liam Devine who has over ten years experience using the Lua programming
-	language, having what he considers a deep understanding of both it and also C++.
+	language, having what he considers to be a deep understanding of both it and also C++.
 
 	This is not a fully original work and was originally based on ideas from binding classes using
 	the famous <a href="http://lua-users.org/wiki/CppBindingWithLunar" target="_blank">Lunar</a>

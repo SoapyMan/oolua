@@ -39,8 +39,7 @@ THE SOFTWARE.
 #	include "proxy_stack_helper.h"
 #	include "proxy_constructor_param_tester.h"
 #	include "type_converters.h"
-
-#include "oolua_boilerplate.h"
+#	include "oolua_boilerplate.h"
 
 #if defined __GNUC__ && defined __STRICT_ANSI__
 /*shhhhh about va args and c99*/

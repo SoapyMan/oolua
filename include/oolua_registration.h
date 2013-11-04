@@ -73,10 +73,9 @@ namespace OOLUA
 		\brief Registers the class type T and it's bases with an instance of lua_State
 		\tparam T Class type to register with OOLua
 		\details Registers a class type T for which there is a Proxy_class and also
-		registers it's bases, if it has any, with OOLua. It preforms a check to see
-		if the type has already been registered with the instance.
-		This is safe to be called multiple times with a Lua universe and safe to be
-		called with a Proxy_class which has no base classes.
+		registers it's bases, if it has any. The function preforms a check to see
+		if the type has already been registered with the instance and is safe to be
+		called multiple times with a Lua universe.
 		\param[in] vm Universe to register the class with.
 	*/
 	template<typename T>void register_class(lua_State * vm);
@@ -408,7 +407,7 @@ namespace OOLUA
 		template<typename TL, int Index>
 		struct info_getter<TL, Index, TYPE::Null_type>
 		{
-			static void add(lua_State* /*vm*/)
+			static void add(lua_State* /*vm*/) //NOLINT(readability/casting)
 			{}
 		};
 

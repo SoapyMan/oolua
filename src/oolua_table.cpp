@@ -23,7 +23,6 @@ THE SOFTWARE.
 */
 
 #	include "oolua_table.h"
-//#	include "oolua_exception.h"
 #	include "oolua_stack_fwd.h"
 
 namespace OOLUA
