@@ -136,9 +136,9 @@ namespace OOLUA
 			Compares this instance reference with the right hand side operand using lua_rawequal.
 			\param[in] rhs Right hand side operand for the operator.
 			\details An invalid reference compares equal with any other invalid reference
-			regardless of the lua_State members. This operator uses and can produce different
-			results with Lua 5.1 and 5.2. In the latter pushing the same C function twice to
-			the stack using lua_pushcclosure and then comparing them will return true, yet in 5.1
+			regardless of the lua_State members. This operator can produce different results for
+			Lua versions 5.1 and 5.2. In the latter pushing the same C function twice to the
+			stack using lua_pushcclosure and then comparing them will return true, yet in 5.1
 			this will return false.
 			\return bool Result of the comparison.
 		*/
