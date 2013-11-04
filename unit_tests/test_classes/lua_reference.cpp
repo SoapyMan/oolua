@@ -33,7 +33,7 @@ class Lua_reference : public CppUnit::TestFixture
 		CPPUNIT_TEST(swap_afterSwap_lhsStateBeforeSwapIsAssignedToRhsState);
 		CPPUNIT_TEST(swap_afterSwap_lhsRefBeforeSwapIsAssignedToRhsRef);
 
-		CPPUNIT_TEST(assignment_selfAssignmentOnValidRef_refIsRegistryCopyOfOrginalValue);
+		CPPUNIT_TEST(assignment_selfAssignmentOnValidRef_refIsRegistryCopyOfOriginalValue);
 		CPPUNIT_TEST(assignment_assignmentToValidRef_registryNoLongerContainsTheValidRef);
 		CPPUNIT_TEST(assignment_assignmentOfValidRefToInvalid_refIsRegistryCopyOfInput);
 
@@ -242,7 +242,7 @@ public:
 		CPPUNIT_ASSERT_EQUAL(lhs_ref_before_swap, rhs.ref());
 	}
 
-	void assignment_selfAssignmentOnValidRef_refIsRegistryCopyOfOrginalValue()
+	void assignment_selfAssignmentOnValidRef_refIsRegistryCopyOfOriginalValue()
 	{
 		m_lua->load_chunk("return ");
 		OOLUA::Lua_func_ref lhs;

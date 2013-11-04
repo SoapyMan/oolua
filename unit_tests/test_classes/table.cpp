@@ -471,9 +471,6 @@ public:
 		CPPUNIT_ASSERT_EQUAL(int(1), lua_gettop(*m_lua)); //NOLINT(readability/casting)
 	}
 
-//		CPPUNIT_TEST(assignment_selfAssignmentOnValidRef_refIsRegistryCopyOfOrginalValue);
-//		CPPUNIT_TEST(assignment_assignmentToValidRef_registryNoLongerContainsTheValidRef);
-//		CPPUNIT_TEST(assignment_assignmentOfValidRefToInvalid_refIsRegistryCopyOfInput);
 	void assignment_selfAssignmentOnValidTable_refIsRegistryCopyOfOriginalValue()
 	{
 		OOLUA::Table t;
