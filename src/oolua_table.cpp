@@ -44,6 +44,12 @@ namespace OOLUA
 		:m_table_ref(rhs.m_table_ref)
 	{}
 
+	Table& Table::operator = (Table const& rhs)
+	{
+		m_table_ref = rhs.m_table_ref;
+		return *this;
+	}
+
 	void Table::bind_script(lua_State*  const vm)
 	{
 		if(m_table_ref.m_lua == vm)return;

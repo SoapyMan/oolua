@@ -78,8 +78,15 @@ namespace OOLUA
 		Table(lua_State*  const vm, std::string const& name);
 		Table(Table const& rhs);
 
-		/** \brief unimplemented*/
-		Table& operator =(Table const& /*rhs*/);
+		/** \brief Assigns a copy of rhs's internal state to this instance
+			\details If this table is valid then the operator will release
+			the registry reference before assigning a copy of rhs to this
+			instance.
+			\param[in] rhs Table from which to copy the table reference
+			\returns This instance.
+			\see OOLUA::Lua_ref assignment operator
+		*/
+		Table& operator = (Table const& rhs);
 
 		/**@}*/
 

@@ -111,6 +111,7 @@ class Table : public CPPUNIT_NS::TestFixture
 		CPPUNIT_TEST(ipairs_stackIsNotEmptyTableHasFiveEntry_IterationCountIsFive);
 		CPPUNIT_TEST(ipairs_stackHasOneEntryTableHasFiveEntry_afterIterationsStackCountIsOne);
 
+		CPPUNIT_TEST(assignment_selfAssignmentOnValidTable_refIsRegistryCopyOfOriginalValue);
 	CPPUNIT_TEST_SUITE_END();
 
 	OOLUA::Script * m_lua;
@@ -468,6 +469,22 @@ public:
 		}
 		oolua_ipairs_end()
 		CPPUNIT_ASSERT_EQUAL(int(1), lua_gettop(*m_lua)); //NOLINT(readability/casting)
+	}
+
+//		CPPUNIT_TEST(assignment_selfAssignmentOnValidRef_refIsRegistryCopyOfOrginalValue);
+//		CPPUNIT_TEST(assignment_assignmentToValidRef_registryNoLongerContainsTheValidRef);
+//		CPPUNIT_TEST(assignment_assignmentOfValidRefToInvalid_refIsRegistryCopyOfInput);
+	void assignment_selfAssignmentOnValidTable_refIsRegistryCopyOfOriginalValue()
+	{
+		OOLUA::Table t;
+		OOLUA::new_table(*m_lua, t);
+
+		//put the instance on the stack to compare after the assignment
+		m_lua->push(t);
+
+		t = t;
+		m_lua->push(t);
+		CPPUNIT_ASSERT_EQUAL(1, lua_rawequal(*m_lua, -1, -2));
 	}
 };
 

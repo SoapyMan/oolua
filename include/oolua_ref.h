@@ -149,7 +149,7 @@ namespace OOLUA
 			Makes this instance a copy of rhs.
 			\param[in] rhs The instance to make a copy of
 			\note Even self assignment makes a copy, yet it will refer to the same
-			actual Lua type. It doesn't seem correct for every assignment to pay for
+			actual Lua instance. It doesn't seem correct for every assignment to pay for
 			a branch just to keep the internal reference id the same.
 		*/
 		Lua_ref& operator = (Lua_ref const& rhs);

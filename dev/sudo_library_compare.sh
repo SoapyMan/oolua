@@ -1,3 +1,4 @@
+#!/bin/bash
 if [ $EUID != 0 ]; then
     echo  "WARNING:
   	This file is not for general purpose usage and is required to have elevated privileges.
