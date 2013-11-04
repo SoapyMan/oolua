@@ -183,7 +183,10 @@ namespace OOLUA
 		bool valid()const;
 
 		typedef void(*traverse_do_function)(lua_State* );//NOLINT
-		/** \deprecated*/
+		/** \brief Traverses the table using \ref oolua_pairs
+			\see \ref oolua_pairs "oolua_pairs'" details for the correct procedure
+			to follow.
+		*/
 		void traverse(traverse_do_function do_);
 
 		/**
