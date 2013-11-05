@@ -14,6 +14,11 @@ class SharedPointer : public CppUnit::TestFixture
 		CPPUNIT_TEST(push_pushTheSharedPtrTwice_sharedUseCountEqualsTwo);
 		CPPUNIT_TEST(push_pushTheSharedPtrTwice_userdatasCompareEqual);
 		CPPUNIT_TEST(gc_pushTheSharedPtrPopItAndThenCallGc_userCountEqualsOne);
+#if OOLUA_STORE_LAST_ERROR == 1
+		CPPUNIT_TEST(pull_returnEqualsTrue);
+#endif
+		CPPUNIT_TEST(gc_pushSharedThenPullAndGc_useCountEqualsTwo);
+		CPPUNIT_TEST(pull_pushSharedThenPull_resultEqualsInput);
 	CPPUNIT_TEST_SUITE_END();
 	OOLUA::Script* m_lua;
 public:
@@ -87,6 +92,37 @@ public:
 		m_lua->gc();
 		CPPUNIT_ASSERT_EQUAL(long(1), sp.use_count());
 	}
+
+#if OOLUA_STORE_LAST_ERROR == 1
+	void pull_returnEqualsTrue()
+	{
+		m_lua->register_class<Stub1>();
+		OOLUA_SHARED_TYPE<Stub1> sp(new Stub1);
+		m_lua->push(sp);
+		OOLUA_SHARED_TYPE<Stub1> result;
+		CPPUNIT_ASSERT_EQUAL(true, m_lua->pull(result));
+	}
+#endif
+	void gc_pushSharedThenPullAndGc_useCountEqualsTwo()
+	{
+		m_lua->register_class<Stub1>();
+		OOLUA_SHARED_TYPE<Stub1> sp(new Stub1);
+		m_lua->push(sp);
+		OOLUA_SHARED_TYPE<Stub1> result;
+		m_lua->pull(result);
+		m_lua->gc();
+		CPPUNIT_ASSERT_EQUAL(long(2), result.use_count());
+	}
+	void pull_pushSharedThenPull_resultEqualsInput()
+	{
+		m_lua->register_class<Stub1>();
+		OOLUA_SHARED_TYPE<Stub1> input(new Stub1);
+		m_lua->push(input);
+		OOLUA_SHARED_TYPE<Stub1> result;
+		m_lua->pull(result);
+		CPPUNIT_ASSERT(input == result);
+	}
+
 };
 
 CPPUNIT_TEST_SUITE_REGISTRATION(SharedPointer);

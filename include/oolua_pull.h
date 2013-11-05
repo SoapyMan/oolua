@@ -37,8 +37,11 @@ THE SOFTWARE.
 #include "lvd_types.h"
 #include "lvd_type_traits.h"
 
-
 #include <cassert>
+
+#if OOLUA_USE_SHARED_PTR == 1
+#	include OOLUA_SHARED_HEADER
+#endif
 
 namespace OOLUA
 {
@@ -69,6 +72,10 @@ namespace OOLUA
 		T* class_from_stack_top(lua_State * vm);
 		template<typename T>
 		T* none_const_class_from_stack_top(lua_State * vm);
+#if OOLUA_USE_SHARED_PTR == 1
+		template<typename Ptr_type,template <typename> class Shared_pointer_class>
+		Shared_pointer_class<Ptr_type>* check_shared_index(lua_State *  vm, int index);
+#endif
 		//fwd
 
 		template<typename T, int is_integral, int is_convertable_to_int>
@@ -122,6 +129,21 @@ namespace OOLUA
 				return OOLUA::STRING::pull(vm, value);
 			}
 		};
+
+#if OOLUA_USE_SHARED_PTR == 1
+		template<typename T>
+		struct pull_basic_type<OOLUA_SHARED_TYPE<T>, 0, 0>
+		{
+			static bool pull(lua_State* const vm, OOLUA_SHARED_TYPE<T> & value)
+			{
+				OOLUA_SHARED_TYPE<T>* result = check_shared_index<T,OOLUA_SHARED_TYPE>(vm, lua_gettop(vm));
+				if (!result) return false;
+				value = *result;
+				lua_pop(vm, 1);
+				return true;
+			}
+		};
+#endif
 
 		///////////////////////////////////////////////////////////////////////////////
 		///  @struct pull_ptr

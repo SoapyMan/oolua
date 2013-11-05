@@ -64,7 +64,10 @@ namespace OOLUA
 		*/
 		template<typename T>
 		T* check_index(lua_State * vm, int index);
-
+#if OOLUA_USE_SHARED_PTR == 1
+		template<typename Ptr_type,template <typename> class Shared_pointer_class>
+		Shared_pointer_class<Ptr_type>* check_shared_index(lua_State *  vm, int index);
+#endif
 		/**
 			\brief Uses config dependant checks to verify "index" is a library created userdata
 			\details Preforms an extra check that the stack type is not constant, throws a Lua
@@ -157,6 +160,19 @@ namespace OOLUA
 			}
 			return static_cast<T* >(ud->void_class_ptr);
 		}
+#if OOLUA_USE_SHARED_PTR == 1
+		template<typename Ptr_type,template <typename> class Shared_pointer_class>
+		Shared_pointer_class<Ptr_type>* check_shared_index(lua_State *  vm, int index)
+		{
+			Lua_ud * ud;
+			if( !index_is_userdata(vm, index, ud))return 0;
+//			if( !ud_is_type<T>(ud))
+			{
+//				return valid_base_ptr_or_null<T>(ud);
+			}
+			return reinterpret_cast<Shared_pointer_class<Ptr_type>* >(ud->shared_object);
+		}
+#endif
 
 		template<typename T>
 		T* check_index_no_const(lua_State * vm, int index)
