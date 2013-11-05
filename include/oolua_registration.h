@@ -66,6 +66,10 @@ THE SOFTWARE.
 #include "char_arrays.h"
 #include "lvd_types.h"
 
+#if OOLUA_USE_SHARED_PTR == 1
+#	include OOLUA_SHARED_HEADER
+#endif
+
 
 namespace OOLUA
 {
@@ -142,12 +146,22 @@ namespace OOLUA
 	{
 
 		template<typename T>
+		inline void shared_delete(T* p)
+		{
+			p->~T();
+		}
+		template<typename T>
 		struct garbage_collect
 		{
 			static int gc(lua_State * vm)
 			{
 				Lua_ud *ud = static_cast<Lua_ud*>(lua_touserdata(vm, 1));
-				if( ud->flags & GC_FLAG )delete static_cast<T*>(ud->void_class_ptr);
+#if OOLUA_USE_SHARED_PTR == 1
+				if( ud->flags & SHARED_FLAG)
+					shared_delete(reinterpret_cast<OOLUA_SHARED_TYPE<T>* >(ud->shared_object));
+				else
+#endif
+					if( ud->flags & GC_FLAG )delete static_cast<T*>(ud->void_class_ptr);
 				return 0;
 			}
 		};

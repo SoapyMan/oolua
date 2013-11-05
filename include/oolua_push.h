@@ -37,6 +37,10 @@ THE SOFTWARE.
 
 #include <cassert>
 
+#if OOLUA_USE_SHARED_PTR == 1
+#	include OOLUA_SHARED_HEADER
+#endif
+
 namespace OOLUA
 {
 	/** \cond INTERNAL*/
@@ -45,6 +49,9 @@ namespace OOLUA
 		//fwd
 		template<typename Raw, typename TypeMaybeConst>
 		void push_pointer_which_has_a_proxy_class(lua_State * vm, TypeMaybeConst * const ptr, Owner owner);
+
+		template<typename Underlying_pointer_type,template <typename> class Shared_pointer_class>
+		void push_shared_pointer(lua_State* vm, Shared_pointer_class<Underlying_pointer_type> const & instance);
 		//fwd
 
 		template<typename T, int is_integral, int is_convertable_to_int>
@@ -94,6 +101,27 @@ namespace OOLUA
 			}
 		};
 
+/*
+		template<typename Ptr_type,template <typename> class Shared_pointer_class>
+		struct push_basic_type<Shared_pointer_class<Ptr_type>, 0, 0>
+		{
+			static bool push(lua_State* const vm, Shared_pointer_class<Ptr_type> const& value)
+			{
+				return false;
+			}
+		};
+*/
+#if OOLUA_USE_SHARED_PTR == 1
+		template<typename T>
+		struct push_basic_type<OOLUA_SHARED_TYPE<T>, 0, 0>
+		{
+			static bool push(lua_State* const vm, OOLUA_SHARED_TYPE<T> const& value)
+			{
+				push_shared_pointer(vm, value);
+				return true;
+			}
+		};
+#endif
 
 
 		template<typename T>

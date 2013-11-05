@@ -207,6 +207,10 @@ THE SOFTWARE.
 #		define OOLUA_STD_STRING_IS_INTEGRAL 1
 #	endif
 
+#define OOLUA_USE_SHARED_PTR 1
+#define OOLUA_SHARED_HEADER <tr1/memory>
+#define OOLUA_SHARED_TYPE std::tr1::shared_ptr
+
 /**@}*/
 
 /** \cond INTERNAL */

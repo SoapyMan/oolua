@@ -32,6 +32,11 @@ THE SOFTWARE.
 
 #	include "oolua_config.h"
 #	include "lvd_types.h"
+
+#if OOLUA_USE_SHARED_PTR == 1
+#	include OOLUA_SHARED_HEADER
+#endif
+
 struct lua_State;
 namespace OOLUA
 {
@@ -47,7 +52,15 @@ namespace OOLUA
 		*/
 		struct Lua_ud
 		{
+#if OOLUA_USE_SHARED_PTR == 1
+			union
+			{
+				void* void_class_ptr;
+				char shared_object[sizeof(OOLUA_SHARED_TYPE<int>)];
+			};
+#else
 			void* void_class_ptr;
+#endif
 			oolua_function_check_base base_checker;
 			oolua_type_check_function type_check;
 			LVD::uint32 flags;
@@ -64,8 +77,10 @@ namespace OOLUA
 		bool userdata_is_constant(Lua_ud const* ud);
 		bool userdata_is_to_be_gced(Lua_ud const * ud);
 		void userdata_gc_value(Lua_ud* ud, bool value);
+		void userdata_shared_ptr(Lua_ud* ud);
+		bool userdata_is_shared_ptr(Lua_ud* ud);
 
-		enum UD_FLAGS {CONST_FLAG = 0x01, GC_FLAG = 0x02};
+		enum UD_FLAGS {CONST_FLAG = 0x01, GC_FLAG = 0x02, SHARED_FLAG = 0x4};
 
 		inline void userdata_const_value(Lua_ud* ud, bool value)
 		{
@@ -86,6 +101,15 @@ namespace OOLUA
 			else ud->flags &= (~GC_FLAG);
 		}
 
+		inline void userdata_shared_ptr(Lua_ud* ud)
+		{
+			ud->flags |= SHARED_FLAG;
+		}
+
+		inline bool userdata_is_shared_ptr(Lua_ud* ud)
+		{
+			return (ud->flags & SHARED_FLAG) != 0;
+		}
 	} // namespace INTERNAL //NOLINT
 	/**\endcond */
 

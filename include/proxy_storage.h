@@ -38,6 +38,9 @@ THE SOFTWARE.
 #include "type_list.h"
 #include "char_arrays.h"
 
+#if OOLUA_USE_SHARED_PTR == 1
+#	include OOLUA_SHARED_HEADER
+#endif
 
 namespace OOLUA
 {
@@ -230,11 +233,8 @@ namespace OOLUA
 		}
 
 		template<typename T>
-		inline Lua_ud* add_ptr(lua_State* const vm, T* const ptr, bool is_const, Owner owner)
+		inline void add_ptr_imp(lua_State* const vm, T* const ptr)
 		{
-			Lua_ud* ud = new_userdata(vm, ptr, is_const, &requested_ud_is_a_base<T>, &register_class_imp<T>);
-			if(owner != No_change)userdata_gc_value(ud, owner == Lua);
-
 			lua_getfield(vm, LUA_REGISTRYINDEX, OOLUA::Proxy_class<T>::class_name);
 
 #if	OOLUA_DEBUG_CHECKS == 1
@@ -256,9 +256,53 @@ namespace OOLUA
 			addThisTypesBases(vm, ptr, udIndex, weakIndex);
 
 			lua_pop(vm, 1);//ud
-			return ud;
 		}
 
+		template<typename T>
+		inline Lua_ud* add_ptr(lua_State* const vm, T* const ptr, bool is_const, Owner owner)
+		{
+			Lua_ud* ud = new_userdata(vm, ptr, is_const, &requested_ud_is_a_base<T>, &register_class_imp<T>);
+			if(owner != No_change)userdata_gc_value(ud, owner == Lua);
+
+			add_ptr_imp(vm,ptr);
+#if OOLUA_TEMP_DISABLED_SHARED_PTR == 99999
+			lua_getfield(vm, LUA_REGISTRYINDEX, OOLUA::Proxy_class<T>::class_name);
+
+#if	OOLUA_DEBUG_CHECKS == 1
+			assert(lua_isnoneornil(vm, -1) == 0 && "no metatable of this name found in registry");
+#endif
+			////Pops a table from the stack and sets it as the new metatable for the value at the given acceptable index
+			lua_setmetatable(vm, -2);
+
+			int weakIndex = push_weak_table(vm);//ud,weakTable
+			int udIndex = weakIndex -1;
+
+			add_ptr_if_required(vm, ptr, udIndex, weakIndex);//it is required
+
+			Add_ptr<T
+					, typename OOLUA::Proxy_class<T>::AllBases
+					, 0
+					, typename TYPELIST::At_default< typename OOLUA::Proxy_class<T>::AllBases, 0, TYPE::Null_type >::Result
+				> addThisTypesBases;
+			addThisTypesBases(vm, ptr, udIndex, weakIndex);
+
+			lua_pop(vm, 1);//ud
+#endif
+			return ud;
+		}
+#if OOLUA_USE_SHARED_PTR == 1
+		template<typename T>
+		inline Lua_ud* add_shared_ptr(lua_State* const vm, OOLUA_SHARED_TYPE<T> const&  shared_ptr, bool is_const)
+		{
+			Lua_ud* ud = new_userdata(vm, 0, is_const, &requested_ud_is_a_base<T>, &register_class_imp<T>);
+			userdata_gc_value(ud, true);//yes it always needs destructing
+			userdata_shared_ptr(ud);//add the shared flag
+			//placement new, later explicitly call the destructor p->~OOLUA_SHARED_TYPE<T>();
+			OOLUA_SHARED_TYPE<T>* p = new (ud->shared_object) OOLUA_SHARED_TYPE<T>(shared_ptr);
+			add_ptr_imp(vm, p->get());
+			return ud;
+		}
+#endif
 		template<typename Type, typename Bases, int BaseIndex, typename BaseType>
 		struct Add_ptr
 		{

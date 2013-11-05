@@ -137,7 +137,11 @@ namespace OOLUA
 		template<typename T>
 		T* valid_base_ptr_or_null(Lua_ud const* stack_ud)
 		{
+#if OOLUA_USE_SHARED_PTR == 1
+			Lua_ud requested_ud = {{0}, 0, &register_class_imp<T>, 0};
+#else
 			Lua_ud requested_ud = {0, 0, &register_class_imp<T>, 0};
+#endif
 			stack_ud->base_checker(&requested_ud, stack_ud);
 			return static_cast<T* >(requested_ud.void_class_ptr);
 		}

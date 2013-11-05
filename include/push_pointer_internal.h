@@ -51,6 +51,15 @@ namespace OOLUA
 			else set_owner_if_change(owner, ud);
 		}
 
+		template<typename Underlying_pointer_type,template <typename> class Shared_pointer_class>
+		inline void push_shared_pointer(lua_State* vm, Shared_pointer_class<Underlying_pointer_type> const& instance)
+		{
+			if_check_enabled_check_type_is_registered(vm, Proxy_class<Underlying_pointer_type>::class_name);
+			Lua_ud* ud(find_ud(vm, (Underlying_pointer_type*)(instance.get()), !!LVD::is_const<Underlying_pointer_type>::value));//NOLINT
+			if(!ud) ud = add_shared_ptr(vm, instance, !!(LVD::is_const<Underlying_pointer_type>::value));//NOLINT
+			//else set_owner_if_change(owner, ud);
+		}
+
 	} // namespace INTERNAL // NOLINT
 	/**\endcond*/
 } // namespace OOLUA
