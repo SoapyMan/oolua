@@ -3,6 +3,7 @@
 #	include "oolua.h"
 #	include "common_cppunit_headers.h"
 #	include "expose_stub_classes.h"
+#	include "expose_hierarchy.h"
 #	include OOLUA_SHARED_HEADER
 
 class SharedPointer : public CppUnit::TestFixture
@@ -16,9 +17,13 @@ class SharedPointer : public CppUnit::TestFixture
 		CPPUNIT_TEST(gc_pushTheSharedPtrPopItAndThenCallGc_userCountEqualsOne);
 #if OOLUA_STORE_LAST_ERROR == 1
 		CPPUNIT_TEST(pull_returnEqualsTrue);
+		CPPUNIT_TEST(pull_pushDerivedThenPullBase_pullReturnsTrue);
 #endif
 		CPPUNIT_TEST(gc_pushSharedThenPullAndGc_useCountEqualsTwo);
 		CPPUNIT_TEST(pull_pushSharedThenPull_resultEqualsInput);
+
+		CPPUNIT_TEST(push_pushBaseAndThenPushDerived_topTwoIndiciesCompareEqual);
+		CPPUNIT_TEST(pull_pushDerivedPullBaseThenCallGc_useCountEqualsTwo);
 	CPPUNIT_TEST_SUITE_END();
 	OOLUA::Script* m_lua;
 public:
@@ -122,7 +127,40 @@ public:
 		m_lua->pull(result);
 		CPPUNIT_ASSERT(input == result);
 	}
+	//TODO They are equal but the shared_ptr type is not changed yet
+	void push_pushBaseAndThenPushDerived_topTwoIndiciesCompareEqual()
+	{
+		m_lua->register_class<Derived1Abstract1>();
+		OOLUA_SHARED_TYPE<Derived1Abstract1> derived(new Derived1Abstract1);
+		OOLUA_SHARED_TYPE<Abstract1> base(derived);
 
+		m_lua->push(base);
+		m_lua->push(derived);
+		CPPUNIT_ASSERT_EQUAL(true, OOLUA::idxs_equal(m_lua->state(), -1, -2));
+	}
+#if OOLUA_STORE_LAST_ERROR == 1
+	void pull_pushDerivedThenPullBase_pullReturnsTrue()
+	{
+		m_lua->register_class<Derived1Abstract1>();
+		OOLUA_SHARED_TYPE<Derived1Abstract1> derived(new Derived1Abstract1);
+		OOLUA_SHARED_TYPE<Abstract1> base;
+
+		m_lua->push(derived);
+		CPPUNIT_ASSERT_EQUAL(true, m_lua->pull(base));
+	}
+#endif
+
+	void pull_pushDerivedPullBaseThenCallGc_useCountEqualsTwo()
+	{
+		m_lua->register_class<Derived1Abstract1>();
+		OOLUA_SHARED_TYPE<Derived1Abstract1> derived(new Derived1Abstract1);
+		OOLUA_SHARED_TYPE<Abstract1> base;
+
+		m_lua->push(derived);
+		m_lua->pull(base);
+		m_lua->gc();
+		CPPUNIT_ASSERT_EQUAL(long(2), derived.use_count());
+	}
 };
 
 CPPUNIT_TEST_SUITE_REGISTRATION(SharedPointer);

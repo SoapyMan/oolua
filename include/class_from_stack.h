@@ -66,7 +66,7 @@ namespace OOLUA
 		T* check_index(lua_State * vm, int index);
 #if OOLUA_USE_SHARED_PTR == 1
 		template<typename Ptr_type,template <typename> class Shared_pointer_class>
-		Shared_pointer_class<Ptr_type>* check_shared_index(lua_State *  vm, int index);
+		Shared_pointer_class<Ptr_type> check_shared_index(lua_State *  vm, int index);
 #endif
 		/**
 			\brief Uses config dependant checks to verify "index" is a library created userdata
@@ -149,6 +149,22 @@ namespace OOLUA
 			return static_cast<T* >(requested_ud.void_class_ptr);
 		}
 
+#if OOLUA_USE_SHARED_PTR == 1
+		template<typename Ptr_type,template <typename> class Shared_pointer_class>
+		Shared_pointer_class<Ptr_type>& valid_base_shared_ptr_or_null(Lua_ud const* stack_ud, Shared_pointer_class<Ptr_type>& sp )
+		{
+			Lua_ud requested_ud = {{0}, 0, &register_class_imp<Ptr_type>, 0};
+			stack_ud->base_checker(&requested_ud, stack_ud);
+
+			if (requested_ud.void_class_ptr)
+			{
+				Shared_pointer_class<Ptr_type>* ptr = reinterpret_cast<Shared_pointer_class<Ptr_type>*>(requested_ud.shared_object);
+				sp = *ptr;
+				ptr->~Shared_pointer_class<Ptr_type>();
+			}
+			return sp;
+		}
+#endif
 		template<typename T>
 		T* check_index(lua_State *  vm, int index)
 		{
@@ -162,15 +178,16 @@ namespace OOLUA
 		}
 #if OOLUA_USE_SHARED_PTR == 1
 		template<typename Ptr_type,template <typename> class Shared_pointer_class>
-		Shared_pointer_class<Ptr_type>* check_shared_index(lua_State *  vm, int index)
+		Shared_pointer_class<Ptr_type> check_shared_index(lua_State *  vm, int index)
 		{
 			Lua_ud * ud;
-			if( !index_is_userdata(vm, index, ud))return 0;
-//			if( !ud_is_type<T>(ud))
+			if( !index_is_userdata(vm, index, ud))return Shared_pointer_class<Ptr_type>();
+			if( !ud_is_type<Ptr_type>(ud))
 			{
-//				return valid_base_ptr_or_null<T>(ud);
+				Shared_pointer_class<Ptr_type> sp;
+				return valid_base_shared_ptr_or_null(ud, sp);
 			}
-			return reinterpret_cast<Shared_pointer_class<Ptr_type>* >(ud->shared_object);
+			return *reinterpret_cast<Shared_pointer_class<Ptr_type>* >(ud->shared_object);
 		}
 #endif
 

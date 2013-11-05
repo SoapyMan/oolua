@@ -34,6 +34,8 @@ THE SOFTWARE.
 #include "type_list.h"
 #include "proxy_userdata.h"
 #include "proxy_class.h"
+#include "oolua_config.h"
+#include OOLUA_SHARED_HEADER
 
 struct lua_State;
 
@@ -102,12 +104,35 @@ namespace OOLUA
 		template<typename ProxyStackType, typename BaseType, int DoWork = 1>
 		struct CastToRequestedProxyType
 		{
-			static void* cast(INTERNAL::Lua_ud const* stack_ud)
+			static void* cast_old(INTERNAL::Lua_ud const* stack_ud)
 			{
 				//cast the class void ptr from the stack to the stacktype
 				//then to base type to get correct offset
 				return static_cast<BaseType*>(static_cast<typename ProxyStackType::class_* > ( stack_ud->void_class_ptr) );
 			}
+
+			static void cast(INTERNAL::Lua_ud * requested_ud, INTERNAL::Lua_ud const* stack_ud)
+			{
+				stack_ud->flags & SHARED_FLAG ? do_shared_cast(requested_ud, const_cast<Lua_ud*>(stack_ud)) : do_ptr_cast(requested_ud,stack_ud);
+			}
+
+			static void do_ptr_cast(INTERNAL::Lua_ud * requested_ud, INTERNAL::Lua_ud const* stack_ud)
+			{
+				//cast the class void ptr from the stack to the stacktype
+				//then to base type to get correct offset
+				requested_ud->void_class_ptr = static_cast<BaseType*>(static_cast<typename ProxyStackType::class_* > ( stack_ud->void_class_ptr) );
+			}
+
+			static void do_shared_cast(INTERNAL::Lua_ud * requested_ud, INTERNAL::Lua_ud * stack_ud)
+			{
+				//cast the generic shared ptr to the the stacktype shared_ptr
+				//then construct a base class shared ptr using placement new
+				OOLUA_SHARED_TYPE<typename ProxyStackType::class_>* stack_shared_ptr = reinterpret_cast<OOLUA_SHARED_TYPE<typename ProxyStackType::class_>* >( stack_ud->shared_object);
+				//worried that this may get optimised away by clang, I recall something like this
+				//in an old mailing list thread!
+				new (requested_ud->shared_object) OOLUA_SHARED_TYPE<BaseType>(*stack_shared_ptr);
+			}
+
 		};
 
 		template<typename ProxyStackType, typename Bases, int BaseIndex, typename BaseType>
@@ -118,7 +143,8 @@ namespace OOLUA
 				//is this a base
 				if( ud_is_type<BaseType>(requested_ud) )
 				{
-					requested_ud->void_class_ptr = CastToRequestedProxyType<ProxyStackType, BaseType, 1>::cast(stack_ud);
+					//requested_ud->void_class_ptr = CastToRequestedProxyType<ProxyStackType, BaseType, 1>::cast(stack_ud);
+					CastToRequestedProxyType<ProxyStackType, BaseType, 1>::cast(requested_ud,stack_ud);
 					return;
 				}
 				//check the next in the type list
