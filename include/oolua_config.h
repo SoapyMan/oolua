@@ -219,7 +219,7 @@ THE SOFTWARE.
 		\param 0 Disabled
 		\param 1 Enabled
 */
-#	define OOLUA_USE_SHARED_PTR 0
+#	define OOLUA_USE_SHARED_PTR 1
 
 #	ifndef OOLUA_USE_SHARED_PTR
 #		define OOLUA_USE_SHARED_PTR 0

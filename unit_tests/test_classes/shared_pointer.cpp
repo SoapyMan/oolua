@@ -8,6 +8,31 @@
 
 #	if OOLUA_USE_SHARED_PTR == 1
 #		include OOLUA_SHARED_HEADER
+int called = 0;
+struct SharedFoo
+{
+	SharedFoo()
+		: count(0)
+	{}
+	void no_param_function_const() const
+	{
+		++called;
+	}
+	void no_param_function()
+	{
+		++count;
+	}
+
+	int count;
+};
+
+OOLUA_PROXY(SharedFoo)
+	OOLUA_MFUNC(no_param_function)
+	OOLUA_MFUNC_CONST(no_param_function_const)
+OOLUA_PROXY_END
+
+OOLUA_EXPORT_FUNCTIONS(SharedFoo,no_param_function)
+OOLUA_EXPORT_FUNCTIONS_CONST(SharedFoo, no_param_function_const)
 
 	class SharedPointer : public CppUnit::TestFixture
 	{
@@ -28,6 +53,12 @@
 			CPPUNIT_TEST(push_pushBaseAndThenPushDerived_topTwoIndiciesCompareEqual);
 			CPPUNIT_TEST(pull_pushDerivedPullBaseThenCallGc_useCountEqualsTwo);
 			CPPUNIT_TEST(push_pushBaseAndThenPushDerived_useCountEqualsTwo);
+
+			CPPUNIT_TEST(call_pushSharedObjectAndCallFunction_callReturnsTrue);
+			CPPUNIT_TEST(call_pushSharedObjectAndCallFunction_countMemberEqualsOne);
+			CPPUNIT_TEST(call_pushSharedObjectAndCallConstantFunction_globalCalledCountEqualsOne);
+
+			CPPUNIT_TEST(pull_pushSharedPointerPullNormalPointer_pointerEqualsInputsGet);
 		CPPUNIT_TEST_SUITE_END();
 		OOLUA::Script* m_lua;
 	public:
@@ -179,6 +210,45 @@
 				m_lua->push(derived);
 			}
 			CPPUNIT_ASSERT_EQUAL(long(2), derived.use_count());
+		}
+
+		void call_pushSharedObjectAndCallFunction_callReturnsTrue()
+		{
+			m_lua->register_class<SharedFoo>();
+			OOLUA_SHARED_TYPE<SharedFoo> foo(new SharedFoo);
+			m_lua->run_chunk("return function(obj) obj:no_param_function() end");
+			bool result = m_lua->call(1, foo);
+			std::cout <<OOLUA::get_last_error(m_lua->state());
+			CPPUNIT_ASSERT_EQUAL(true, result);
+		}
+
+		void call_pushSharedObjectAndCallFunction_countMemberEqualsOne()
+		{
+			m_lua->register_class<SharedFoo>();
+			OOLUA_SHARED_TYPE<SharedFoo> foo(new SharedFoo);
+			m_lua->run_chunk("return function(obj) obj:no_param_function() end");
+			m_lua->call(1, foo);
+			CPPUNIT_ASSERT_EQUAL(int(1), foo->count);
+		}
+		void call_pushSharedObjectAndCallConstantFunction_globalCalledCountEqualsOne()
+		{
+			m_lua->register_class<SharedFoo>();
+			OOLUA_SHARED_TYPE<SharedFoo> foo(new SharedFoo);
+			m_lua->run_chunk("return function(obj) obj:no_param_function_const() end");
+			called = 0;
+			m_lua->call(1, foo);
+			CPPUNIT_ASSERT_EQUAL(int(1), called);
+		}
+
+		//TODO Hmm should this be disallowed?
+		void pull_pushSharedPointerPullNormalPointer_pointerEqualsInputsGet()
+		{
+			m_lua->register_class<SharedFoo>();
+			OOLUA_SHARED_TYPE<SharedFoo> input(new SharedFoo);
+			SharedFoo* result;
+			m_lua->push(input);
+			m_lua->pull(result);
+			CPPUNIT_ASSERT_EQUAL(input.get(), result);
 		}
 	};
 

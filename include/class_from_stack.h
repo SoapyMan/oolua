@@ -181,7 +181,7 @@ namespace OOLUA
 			template<typename T>
 			inline T** ud_member_cast(Lua_ud* ud, T*&)
 			{
-				return &static_cast<T*>(ud->void_class_ptr);
+				return reinterpret_cast<T**>(&ud->void_class_ptr);
 			}
 
 			template<typename T,template <typename> class Shared_pointer_class>
@@ -202,7 +202,7 @@ namespace OOLUA
 				return Shared_pointer_class<T>();
 			}
 			template<typename T>
-			inline void destroy_ud_ptr(T** ud_ptr)
+			inline void destroy_ud_ptr(T** /*ud_ptr*/)
 			{}
 
 			template<typename T,template <typename> class Shared_pointer_class>

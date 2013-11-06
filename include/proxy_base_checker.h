@@ -134,7 +134,7 @@ namespace OOLUA
 				OOLUA_SHARED_TYPE<typename ProxyStackType::class_>* stack_shared_ptr = reinterpret_cast<OOLUA_SHARED_TYPE<typename ProxyStackType::class_>* >( stack_ud->shared_object);
 
 				//the type wanted is a shared pointer
-				if(stack_ud->flags & SHARED_FLAG)
+				if(requested_ud->flags & SHARED_FLAG)
 				{
 					//worried that this may get optimised away by clang, I recall something like this
 					//in an old mailing list thread!
