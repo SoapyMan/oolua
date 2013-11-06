@@ -31,6 +31,15 @@ struct SharedFoo
 	{
 		m_shared = input;
 	}
+	OOLUA_SHARED_TYPE<SharedFoo> returnsSharedPtr()
+	{
+		return m_shared;
+	}
+	OOLUA_SHARED_TYPE<SharedFoo>& returnsRefToSharedPtr()
+	{
+		return m_shared;
+	}
+
 	int count;
 	OOLUA_SHARED_TYPE<SharedFoo> m_shared;
 };
@@ -40,12 +49,16 @@ OOLUA_PROXY(SharedFoo)
 	OOLUA_MFUNC_CONST(no_param_function_const)
 	OOLUA_MFUNC(shared_param)
 	OOLUA_MFUNC(shared_param_ref)
+	OOLUA_MFUNC(returnsSharedPtr)
+	OOLUA_MFUNC(returnsRefToSharedPtr)
 OOLUA_PROXY_END
 
 OOLUA_EXPORT_FUNCTIONS(SharedFoo
 						, no_param_function
 						, shared_param
 						, shared_param_ref
+						, returnsSharedPtr
+						, returnsRefToSharedPtr
 						)
 OOLUA_EXPORT_FUNCTIONS_CONST(SharedFoo, no_param_function_const)
 
@@ -80,9 +93,14 @@ OOLUA_EXPORT_FUNCTIONS_CONST(SharedFoo, no_param_function_const)
 
 			CPPUNIT_TEST(call_memberFunctionPassingSharedPointer_useCountEqualsTwo);
 			CPPUNIT_TEST(call_memberFunctionPassingSharedPointer_memberPointerEqualsInput);
-			CPPUNIT_TEST(inTrait_rRefToSharedObject_pullTypeIsSharedPointerStub1);
+			CPPUNIT_TEST(inTrait_refToSharedObject_pullTypeIsSharedPointerStub1);
 			CPPUNIT_TEST(call_memberFunctionPassingRefToSharedPointer_useCountEqualsTwo);
 
+			CPPUNIT_TEST(functionReturnTrait_sharedObject_pullTypeIsSharedPointerStub1);
+			CPPUNIT_TEST(functionReturnTrait_refToSharedObject_pullTypeIsSharedPointerStub1);
+			CPPUNIT_TEST(functionReturn_returnsSharedObject_useCountEqualsTwo);
+			CPPUNIT_TEST(functionReturn_returnsSharedObjectPullReturn_resultEqualsInput);
+			CPPUNIT_TEST(functionReturn_returnsRefToSharedObjectPullReturn_resultEqualsInput);
 		CPPUNIT_TEST_SUITE_END();
 		OOLUA::Script* m_lua;
 	public:
@@ -314,7 +332,7 @@ OOLUA_EXPORT_FUNCTIONS_CONST(SharedFoo, no_param_function_const)
 			CPPUNIT_ASSERT_EQUAL(param.get(), object.m_shared.get());
 		}
 
-		void inTrait_rRefToSharedObject_pullTypeIsSharedPointerStub1()
+		void inTrait_refToSharedObject_pullTypeIsSharedPointerStub1()
 		{
 			typedef OOLUA_SHARED_TYPE<Stub1> shared;
 			int pull_type_is_same = LVD::is_same<shared, OOLUA::in_p<shared&>::pull_type>::value;
@@ -332,6 +350,56 @@ OOLUA_EXPORT_FUNCTIONS_CONST(SharedFoo, no_param_function_const)
 			CPPUNIT_ASSERT_EQUAL(long(2), param.use_count());
 		}
 
+		void functionReturnTrait_sharedObject_pullTypeIsSharedPointerStub1()
+		{
+			typedef OOLUA_SHARED_TYPE<Stub1> shared;
+			int pull_type_is_same = LVD::is_same<shared, OOLUA::INTERNAL::function_return<shared>::pull_type>::value;
+			CPPUNIT_ASSERT_EQUAL(1, pull_type_is_same);
+		}
+
+		void functionReturnTrait_refToSharedObject_pullTypeIsSharedPointerStub1()
+		{
+			typedef OOLUA_SHARED_TYPE<Stub1> shared;
+			int pull_type_is_same = LVD::is_same<shared, OOLUA::INTERNAL::function_return<shared&>::pull_type>::value;
+			CPPUNIT_ASSERT_EQUAL(1, pull_type_is_same);
+		}
+
+		void functionReturn_returnsSharedObject_useCountEqualsTwo()
+		{
+			m_lua->register_class<SharedFoo>();
+			SharedFoo object;
+			object.m_shared = OOLUA_SHARED_TYPE<SharedFoo>(new SharedFoo);
+
+			m_lua->run_chunk("return function(obj) return obj:returnsSharedPtr() end");
+			m_lua->call(1, &object);
+			CPPUNIT_ASSERT_EQUAL(long(2), object.m_shared.use_count());
+		}
+
+		void functionReturn_returnsSharedObjectPullReturn_resultEqualsInput()
+		{
+			m_lua->register_class<SharedFoo>();
+			SharedFoo object;
+			object.m_shared = OOLUA_SHARED_TYPE<SharedFoo>(new SharedFoo);
+
+			m_lua->run_chunk("return function(obj) return obj:returnsSharedPtr() end");
+			m_lua->call(1, &object);
+			OOLUA_SHARED_TYPE<SharedFoo> result;
+			m_lua->pull(result);
+			CPPUNIT_ASSERT_EQUAL(object.m_shared.get(), result.get());
+		}
+
+		void functionReturn_returnsRefToSharedObjectPullReturn_resultEqualsInput()
+		{
+			m_lua->register_class<SharedFoo>();
+			SharedFoo object;
+			object.m_shared = OOLUA_SHARED_TYPE<SharedFoo>(new SharedFoo);
+
+			m_lua->run_chunk("return function(obj) return obj:returnsSharedPtr() end");
+			m_lua->call(1, &object);
+			OOLUA_SHARED_TYPE<SharedFoo> result;
+			m_lua->pull(result);
+			CPPUNIT_ASSERT_EQUAL(object.m_shared.get(), result.get());
+		}
 	};
 
 	CPPUNIT_TEST_SUITE_REGISTRATION(SharedPointer);
