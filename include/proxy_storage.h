@@ -104,16 +104,23 @@ namespace OOLUA
 		bool is_there_an_entry_for_this_void_pointer(lua_State* vm, void* ptr);
 		bool is_there_an_entry_for_this_void_pointer(lua_State* vm, void* ptr, int tableIndex);
 
-		template<typename T>
-		Lua_ud* reset_metatable(lua_State*  vm, T* ptr, bool is_const);
+//		template<typename T>
+//		Lua_ud* reset_metatable(lua_State*  vm, T* ptr, bool is_const);
+		template<typename PossiblySharedType, typename ClassType>
+		inline Lua_ud* reset_metatable(lua_State* vm, PossiblySharedType const* shared_ptr
+										, ClassType* ptr, bool is_const);
 
 		void add_ptr_if_required(lua_State* const vm, void* ptr, int udIndex, int weakIndex);
 
 
 		Lua_ud* new_userdata(lua_State* vm, void* ptr, bool is_const
-							 , oolua_function_check_base base_checker, oolua_type_check_function type_check);
+							 , oolua_function_check_base base_checker
+							 , oolua_type_check_function type_check
+							 , oolua_release_shared_ptr shared_release);
 		void reset_userdata(Lua_ud* ud, void* ptr, bool is_const
-							, oolua_function_check_base base_checker, oolua_type_check_function type_check);
+							, oolua_function_check_base base_checker
+							, oolua_type_check_function type_check
+							, oolua_release_shared_ptr shared_release);
 
 		template<typename Type, typename Bases, int BaseIndex, typename BaseType>
 		struct Add_ptr;
@@ -142,11 +149,18 @@ namespace OOLUA
 		}
 
 
+// TODO
+/*
+	this reset the userdata's metatable, when the type is a shared pointer it also needs
+	to explictly call the destructor of the current stored shard pointer and replace
+	it will the new instance
+*/
 		//It is possible for a base class and a derived class pointer to have no offset.
 		//if found it is left on the top of the stack and returns the Lua_ud ptr
 		//else the stack is same as on entrance to the function and null is returned
-		template<typename T>
-		inline Lua_ud* find_ud(lua_State*  vm, T* ptr, bool const is_const)
+		template<typename PossiblySharedPtrType, typename ClassType>
+		inline Lua_ud* find_ud(lua_State*  vm, PossiblySharedPtrType const* shared_ptr
+								, ClassType* ptr, bool const is_const)
 		{
 			bool has_entry = is_there_an_entry_for_this_void_pointer(vm, ptr);//(ud or no addition to the stack)
 			Lua_ud* ud(0);
@@ -163,11 +177,11 @@ namespace OOLUA
 
 				if (is_const)
 				{
-					if(class_from_stack_top<T>(vm)) return ud;
+					if(class_from_stack_top<ClassType>(vm)) return ud;
 				}
 				else if (was_const)//change
 				{
-					if(class_from_stack_top<T>(vm))
+					if(class_from_stack_top<ClassType>(vm))
 					{
 						INTERNAL::userdata_const_value(ud, false);
 						return ud;
@@ -175,13 +189,13 @@ namespace OOLUA
 				}
 				else //was not const and is not const
 				{
-					if( none_const_class_from_stack_top<T>(vm) )
+					if( none_const_class_from_stack_top<ClassType>(vm) )
 						return ud;
 				}
 
 				//if T was a base of the stack or T was the stack it has been returned
 				//top of stack is a registered base class of T with no offset pointer
-				return reset_metatable(vm, ptr, was_const && is_const);
+				return reset_metatable(vm, shared_ptr, ptr, was_const && is_const);
 			}
 			else
 			{
@@ -194,38 +208,90 @@ namespace OOLUA
 				int weak_table = push_weak_table(vm);
 				bool base_is_stored(false);
 				Has_a_root_entry<
-						T
-						, typename FindRootBases<T>::Result
+						ClassType
+						, typename FindRootBases<ClassType>::Result
 						, 0
-						, typename TYPELIST::At_default< typename FindRootBases<T>::Result, 0, TYPE::Null_type >::Result
+						, typename TYPELIST::At_default< typename FindRootBases<ClassType>::Result, 0, TYPE::Null_type >::Result
 					> checkRoots;
 				checkRoots(vm, ptr, weak_table, base_is_stored);
 				lua_remove(vm, weak_table);
 				if(base_is_stored)
 				{
 					bool was_const = ud_at_index_is_const(vm, -1);
-					ud = reset_metatable(vm, ptr, was_const && is_const);
+					ud = reset_metatable(vm, shared_ptr, ptr, was_const && is_const);
 				}
 			}
 			return ud;
 		}
 
+
+		/*
+			This is required because when we want to change the metatable to a more
+			derived type we do not acutally know the type that is already stored in
+			the userdata member. So the userdata has to pay the for another function
+			pointer to do the work.
+			When the type is not a userdata the function should translate to a nop.
+			TODO check generated assembly to see if this assumption is correct
+		*/
 		template<typename T>
-		inline Lua_ud* reset_metatable(lua_State* vm, T* ptr, bool is_const)
+		struct SharedHelper;
+
+		template<typename Ptr_type,template <typename> class Shared_pointer_class>
+		struct SharedHelper<Shared_pointer_class<Ptr_type> >
+		{
+			typedef Shared_pointer_class<Ptr_type> shared;
+			static void release_pointer(Lua_ud* ud)
+			{
+				shared* shared_ptr = reinterpret_cast<shared*>(ud->shared_object);
+				shared_ptr->~shared();
+			}
+			static shared* fixup_pointer(Lua_ud* ud, shared const* ptr)
+			{
+				//correct the ud pointer
+				//we use placement new and later code will explicitly call the destructor
+			 	return new (ud->shared_object) shared(*ptr);
+			}
+		};
+		template<typename T>
+		struct SharedHelper
+		{
+			static void release_pointer(Lua_ud* /*ud*/){}//nop
+			static void fixup_pointer(Lua_ud* /*ud*/, T const* /*ptr*/){}//nop
+		};
+
+/*
+		OOLUA_SHARED_TYPE<T>* fixup_pointer(Lua_ud* ud)
+		{
+			//correct the ud pointer
+			//we use placement new and later code will explicitly call the destructor
+			OOLUA_SHARED_TYPE<T>* p = new (ud->shared_object) OOLUA_SHARED_TYPE<T>(shared_ptr);
+			return p;
+		}
+*/
+		template<typename PossiblySharedType, typename ClassType>
+		inline Lua_ud* reset_metatable(lua_State* vm, PossiblySharedType const* shared_ptr
+										, ClassType* ptr, bool is_const)
 		{
 			Lua_ud *ud = static_cast<Lua_ud *>(lua_touserdata(vm, -1));//ud
-			reset_userdata(ud, ptr, is_const, &requested_ud_is_a_base<T>, &register_class_imp<T>);
+			ud->shared_ptr_release(ud);
+			reset_userdata(ud, ptr, is_const
+							, &requested_ud_is_a_base<ClassType>
+							, &register_class_imp<ClassType>
+							, &SharedHelper<PossiblySharedType>::release_pointer);
+
+			SharedHelper<PossiblySharedType>::fixup_pointer(ud,shared_ptr);
+
 			//change the metatable associated with the ud
-			lua_getfield(vm, LUA_REGISTRYINDEX, OOLUA::Proxy_class<T>::class_name);
+			lua_getfield(vm, LUA_REGISTRYINDEX, OOLUA::Proxy_class<ClassType>::class_name);
 
 			lua_setmetatable(vm, -2);//set ud's metatable to this
 
 			int weak_index = push_weak_table(vm);//ud weakTable
 			//then register all the bases that need it
-			Add_ptr<T
-					, typename OOLUA::Proxy_class<T>::AllBases
+			Add_ptr<ClassType
+					, typename OOLUA::Proxy_class<ClassType>::AllBases
 					, 0
-					, typename TYPELIST::At_default< typename OOLUA::Proxy_class<T>::AllBases, 0, TYPE::Null_type >::Result
+					, typename TYPELIST::At_default< typename OOLUA::Proxy_class<ClassType>::AllBases, 0, TYPE::Null_type >::Result
 				> addThisTypesBases;
 			addThisTypesBases(vm, ptr, weak_index-1, weak_index);
 			lua_pop(vm, 1);//ud
@@ -261,44 +327,28 @@ namespace OOLUA
 		template<typename T>
 		inline Lua_ud* add_ptr(lua_State* const vm, T* const ptr, bool is_const, Owner owner)
 		{
-			Lua_ud* ud = new_userdata(vm, ptr, is_const, &requested_ud_is_a_base<T>, &register_class_imp<T>);
+			Lua_ud* ud = new_userdata(vm, ptr, is_const
+										, &requested_ud_is_a_base<T>
+										, &register_class_imp<T>
+										, &SharedHelper<T>::release_pointer);
 			if(owner != No_change)userdata_gc_value(ud, owner == Lua);
 
 			add_ptr_imp(vm,ptr);
-#if OOLUA_TEMP_DISABLED_SHARED_PTR == 99999
-			lua_getfield(vm, LUA_REGISTRYINDEX, OOLUA::Proxy_class<T>::class_name);
-
-#if	OOLUA_DEBUG_CHECKS == 1
-			assert(lua_isnoneornil(vm, -1) == 0 && "no metatable of this name found in registry");
-#endif
-			////Pops a table from the stack and sets it as the new metatable for the value at the given acceptable index
-			lua_setmetatable(vm, -2);
-
-			int weakIndex = push_weak_table(vm);//ud,weakTable
-			int udIndex = weakIndex -1;
-
-			add_ptr_if_required(vm, ptr, udIndex, weakIndex);//it is required
-
-			Add_ptr<T
-					, typename OOLUA::Proxy_class<T>::AllBases
-					, 0
-					, typename TYPELIST::At_default< typename OOLUA::Proxy_class<T>::AllBases, 0, TYPE::Null_type >::Result
-				> addThisTypesBases;
-			addThisTypesBases(vm, ptr, udIndex, weakIndex);
-
-			lua_pop(vm, 1);//ud
-#endif
 			return ud;
 		}
 #if OOLUA_USE_SHARED_PTR == 1
 		template<typename T>
 		inline Lua_ud* add_shared_ptr(lua_State* const vm, OOLUA_SHARED_TYPE<T> const&  shared_ptr, bool is_const)
 		{
-			Lua_ud* ud = new_userdata(vm, 0, is_const, &requested_ud_is_a_base<T>, &register_class_imp<T>);
+			Lua_ud* ud = new_userdata(vm, NULL, is_const
+									, &requested_ud_is_a_base<T>
+									, &register_class_imp<T>
+									, &SharedHelper<OOLUA_SHARED_TYPE<T> >::release_pointer);
+
+			OOLUA_SHARED_TYPE<T>* p = SharedHelper<OOLUA_SHARED_TYPE<T> >::fixup_pointer(ud, &shared_ptr);
+
 			userdata_gc_value(ud, true);//yes it always needs destructing
 			userdata_shared_ptr(ud);//add the shared flag
-			//placement new, later explicitly call the destructor p->~OOLUA_SHARED_TYPE<T>();
-			OOLUA_SHARED_TYPE<T>* p = new (ud->shared_object) OOLUA_SHARED_TYPE<T>(shared_ptr);
 			add_ptr_imp(vm, p->get());
 			return ud;
 		}

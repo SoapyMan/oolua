@@ -75,6 +75,8 @@ namespace OOLUA
 #if OOLUA_USE_SHARED_PTR == 1
 		template<typename Ptr_type,template <typename> class Shared_pointer_class>
 		Shared_pointer_class<Ptr_type> check_shared_index(lua_State *  vm, int index);
+		template<typename T>
+		struct stack_checker;
 #endif
 		//fwd
 
@@ -131,14 +133,13 @@ namespace OOLUA
 		};
 
 #if OOLUA_USE_SHARED_PTR == 1
-		template<typename T>
-		struct pull_basic_type<OOLUA_SHARED_TYPE<T>, 0, 0>
+		template<typename T,template <typename> class Shared_pointer_class>
+		struct pull_basic_type<Shared_pointer_class<T>, 0, 0>
 		{
-			static bool pull(lua_State* const vm, OOLUA_SHARED_TYPE<T> & value)
+			static bool pull(lua_State* const vm, Shared_pointer_class<T> & value)
 			{
-				OOLUA_SHARED_TYPE<T> result = check_shared_index<T,OOLUA_SHARED_TYPE>(vm, lua_gettop(vm));
-				if (!result) return false;
-				value = result;
+				value = stack_checker<Shared_pointer_class<T> >::check_index(vm, lua_gettop(vm));
+				if (!value) return false;
 				lua_pop(vm, 1);
 				return true;
 			}

@@ -46,7 +46,7 @@ namespace OOLUA
 		struct Lua_ud;
 		typedef void (*oolua_function_check_base)(INTERNAL::Lua_ud* __restrict, INTERNAL::Lua_ud const* __restrict);
 		typedef void (*oolua_type_check_function)(lua_State * vm);
-
+		typedef void (*oolua_release_shared_ptr)(INTERNAL::Lua_ud*);
 		/**
 			\brief The internal type which is used by the library to represent C++ classes.
 		*/
@@ -63,6 +63,7 @@ namespace OOLUA
 #endif
 			oolua_function_check_base base_checker;
 			oolua_type_check_function type_check;
+			oolua_release_shared_ptr shared_ptr_release;
 			LVD::uint32 flags;
 		};
 

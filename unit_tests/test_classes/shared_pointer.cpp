@@ -24,6 +24,7 @@ class SharedPointer : public CppUnit::TestFixture
 
 		CPPUNIT_TEST(push_pushBaseAndThenPushDerived_topTwoIndiciesCompareEqual);
 		CPPUNIT_TEST(pull_pushDerivedPullBaseThenCallGc_useCountEqualsTwo);
+		CPPUNIT_TEST(push_pushBaseAndThenPushDerived_useCountEqualsTwo);
 	CPPUNIT_TEST_SUITE_END();
 	OOLUA::Script* m_lua;
 public:
@@ -159,6 +160,21 @@ public:
 		m_lua->push(derived);
 		m_lua->pull(base);
 		m_lua->gc();
+		CPPUNIT_ASSERT_EQUAL(long(2), derived.use_count());
+	}
+
+	void push_pushBaseAndThenPushDerived_useCountEqualsTwo()
+	{
+		m_lua->register_class<Derived1Abstract1>();
+		OOLUA_SHARED_TYPE<Derived1Abstract1> derived(new Derived1Abstract1);
+
+		{
+			//forece a release for base making the counter two
+			//one C++ side and one for the two userdatas Lua side
+			OOLUA_SHARED_TYPE<Abstract1> base(derived);
+			m_lua->push(base);
+			m_lua->push(derived);
+		}
 		CPPUNIT_ASSERT_EQUAL(long(2), derived.use_count());
 	}
 };
