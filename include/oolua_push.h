@@ -37,10 +37,6 @@ THE SOFTWARE.
 
 #include <cassert>
 
-#if OOLUA_USE_SHARED_PTR == 1
-#	include OOLUA_SHARED_HEADER
-#endif
-
 namespace OOLUA
 {
 	/** \cond INTERNAL*/
@@ -101,27 +97,15 @@ namespace OOLUA
 			}
 		};
 
-/*
 		template<typename Ptr_type,template <typename> class Shared_pointer_class>
 		struct push_basic_type<Shared_pointer_class<Ptr_type>, 0, 0>
 		{
 			static bool push(lua_State* const vm, Shared_pointer_class<Ptr_type> const& value)
 			{
-				return false;
-			}
-		};
-*/
-#if OOLUA_USE_SHARED_PTR == 1
-		template<typename T>
-		struct push_basic_type<OOLUA_SHARED_TYPE<T>, 0, 0>
-		{
-			static bool push(lua_State* const vm, OOLUA_SHARED_TYPE<T> const& value)
-			{
 				push_shared_pointer(vm, value);
 				return true;
 			}
 		};
-#endif
 
 
 		template<typename T>

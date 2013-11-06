@@ -58,7 +58,6 @@ namespace OOLUA
 			if_check_enabled_check_type_is_registered(vm, Proxy_class<Underlying_pointer_type>::class_name);
 			Lua_ud* ud(find_ud<shared_type,Underlying_pointer_type>(vm, &instance, (Underlying_pointer_type*)(instance.get()), !!LVD::is_const<Underlying_pointer_type>::value));//NOLINT
 			if(!ud) ud = add_shared_ptr(vm, instance, !!(LVD::is_const<Underlying_pointer_type>::value));//NOLINT
-			//else set_owner_if_change(owner, ud);
 		}
 
 	} // namespace INTERNAL // NOLINT

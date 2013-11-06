@@ -39,10 +39,6 @@ THE SOFTWARE.
 
 #include <cassert>
 
-#if OOLUA_USE_SHARED_PTR == 1
-#	include OOLUA_SHARED_HEADER
-#endif
-
 namespace OOLUA
 {
 	/** \cond INTERNAL*/
@@ -72,9 +68,8 @@ namespace OOLUA
 		T* class_from_stack_top(lua_State * vm);
 		template<typename T>
 		T* none_const_class_from_stack_top(lua_State * vm);
+
 #if OOLUA_USE_SHARED_PTR == 1
-		template<typename Ptr_type,template <typename> class Shared_pointer_class>
-		Shared_pointer_class<Ptr_type> check_shared_index(lua_State *  vm, int index);
 		template<typename T>
 		struct stack_checker;
 #endif

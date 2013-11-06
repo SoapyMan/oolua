@@ -63,7 +63,9 @@ namespace OOLUA
 #endif
 			oolua_function_check_base base_checker;
 			oolua_type_check_function type_check;
+#if OOLUA_USE_SHARED_PTR == 1
 			oolua_release_shared_ptr shared_ptr_release;
+#endif
 			LVD::uint32 flags;
 		};
 

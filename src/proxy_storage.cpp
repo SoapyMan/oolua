@@ -114,7 +114,11 @@ namespace OOLUA
 			ud->void_class_ptr = ptr;
 			ud->base_checker = base_checker;
 			ud->type_check = type_check;
+#if OOLUA_USE_SHARED_PTR == 1
 			ud->shared_ptr_release = shared_release;
+#else
+			(void)shared_release;
+#endif
 			userdata_const_value(ud, is_const);
 		}
 

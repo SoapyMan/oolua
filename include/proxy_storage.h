@@ -38,9 +38,6 @@ THE SOFTWARE.
 #include "type_list.h"
 #include "char_arrays.h"
 
-#if OOLUA_USE_SHARED_PTR == 1
-#	include OOLUA_SHARED_HEADER
-#endif
 
 namespace OOLUA
 {
@@ -104,8 +101,6 @@ namespace OOLUA
 		bool is_there_an_entry_for_this_void_pointer(lua_State* vm, void* ptr);
 		bool is_there_an_entry_for_this_void_pointer(lua_State* vm, void* ptr, int tableIndex);
 
-//		template<typename T>
-//		Lua_ud* reset_metatable(lua_State*  vm, T* ptr, bool is_const);
 		template<typename PossiblySharedType, typename ClassType>
 		inline Lua_ud* reset_metatable(lua_State* vm, PossiblySharedType const* shared_ptr
 										, ClassType* ptr, bool is_const);
@@ -134,6 +129,7 @@ namespace OOLUA
 		bool ud_at_index_is_const(lua_State* vm, int index);
 
 
+		//TODO you can not change a shared_ptr's owership
 		template<typename T>
 		int lua_set_owner(lua_State*  vm)
 		{
@@ -149,12 +145,12 @@ namespace OOLUA
 		}
 
 
-// TODO
-/*
-	this reset the userdata's metatable, when the type is a shared pointer it also needs
-	to explictly call the destructor of the current stored shard pointer and replace
-	it will the new instance
-*/
+		/*
+			This resets the userdata's metatable.
+			When the type is a shared pointer methods that it calls also need to explictly
+			call the destructor of the current stored shard pointer and replace
+			it will the new instance
+		*/
 		//It is possible for a base class and a derived class pointer to have no offset.
 		//if found it is left on the top of the stack and returns the Lua_ud ptr
 		//else the stack is same as on entrance to the function and null is returned
@@ -227,8 +223,8 @@ namespace OOLUA
 
 		/*
 			This is required because when we want to change the metatable to a more
-			derived type we do not acutally know the type that is already stored in
-			the userdata member. So the userdata has to pay the for another function
+			derived type, we do not acutally know the type that is already stored in
+			the userdata member. So the userdata has to pay for another function
 			pointer to do the work.
 			When the type is not a userdata the function should translate to a nop.
 			TODO check generated assembly to see if this assumption is correct
@@ -242,14 +238,30 @@ namespace OOLUA
 			typedef Shared_pointer_class<Ptr_type> shared;
 			static void release_pointer(Lua_ud* ud)
 			{
+#if OOLUA_USE_SHARED_PTR == 1
+				//this member is only defined when compiled with shared pointer support
 				shared* shared_ptr = reinterpret_cast<shared*>(ud->shared_object);
 				shared_ptr->~shared();
+
+#else
+				//otherwise this function should never be called
+//				typedef char error_library_is_not_configured_with_shared_ptr_support[-1];
+			 	assert(0 && "this function should never be called when not compiled with shared pointer support");
+#endif
+
 			}
 			static shared* fixup_pointer(Lua_ud* ud, shared const* ptr)
 			{
+#if OOLUA_USE_SHARED_PTR == 1
 				//correct the ud pointer
 				//we use placement new and later code will explicitly call the destructor
 			 	return new (ud->shared_object) shared(*ptr);
+#else
+				//otherwise this function should never be called
+//				typedef char error_library_is_not_configured_with_shared_ptr_support[-1];
+			 	assert(0 && "this function should never be called when not compiled with shared pointer support");
+#endif
+
 			}
 		};
 		template<typename T>
@@ -259,21 +271,14 @@ namespace OOLUA
 			static void fixup_pointer(Lua_ud* /*ud*/, T const* /*ptr*/){}//nop
 		};
 
-/*
-		OOLUA_SHARED_TYPE<T>* fixup_pointer(Lua_ud* ud)
-		{
-			//correct the ud pointer
-			//we use placement new and later code will explicitly call the destructor
-			OOLUA_SHARED_TYPE<T>* p = new (ud->shared_object) OOLUA_SHARED_TYPE<T>(shared_ptr);
-			return p;
-		}
-*/
 		template<typename PossiblySharedType, typename ClassType>
 		inline Lua_ud* reset_metatable(lua_State* vm, PossiblySharedType const* shared_ptr
 										, ClassType* ptr, bool is_const)
 		{
 			Lua_ud *ud = static_cast<Lua_ud *>(lua_touserdata(vm, -1));//ud
+#if OOLUA_USE_SHARED_PTR == 1
 			ud->shared_ptr_release(ud);
+#endif
 			reset_userdata(ud, ptr, is_const
 							, &requested_ud_is_a_base<ClassType>
 							, &register_class_imp<ClassType>
@@ -336,23 +341,27 @@ namespace OOLUA
 			add_ptr_imp(vm,ptr);
 			return ud;
 		}
-#if OOLUA_USE_SHARED_PTR == 1
-		template<typename T>
-		inline Lua_ud* add_shared_ptr(lua_State* const vm, OOLUA_SHARED_TYPE<T> const&  shared_ptr, bool is_const)
+
+//#if OOLUA_USE_SHARED_PTR == 1
+//		template<typename T>
+		template<typename T,template <typename> class Shared_pointer_class>
+		inline Lua_ud* add_shared_ptr(lua_State* const vm, Shared_pointer_class<T> const&  shared_ptr, bool is_const)
 		{
+			typedef  Shared_pointer_class<T> shared;
 			Lua_ud* ud = new_userdata(vm, NULL, is_const
 									, &requested_ud_is_a_base<T>
 									, &register_class_imp<T>
-									, &SharedHelper<OOLUA_SHARED_TYPE<T> >::release_pointer);
+									, &SharedHelper<shared >::release_pointer);
 
-			OOLUA_SHARED_TYPE<T>* p = SharedHelper<OOLUA_SHARED_TYPE<T> >::fixup_pointer(ud, &shared_ptr);
+			shared* p = SharedHelper<shared>::fixup_pointer(ud, &shared_ptr);
 
 			userdata_gc_value(ud, true);//yes it always needs destructing
 			userdata_shared_ptr(ud);//add the shared flag
 			add_ptr_imp(vm, p->get());
 			return ud;
 		}
-#endif
+//#endif
+
 		template<typename Type, typename Bases, int BaseIndex, typename BaseType>
 		struct Add_ptr
 		{

@@ -207,10 +207,28 @@ THE SOFTWARE.
 #		define OOLUA_STD_STRING_IS_INTEGRAL 1
 #	endif
 
-#define OOLUA_USE_SHARED_PTR 1
-#define OOLUA_SHARED_HEADER <tr1/memory>
-#define OOLUA_SHARED_TYPE std::tr1::shared_ptr
 
+/**
+	\def OOLUA_USE_SHARED_PTR
+		\brief \b Default: Disabled
+		If you need to change what shared_ptr you use here is where you do it
+		\li The type must be non intrusive to the underlying type
+		\li Have a "get" member function which returns a raw pointer
+		\li Be constructable from a more dervied shared_ptr
+		\li Be of uniform size
+		\param 0 Disabled
+		\param 1 Enabled
+*/
+#	define OOLUA_USE_SHARED_PTR 0
+
+#	ifndef OOLUA_USE_SHARED_PTR
+#		define OOLUA_USE_SHARED_PTR 0
+#	else
+#		if OOLUA_USE_SHARED_PTR == 1
+#			define OOLUA_SHARED_HEADER <tr1/memory>
+#			define OOLUA_SHARED_TYPE std::tr1::shared_ptr
+#		endif
+#	endif
 /**@}*/
 
 /** \cond INTERNAL */
