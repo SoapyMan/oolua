@@ -304,12 +304,27 @@ The general naming convention for traits is:\n
 		};
 
 		template<typename T>
+		struct is_shared_type
+		{
+			enum {value = 0};
+		};
+
+		template<typename T,template <typename> class shared_type>
+		struct is_shared_type<shared_type<T> >
+		{
+			//container class does not have a proxy yet the contained class does.
+			enum {value = has_a_proxy_type<shared_type<T> >::value == 0
+					&& has_a_proxy_type<typename LVD::raw_type<T>::raw>::value == 1};
+		};
+
+		template<typename T>
 		struct is_false_integral
 		{
 			typedef typename LVD::raw_type<T>::type raw;
 			enum {value = STRING::is_integral_string_class<raw>::value
 						|| INTERNAL::is_lua_ref<raw>::value
 						|| LVD::is_same<OOLUA::Table, raw>::value
+						|| INTERNAL::is_shared_type<T>::value
 					};
 		};
 	} // namespace INTERNAL // NOLINT

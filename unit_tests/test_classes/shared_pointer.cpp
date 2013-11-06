@@ -8,6 +8,7 @@
 
 #	if OOLUA_USE_SHARED_PTR == 1
 #		include OOLUA_SHARED_HEADER
+#	include <typeinfo>
 int called = 0;
 struct SharedFoo
 {
@@ -22,16 +23,24 @@ struct SharedFoo
 	{
 		++count;
 	}
-
+	void shared_param(OOLUA_SHARED_TYPE<SharedFoo> input)
+	{
+		m_shared = input;
+	}
 	int count;
+	OOLUA_SHARED_TYPE<SharedFoo> m_shared;
 };
 
 OOLUA_PROXY(SharedFoo)
 	OOLUA_MFUNC(no_param_function)
 	OOLUA_MFUNC_CONST(no_param_function_const)
+	OOLUA_MFUNC(shared_param)
 OOLUA_PROXY_END
 
-OOLUA_EXPORT_FUNCTIONS(SharedFoo,no_param_function)
+OOLUA_EXPORT_FUNCTIONS(SharedFoo
+						, no_param_function
+						, shared_param
+						)
 OOLUA_EXPORT_FUNCTIONS_CONST(SharedFoo, no_param_function_const)
 
 	class SharedPointer : public CppUnit::TestFixture
@@ -59,6 +68,12 @@ OOLUA_EXPORT_FUNCTIONS_CONST(SharedFoo, no_param_function_const)
 			CPPUNIT_TEST(call_pushSharedObjectAndCallConstantFunction_globalCalledCountEqualsOne);
 
 			CPPUNIT_TEST(pull_pushSharedPointerPullNormalPointer_pointerEqualsInputsGet);
+
+			CPPUNIT_TEST(test_inTraits_pullTypeIsSharedPointerStub1);
+			CPPUNIT_TEST(ref_is_not_shared_type);
+
+			CPPUNIT_TEST(call_memberFunctionPassingSharedPointer_useCountEqualsTwo);
+			CPPUNIT_TEST(call_memberFunctionPassingSharedPointer_memberPointerEqualsInput);
 		CPPUNIT_TEST_SUITE_END();
 		OOLUA::Script* m_lua;
 	public:
@@ -249,6 +264,45 @@ OOLUA_EXPORT_FUNCTIONS_CONST(SharedFoo, no_param_function_const)
 			m_lua->push(input);
 			m_lua->pull(result);
 			CPPUNIT_ASSERT_EQUAL(input.get(), result);
+		}
+
+		void test_inTraits_compiles()
+		{
+			OOLUA::in_p<OOLUA_SHARED_TYPE<Stub1> > test1; (void)test1;
+		}
+		void test_inTraits_pullTypeIsSharedPointerStub1()
+		{
+			typedef OOLUA_SHARED_TYPE<Stub1> shared;
+			int pull_type_is_same = LVD::is_same<shared, OOLUA::in_p<shared>::pull_type>::value;
+			CPPUNIT_ASSERT_EQUAL(1, pull_type_is_same);
+		}
+
+		void ref_is_not_shared_type()
+		{
+			int result = OOLUA::INTERNAL::is_shared_type<OOLUA::Lua_func_ref>::value;
+			CPPUNIT_ASSERT_EQUAL(0, result);
+		}
+
+		void call_memberFunctionPassingSharedPointer_useCountEqualsTwo()
+		{
+			m_lua->register_class<SharedFoo>();
+			SharedFoo object;
+			OOLUA_SHARED_TYPE<SharedFoo> param(new SharedFoo);
+			m_lua->run_chunk("return function(obj, param) obj:shared_param(param) end");
+			m_lua->call(1, &object, param);
+			m_lua->gc();
+			CPPUNIT_ASSERT_EQUAL(long(2), param.use_count());
+		}
+
+		void call_memberFunctionPassingSharedPointer_memberPointerEqualsInput()
+		{
+			m_lua->register_class<SharedFoo>();
+			SharedFoo object;
+			OOLUA_SHARED_TYPE<SharedFoo> param(new SharedFoo);
+			m_lua->run_chunk("return function(obj, param) obj:shared_param(param) end");
+			m_lua->call(1, &object, param);
+			m_lua->gc();
+			CPPUNIT_ASSERT_EQUAL(param.get(), object.m_shared.get());
 		}
 	};
 

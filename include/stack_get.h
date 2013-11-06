@@ -31,6 +31,7 @@ THE SOFTWARE.
 #include "oolua_string.h"
 #include "lvd_types.h"
 #include "lvd_type_traits.h"
+#include "oolua_config.h"
 
 namespace OOLUA
 {
@@ -47,6 +48,11 @@ namespace OOLUA
 
 		template<typename T>
 		T* check_index_no_const(lua_State * vm, int index);
+
+#if OOLUA_USE_SHARED_PTR == 1
+		template<typename T>
+		struct stack_checker;
+#endif
 
 
 		namespace PULL
@@ -126,7 +132,25 @@ namespace OOLUA
 				}
 			};
 
+#if OOLUA_USE_SHARED_PTR == 1
+		template<typename T,template <typename> class Shared_pointer_class>
+		struct get_basic_type<Shared_pointer_class<T>, 0, 0>
+		{
+			static void get(lua_State* const vm, int idx, Shared_pointer_class<T> & value)
+			{
+				value = stack_checker<Shared_pointer_class<T> >::check_index(vm, idx);
+/*
+				if (!value)
+				{
+					get_class_type_error(vm, OOLUA::INTERNAL::param_type<T>::is_constant
+											  ? Proxy_class<typename OOLUA::INTERNAL::param_type<T>::raw>::class_name_const
+											  : Proxy_class<typename OOLUA::INTERNAL::param_type<T>::raw>::class_name);
 
+				}
+*/
+			}
+		};
+#endif
 			template<typename T, int is_integral>
 			struct get_ptr;
 
