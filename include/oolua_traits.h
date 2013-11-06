@@ -324,7 +324,7 @@ The general naming convention for traits is:\n
 			enum {value = STRING::is_integral_string_class<raw>::value
 						|| INTERNAL::is_lua_ref<raw>::value
 						|| LVD::is_same<OOLUA::Table, raw>::value
-						|| INTERNAL::is_shared_type<T>::value
+						|| INTERNAL::is_shared_type<raw>::value
 					};
 		};
 	} // namespace INTERNAL // NOLINT
