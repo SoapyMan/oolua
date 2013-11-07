@@ -128,7 +128,7 @@ namespace OOLUA
 		};
 
 #if OOLUA_USE_SHARED_PTR == 1
-		template<typename T,template <typename> class Shared_pointer_class>
+		template<typename T, template <typename> class Shared_pointer_class>
 		struct pull_basic_type<Shared_pointer_class<T>, 0, 0>
 		{
 			static bool pull(lua_State* const vm, Shared_pointer_class<T> & value)

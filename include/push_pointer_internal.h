@@ -51,7 +51,7 @@ namespace OOLUA
 			else set_owner_if_change(owner, ud);
 		}
 
-		template<typename Underlying_pointer_type,template <typename> class Shared_pointer_class>
+		template<typename Underlying_pointer_type, template <typename> class Shared_pointer_class>
 		inline void push_shared_pointer(lua_State* vm, Shared_pointer_class<Underlying_pointer_type> const& instance)
 		{
 			typedef Shared_pointer_class<Underlying_pointer_type> shared_type;

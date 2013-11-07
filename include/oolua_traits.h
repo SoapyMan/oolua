@@ -309,7 +309,7 @@ The general naming convention for traits is:\n
 			enum {value = 0};
 		};
 
-		template<typename T,template <typename> class shared_type>
+		template<typename T, template <typename> class shared_type>
 		struct is_shared_type<shared_type<T> >
 		{
 			//container class does not have a proxy yet the contained class does.

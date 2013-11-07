@@ -107,7 +107,6 @@ namespace OOLUA
 		template<typename ProxyStackType, typename BaseType, int DoWork = 1>
 		struct CastToRequestedProxyType
 		{
-
 #if OOLUA_USE_SHARED_PTR == 1
 			/*
 				If the type in the stack_ud is a shared pointer you can request a shared pointer
@@ -118,20 +117,22 @@ namespace OOLUA
 			*/
 			static void cast(INTERNAL::Lua_ud * requested_ud, INTERNAL::Lua_ud const* stack_ud)
 			{
-				stack_ud->flags & SHARED_FLAG ? do_shared_cast(requested_ud, const_cast<Lua_ud*>(stack_ud)) : do_ptr_cast(requested_ud,stack_ud);
+				stack_ud->flags & SHARED_FLAG ?
+						do_shared_cast(requested_ud, const_cast<Lua_ud*>(stack_ud))
+						: do_ptr_cast(requested_ud, stack_ud);
 			}
 
 			static void do_ptr_cast(INTERNAL::Lua_ud * requested_ud, INTERNAL::Lua_ud const* stack_ud)
 			{
 				//cast the class void ptr from the stack to the stacktype
 				//then to base type to get correct offset
-				requested_ud->void_class_ptr = static_cast<BaseType*>(static_cast<typename ProxyStackType::class_* > ( stack_ud->void_class_ptr) );
+				requested_ud->void_class_ptr = static_cast<BaseType*>(static_cast<typename ProxyStackType::class_* >(stack_ud->void_class_ptr));
 			}
 
 			static void do_shared_cast(INTERNAL::Lua_ud * requested_ud, INTERNAL::Lua_ud * stack_ud)
 			{
 				//cast the generic shared ptr to the the stacktype shared_ptr
-				OOLUA_SHARED_TYPE<typename ProxyStackType::class_>* stack_shared_ptr = reinterpret_cast<OOLUA_SHARED_TYPE<typename ProxyStackType::class_>* >( stack_ud->shared_object);
+				OOLUA_SHARED_TYPE<typename ProxyStackType::class_>* stack_shared_ptr = reinterpret_cast<OOLUA_SHARED_TYPE<typename ProxyStackType::class_>* >(stack_ud->shared_object);
 
 				//the type wanted is a shared pointer
 				if(requested_ud->flags & SHARED_FLAG)
@@ -139,7 +140,7 @@ namespace OOLUA
 					//worried that this may get optimised away by clang, I recall something like this
 					//in an old mailing list thread!
 					//construct a base class shared ptr using placement new
-					new (requested_ud->shared_object) OOLUA_SHARED_TYPE<BaseType>(*stack_shared_ptr);
+					new(requested_ud->shared_object) OOLUA_SHARED_TYPE<BaseType>(*stack_shared_ptr);
 				}
 				else //the type wanted is a normal pointer
 				{
@@ -152,7 +153,7 @@ namespace OOLUA
 			{
 				//cast the class void ptr from the stack to the stacktype
 				//then to base type to get correct offset
-				requested_ud->void_class_ptr = static_cast<BaseType*>(static_cast<typename ProxyStackType::class_* > ( stack_ud->void_class_ptr) );
+				requested_ud->void_class_ptr = static_cast<BaseType*>(static_cast<typename ProxyStackType::class_* >(stack_ud->void_class_ptr));
 			}
 #endif
 		};
@@ -165,7 +166,7 @@ namespace OOLUA
 				//is this a base
 				if( ud_is_type<BaseType>(requested_ud) )
 				{
-					CastToRequestedProxyType<ProxyStackType, BaseType, 1>::cast(requested_ud,stack_ud);
+					CastToRequestedProxyType<ProxyStackType, BaseType, 1>::cast(requested_ud, stack_ud);
 					return;
 				}
 				//check the next in the type list
@@ -183,7 +184,7 @@ namespace OOLUA
 		struct Is_a_base<ProxyStackType, Bases, BaseIndex, TYPE::Null_type>
 		{
 			void operator()(INTERNAL::Lua_ud* __restrict/*requested_ud*/
-							,INTERNAL::Lua_ud const* __restrict/*stack_ud*/)
+							, INTERNAL::Lua_ud const* __restrict/*stack_ud*/)
 			{}//noop
 		};
 

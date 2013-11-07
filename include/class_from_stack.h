@@ -170,7 +170,7 @@ namespace OOLUA
 				enum {ud_flag = 0};
 			};
 
-			template<typename T,template <typename> class Shared_pointer_class>
+			template<typename T, template <typename> class Shared_pointer_class>
 			struct pointer_type<Shared_pointer_class<T> >
 			{
 				typedef Shared_pointer_class<T> ptr;
@@ -184,34 +184,33 @@ namespace OOLUA
 				return reinterpret_cast<T**>(&ud->void_class_ptr);
 			}
 
-			template<typename T,template <typename> class Shared_pointer_class>
+			template<typename T, template <typename> class Shared_pointer_class>
 			inline Shared_pointer_class<T>* ud_member_cast(Lua_ud* ud, Shared_pointer_class<T>&)
 			{
 				return reinterpret_cast<Shared_pointer_class<T>*>(ud->shared_object);
 			}
 
 			template<typename T>
-			inline T* ptr_null(T**)
+			inline T* ptr_null(T**) // NOLINT(readability/casting)
 			{
 				return NULL;
 			}
 
-			template<typename T,template <typename> class Shared_pointer_class>
+			template<typename T, template <typename> class Shared_pointer_class>
 			inline Shared_pointer_class<T> ptr_null(Shared_pointer_class<T>*)
 			{
 				return Shared_pointer_class<T>();
 			}
 			template<typename T>
-			inline void destroy_ud_ptr(T** /*ud_ptr*/)
+			inline void destroy_ud_ptr(T** /*ud_ptr*/) // NOLINT(readability/casting)
 			{}
 
-			template<typename T,template <typename> class Shared_pointer_class>
+			template<typename T, template <typename> class Shared_pointer_class>
 			inline void destroy_ud_ptr(Shared_pointer_class<T>* ud_ptr)
 			{
 				ud_ptr->~Shared_pointer_class<T>();
 			}
-
-		}
+		} // namespace //NOLINT(readability/namespace)
 
 		template<typename T>
 		struct stack_checker

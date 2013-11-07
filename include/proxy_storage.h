@@ -232,7 +232,7 @@ namespace OOLUA
 		template<typename T>
 		struct SharedHelper;
 
-		template<typename Ptr_type,template <typename> class Shared_pointer_class>
+		template<typename Ptr_type, template <typename> class Shared_pointer_class>
 		struct SharedHelper<Shared_pointer_class<Ptr_type> >
 		{
 			typedef Shared_pointer_class<Ptr_type> shared;
@@ -248,8 +248,8 @@ namespace OOLUA
 //				typedef char error_library_is_not_configured_with_shared_ptr_support[-1];
 			 	assert(0 && "this function should never be called when not compiled with shared pointer support");
 #endif
-
 			}
+
 			static shared* fixup_pointer(Lua_ud* ud, shared const* ptr)
 			{
 #if OOLUA_USE_SHARED_PTR == 1
@@ -261,9 +261,9 @@ namespace OOLUA
 //				typedef char error_library_is_not_configured_with_shared_ptr_support[-1];
 			 	assert(0 && "this function should never be called when not compiled with shared pointer support");
 #endif
-
 			}
 		};
+
 		template<typename T>
 		struct SharedHelper
 		{
@@ -284,7 +284,7 @@ namespace OOLUA
 							, &register_class_imp<ClassType>
 							, &SharedHelper<PossiblySharedType>::release_pointer);
 
-			SharedHelper<PossiblySharedType>::fixup_pointer(ud,shared_ptr);
+			SharedHelper<PossiblySharedType>::fixup_pointer(ud, shared_ptr);
 
 			//change the metatable associated with the ud
 			lua_getfield(vm, LUA_REGISTRYINDEX, OOLUA::Proxy_class<ClassType>::class_name);
@@ -338,11 +338,11 @@ namespace OOLUA
 										, &SharedHelper<T>::release_pointer);
 			if(owner != No_change)userdata_gc_value(ud, owner == Lua);
 
-			add_ptr_imp(vm,ptr);
+			add_ptr_imp(vm, ptr);
 			return ud;
 		}
 
-		template<typename T,template <typename> class Shared_pointer_class>
+		template<typename T, template <typename> class Shared_pointer_class>
 		inline Lua_ud* add_ptr(lua_State* const vm, Shared_pointer_class<T> const&  shared_ptr, bool is_const, Owner /*owner*/)
 		{
 			typedef  Shared_pointer_class<T> shared;

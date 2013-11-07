@@ -282,7 +282,7 @@ OOLUA_EXPORT_NO_FUNCTIONS(SharedConstructor)
 			OOLUA_SHARED_TYPE<SharedFoo> foo(new SharedFoo);
 			m_lua->run_chunk("return function(obj) obj:no_param_function() end");
 			m_lua->call(1, foo);
-			CPPUNIT_ASSERT_EQUAL(int(1), foo->count);
+			CPPUNIT_ASSERT_EQUAL(int(1), foo->count); //NOLINT(readability/casting)
 		}
 		void call_pushSharedObjectAndCallConstantFunction_globalCalledCountEqualsOne()
 		{
@@ -291,7 +291,7 @@ OOLUA_EXPORT_NO_FUNCTIONS(SharedConstructor)
 			m_lua->run_chunk("return function(obj) obj:no_param_function_const() end");
 			called = 0;
 			m_lua->call(1, foo);
-			CPPUNIT_ASSERT_EQUAL(int(1), called);
+			CPPUNIT_ASSERT_EQUAL(int(1), called); //NOLINT(readability/casting)
 		}
 
 		//TODO Hmm should this be disallowed?
