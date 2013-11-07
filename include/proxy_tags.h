@@ -128,6 +128,9 @@ namespace OOLUA
 	struct No_public_constructors{};
 	struct No_public_destructor{};
 	struct Register_class_enums{};
+//TODO make a proper comment or remove this entirely
+//when OOLUA_USE_SHARED_PTR == 1 this request that constructors/operators push a shared_ptr type
+	struct Shared{};
 } // namespace OOLUA
 /**@}*/
 #endif //OOLUA_PROXY_TAGS_H_

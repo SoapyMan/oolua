@@ -8,7 +8,7 @@
 
 #	if OOLUA_USE_SHARED_PTR == 1
 #		include OOLUA_SHARED_HEADER
-#	include <typeinfo>
+
 int called = 0;
 struct SharedFoo
 {
@@ -62,6 +62,14 @@ OOLUA_EXPORT_FUNCTIONS(SharedFoo
 						)
 OOLUA_EXPORT_FUNCTIONS_CONST(SharedFoo, no_param_function_const)
 
+struct SharedConstructor{};
+
+OOLUA_PROXY(SharedConstructor)
+	OOLUA_TAGS(Shared)
+OOLUA_PROXY_END
+
+OOLUA_EXPORT_NO_FUNCTIONS(SharedConstructor)
+
 	class SharedPointer : public CppUnit::TestFixture
 	{
 		CPPUNIT_TEST_SUITE(SharedPointer);
@@ -101,6 +109,9 @@ OOLUA_EXPORT_FUNCTIONS_CONST(SharedFoo, no_param_function_const)
 			CPPUNIT_TEST(functionReturn_returnsSharedObject_useCountEqualsTwo);
 			CPPUNIT_TEST(functionReturn_returnsSharedObjectPullReturn_resultEqualsInput);
 			CPPUNIT_TEST(functionReturn_returnsRefToSharedObjectPullReturn_resultEqualsInput);
+
+			CPPUNIT_TEST(defaultConstructorWithOutSharedTag_createAndReturn_topOfStackIsNotSharedPtr);
+			CPPUNIT_TEST(defaultConstructorSharedTag_createAndReturn_topOfStackIsSharedPtr);
 		CPPUNIT_TEST_SUITE_END();
 		OOLUA::Script* m_lua;
 	public:
@@ -120,6 +131,7 @@ OOLUA_EXPORT_FUNCTIONS_CONST(SharedFoo, no_param_function_const)
 			OOLUA::INTERNAL::Lua_ud* ud = static_cast<OOLUA::INTERNAL::Lua_ud*>(lua_touserdata(m_lua->state(), index));
 			if (ud) OOLUA::INTERNAL::userdata_gc_value(ud, false);
 		}
+
 		void push_topOfStackIsUserData()
 		{
 			m_lua->register_class<Stub1>();
@@ -400,9 +412,26 @@ OOLUA_EXPORT_FUNCTIONS_CONST(SharedFoo, no_param_function_const)
 			m_lua->pull(result);
 			CPPUNIT_ASSERT_EQUAL(object.m_shared.get(), result.get());
 		}
+
+		void defaultConstructorWithOutSharedTag_createAndReturn_topOfStackIsNotSharedPtr()
+		{
+			m_lua->register_class<Stub1>();
+			m_lua->run_chunk("return Stub1.new()");
+			OOLUA::INTERNAL::Lua_ud* ud = static_cast<OOLUA::INTERNAL::Lua_ud*>(lua_touserdata(m_lua->state(), 1));
+
+			CPPUNIT_ASSERT_EQUAL(false, OOLUA::INTERNAL::userdata_is_shared_ptr(ud));
+		}
+
+		void defaultConstructorSharedTag_createAndReturn_topOfStackIsSharedPtr()
+		{
+			m_lua->register_class<SharedConstructor>();
+			m_lua->run_chunk("return SharedConstructor.new()");
+			OOLUA::INTERNAL::Lua_ud* ud = static_cast<OOLUA::INTERNAL::Lua_ud*>(lua_touserdata(m_lua->state(), 1));
+
+			CPPUNIT_ASSERT_EQUAL(true, OOLUA::INTERNAL::userdata_is_shared_ptr(ud));
+		}
 	};
 
 	CPPUNIT_TEST_SUITE_REGISTRATION(SharedPointer);
 
-#endif //OOLUA_USE_SHARED_POINTER
-
+#	endif //OOLUA_USE_SHARED_PTR

@@ -103,7 +103,7 @@ namespace OOLUA
 			static int construct(lua_State * vm)
 			{
 				OOLUA_CONSTRUCTOR_TRY
-				Type* obj = new Type;
+				typename ConstructorAndOperatorReturnType<Type>::ptr_type obj(new Type);
 				add_ptr(vm, obj, false, Lua);
 				OOLUA_CONSTRUCTOR_CATCH(Type, 0)
 				return 1;

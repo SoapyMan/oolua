@@ -28,6 +28,8 @@ THE SOFTWARE.
 #	include "proxy_class.h"
 #	include "type_list.h"
 #	include "lvd_type_traits.h"
+#	include "oolua_config.h"
+#	include "lvd_types.h"
 
 namespace OOLUA
 {
@@ -129,6 +131,26 @@ namespace OOLUA
 
 			/**@}*/
 		/**@}*/
+#if OOLUA_USE_SHARED_PTR == 1
+//TODO
+//start off by having to request it otherwise is will break alot of tests.
+		template<typename RawClassType>
+		struct ConstructorAndOperatorReturnType
+		{
+			typedef typename LVD::if_else<has_tag<Proxy_class<RawClassType>, Shared>::Result
+										, OOLUA_SHARED_TYPE<RawClassType>
+										, RawClassType*
+									>::type ptr_type;
+		};
+#else
+		template<typename RawClassType>
+		struct ConstructorAndOperatorReturnType
+		{
+			typedef RawClassType* ptr_type;
+		};
+#endif
+
+
 		/** \endcond */
 	} // namespace INTERNAL // NOLINT
 } // namespace OOLUA
