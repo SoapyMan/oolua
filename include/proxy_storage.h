@@ -342,10 +342,8 @@ namespace OOLUA
 			return ud;
 		}
 
-//#if OOLUA_USE_SHARED_PTR == 1
-//		template<typename T>
 		template<typename T,template <typename> class Shared_pointer_class>
-		inline Lua_ud* add_shared_ptr(lua_State* const vm, Shared_pointer_class<T> const&  shared_ptr, bool is_const)
+		inline Lua_ud* add_ptr(lua_State* const vm, Shared_pointer_class<T> const&  shared_ptr, bool is_const, Owner /*owner*/)
 		{
 			typedef  Shared_pointer_class<T> shared;
 			Lua_ud* ud = new_userdata(vm, NULL, is_const
@@ -360,7 +358,6 @@ namespace OOLUA
 			add_ptr_imp(vm, p->get());
 			return ud;
 		}
-//#endif
 
 		template<typename Type, typename Bases, int BaseIndex, typename BaseType>
 		struct Add_ptr
