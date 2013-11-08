@@ -141,7 +141,7 @@ namespace OOLUA
 												   ? Proxy_class<typename OOLUA::INTERNAL::param_type<T>::raw>::class_name_const
 												   : Proxy_class<typename OOLUA::INTERNAL::param_type<T>::raw>::class_name);
 #	elif OOLUA_DEBUG_CHECKS == 1
-					assert(class_ptr);
+					assert(value);
 #	endif
 #	if OOLUA_USE_EXCEPTIONS == 0
 					return false;
