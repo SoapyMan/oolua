@@ -42,6 +42,8 @@ struct SharedFoo
 
 	int count;
 	OOLUA_SHARED_TYPE<SharedFoo> m_shared;
+	OOLUA_SHARED_TYPE<SharedFoo const> m_const_shared;
+
 };
 
 OOLUA_PROXY(SharedFoo)
@@ -113,10 +115,11 @@ OOLUA_EXPORT_NO_FUNCTIONS(SharedConstructor)
 			CPPUNIT_TEST(defaultConstructorWithOutSharedTag_createAndReturn_topOfStackIsNotSharedPtr);
 			CPPUNIT_TEST(defaultConstructorSharedTag_createAndReturn_topOfStackIsSharedPtr);
 
+			CPPUNIT_TEST(inTrait_sharedPointerToConstType_isConst);
+
 #		if OOLUA_STORE_LAST_ERROR == 1
 			CPPUNIT_TEST(pull_sharedPointerWhenIntIsOnTheStack_pullReturnsFalse);
 			CPPUNIT_TEST(call_memberFunctionWhichWantsSharedPointerYetIntIsOnTheStack_callReturnsFalse);
-
 #		endif
 
 #		if OOLUA_USE_EXCEPTIONS == 1
@@ -269,7 +272,7 @@ OOLUA_EXPORT_NO_FUNCTIONS(SharedConstructor)
 			OOLUA_SHARED_TYPE<Derived1Abstract1> derived(new Derived1Abstract1);
 
 			{
-				//forece a release for base making the counter two
+				//force a release for base making the counter two
 				//one C++ side and one for the two userdatas Lua side
 				OOLUA_SHARED_TYPE<Abstract1> base(derived);
 				m_lua->push(base);
@@ -442,6 +445,7 @@ OOLUA_EXPORT_NO_FUNCTIONS(SharedConstructor)
 
 			CPPUNIT_ASSERT_EQUAL(true, OOLUA::INTERNAL::userdata_is_shared_ptr(ud));
 		}
+
 #	if OOLUA_STORE_LAST_ERROR == 1
 		void pull_sharedPointerWhenIntIsOnTheStack_pullReturnsFalse()
 		{
@@ -476,6 +480,13 @@ OOLUA_EXPORT_NO_FUNCTIONS(SharedConstructor)
 			CPPUNIT_ASSERT_THROW((m_lua->call(1, &object)), OOLUA::Runtime_error);
 		}
 #	endif
+
+		void inTrait_sharedPointerToConstType_isConst()
+		{
+			typedef OOLUA_SHARED_TYPE<SharedFoo const> const_shared;
+			int value = OOLUA::in_p<const_shared>::is_constant;
+			CPPUNIT_ASSERT_EQUAL(1, value);
+		}
 	};
 
 	CPPUNIT_TEST_SUITE_REGISTRATION(SharedPointer);

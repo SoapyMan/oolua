@@ -307,6 +307,7 @@ The general naming convention for traits is:\n
 		struct is_shared_type
 		{
 			enum {value = 0};
+			typedef void underlying_type;
 		};
 
 		template<typename T, template <typename> class shared_type>
@@ -315,6 +316,18 @@ The general naming convention for traits is:\n
 			//container class does not have a proxy yet the contained class does.
 			enum {value = has_a_proxy_type<shared_type<T> >::value == 0
 					&& has_a_proxy_type<typename LVD::raw_type<T>::raw>::value == 1};
+			typedef T underlying_type;
+
+		};
+
+		template<typename T>
+		struct is_shared_const
+		{
+			typedef typename LVD::raw_type<T>::type raw;
+			typedef is_shared_type<raw> is_shared;
+
+			enum {value = is_shared::value
+					&& LVD::is_const<typename is_shared::underlying_type>::value };
 		};
 
 		template<typename T>
@@ -342,7 +355,8 @@ The general naming convention for traits is:\n
 		enum {out = 0};
 		enum {owner = No_change};
 		enum { is_by_value = INTERNAL::Type_enum_defaults<type>::is_by_value  };
-		enum { is_constant = INTERNAL::Type_enum_defaults<type>::is_constant  };
+		enum { is_constant = INTERNAL::Type_enum_defaults<type>::is_constant
+							|| INTERNAL::is_shared_const<type>::value };
 		enum { is_integral = INTERNAL::Type_enum_defaults<type>::is_integral
 							|| INTERNAL::is_false_integral<type>::value };
 	};
