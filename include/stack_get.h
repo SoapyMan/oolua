@@ -63,7 +63,6 @@ namespace OOLUA
 
 		namespace LUA_CALLED
 		{
-
 			void get_class_type_error(lua_State* const vm, char const* expected_type);
 			void get_error(lua_State* vm, int idx, char const* expected_type);
 
@@ -139,7 +138,7 @@ namespace OOLUA
 			static void get(lua_State* const vm, int idx, Shared_pointer_class<T> & value)
 			{
 				value = stack_checker<Shared_pointer_class<T> >::check_index(vm, idx);
-/*
+#if OOLUA_RUNTIME_CHECKS_ENABLED  == 1
 				if (!value)
 				{
 					get_class_type_error(vm, OOLUA::INTERNAL::param_type<T>::is_constant
@@ -147,7 +146,7 @@ namespace OOLUA
 											  : Proxy_class<typename OOLUA::INTERNAL::param_type<T>::raw>::class_name);
 
 				}
-*/
+#endif
 			}
 		};
 #endif

@@ -115,10 +115,13 @@ OOLUA_EXPORT_NO_FUNCTIONS(SharedConstructor)
 
 #		if OOLUA_STORE_LAST_ERROR == 1
 			CPPUNIT_TEST(pull_sharedPointerWhenIntIsOnTheStack_pullReturnsFalse);
+			CPPUNIT_TEST(call_memberFunctionWhichWantsSharedPointerYetIntIsOnTheStack_callReturnsFalse);
+
 #		endif
 
 #		if OOLUA_USE_EXCEPTIONS == 1
 			CPPUNIT_TEST(pull_sharedPointerWhenIntIsOnTheStack_throwsOoluaTypeError);
+			CPPUNIT_TEST(call_memberFunctionWhichWantsSharedPointerYetIntIsOnTheStack_throwsOoluaRuntimeError);
 #		endif
 
 		CPPUNIT_TEST_SUITE_END();
@@ -447,7 +450,14 @@ OOLUA_EXPORT_NO_FUNCTIONS(SharedConstructor)
 			OOLUA_SHARED_TYPE<Stub1> result;
 			CPPUNIT_ASSERT_EQUAL(false, m_lua->pull(result));
 		}
-
+		void call_memberFunctionWhichWantsSharedPointerYetIntIsOnTheStack_callReturnsFalse()
+		{
+			m_lua->register_class<SharedFoo>();
+			SharedFoo object;
+			m_lua->run_chunk("return function(obj) obj:shared_param(1) end");
+			bool result = m_lua->call(1, &object);
+			CPPUNIT_ASSERT_EQUAL(false, result);
+		}
 #	endif
 
 #	if OOLUA_USE_EXCEPTIONS == 1
@@ -457,6 +467,13 @@ OOLUA_EXPORT_NO_FUNCTIONS(SharedConstructor)
 			m_lua->run_chunk("return 1");
 			OOLUA_SHARED_TYPE<Stub1> result;
 			CPPUNIT_ASSERT_THROW(m_lua->pull(result), OOLUA::Type_error);
+		}
+		void call_memberFunctionWhichWantsSharedPointerYetIntIsOnTheStack_throwsOoluaRuntimeError()
+		{
+			m_lua->register_class<SharedFoo>();
+			SharedFoo object;
+			m_lua->run_chunk("return function(obj) obj:shared_param(1) end");
+			CPPUNIT_ASSERT_THROW((m_lua->call(1, &object)), OOLUA::Runtime_error);
 		}
 #	endif
 	};
