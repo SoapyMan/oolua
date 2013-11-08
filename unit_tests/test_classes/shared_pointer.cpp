@@ -112,6 +112,15 @@ OOLUA_EXPORT_NO_FUNCTIONS(SharedConstructor)
 
 			CPPUNIT_TEST(defaultConstructorWithOutSharedTag_createAndReturn_topOfStackIsNotSharedPtr);
 			CPPUNIT_TEST(defaultConstructorSharedTag_createAndReturn_topOfStackIsSharedPtr);
+
+#		if OOLUA_STORE_LAST_ERROR == 1
+			CPPUNIT_TEST(pull_sharedPointerWhenIntIsOnTheStack_pullReturnsFalse);
+#		endif
+
+#		if OOLUA_USE_EXCEPTIONS == 1
+			CPPUNIT_TEST(pull_sharedPointerWhenIntIsOnTheStack_throwsOoluaTypeError);
+#		endif
+
 		CPPUNIT_TEST_SUITE_END();
 		OOLUA::Script* m_lua;
 	public:
@@ -430,6 +439,26 @@ OOLUA_EXPORT_NO_FUNCTIONS(SharedConstructor)
 
 			CPPUNIT_ASSERT_EQUAL(true, OOLUA::INTERNAL::userdata_is_shared_ptr(ud));
 		}
+#	if OOLUA_STORE_LAST_ERROR == 1
+		void pull_sharedPointerWhenIntIsOnTheStack_pullReturnsFalse()
+		{
+			m_lua->register_class<Stub1>();
+			m_lua->run_chunk("return 1");
+			OOLUA_SHARED_TYPE<Stub1> result;
+			CPPUNIT_ASSERT_EQUAL(false, m_lua->pull(result));
+		}
+
+#	endif
+
+#	if OOLUA_USE_EXCEPTIONS == 1
+		void pull_sharedPointerWhenIntIsOnTheStack_throwsOoluaTypeError()
+		{
+			m_lua->register_class<Stub1>();
+			m_lua->run_chunk("return 1");
+			OOLUA_SHARED_TYPE<Stub1> result;
+			CPPUNIT_ASSERT_THROW(m_lua->pull(result), OOLUA::Type_error);
+		}
+#	endif
 	};
 
 	CPPUNIT_TEST_SUITE_REGISTRATION(SharedPointer);

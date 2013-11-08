@@ -134,7 +134,19 @@ namespace OOLUA
 			static bool pull(lua_State* const vm, Shared_pointer_class<T> & value)
 			{
 				value = stack_checker<Shared_pointer_class<T> >::check_index(vm, lua_gettop(vm));
-				if (!value) return false;
+				if(!value)
+				{
+#	if OOLUA_RUNTIME_CHECKS_ENABLED  == 1
+					INTERNAL::handle_cpp_pull_fail(vm, OOLUA::INTERNAL::param_type<T>::is_constant
+												   ? Proxy_class<typename OOLUA::INTERNAL::param_type<T>::raw>::class_name_const
+												   : Proxy_class<typename OOLUA::INTERNAL::param_type<T>::raw>::class_name);
+#	elif OOLUA_DEBUG_CHECKS == 1
+					assert(class_ptr);
+#	endif
+#	if OOLUA_USE_EXCEPTIONS == 0
+					return false;
+#	endif
+				}
 				lua_pop(vm, 1);
 				return true;
 			}
