@@ -55,8 +55,9 @@ namespace OOLUA
 		inline void push_shared_pointer(lua_State* vm, Shared_pointer_class<Underlying_pointer_type> const& instance)
 		{
 			typedef Shared_pointer_class<Underlying_pointer_type> shared_type;
-			if_check_enabled_check_type_is_registered(vm, Proxy_class<Underlying_pointer_type>::class_name);
-			Lua_ud* ud(find_ud<shared_type,Underlying_pointer_type>(vm, &instance, (Underlying_pointer_type*)(instance.get()), !!LVD::is_const<Underlying_pointer_type>::value));//NOLINT
+			typedef typename LVD::remove_const<Underlying_pointer_type>::type raw_type;
+			if_check_enabled_check_type_is_registered(vm, Proxy_class<raw_type>::class_name);
+			Lua_ud* ud(find_ud<shared_type,raw_type>(vm, &instance, (raw_type*)(instance.get()), !!LVD::is_const<Underlying_pointer_type>::value));//NOLINT
 			if(!ud) ud = add_ptr(vm, instance, !!(LVD::is_const<Underlying_pointer_type>::value), Lua/*ignored parameter*/);//NOLINT
 		}
 

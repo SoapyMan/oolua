@@ -126,6 +126,7 @@ OOLUA_EXPORT_NO_FUNCTIONS(SharedConstructor)
 			CPPUNIT_TEST(pull_sharedPointerWhenIntIsOnTheStack_throwsOoluaTypeError);
 			CPPUNIT_TEST(call_memberFunctionWhichWantsSharedPointerYetIntIsOnTheStack_throwsOoluaRuntimeError);
 #		endif
+			CPPUNIT_TEST(push_sharedPointerToConstType_topOfStackIsConst);
 
 		CPPUNIT_TEST_SUITE_END();
 		OOLUA::Script* m_lua;
@@ -145,6 +146,12 @@ OOLUA_EXPORT_NO_FUNCTIONS(SharedConstructor)
 		{
 			OOLUA::INTERNAL::Lua_ud* ud = static_cast<OOLUA::INTERNAL::Lua_ud*>(lua_touserdata(m_lua->state(), index));
 			if (ud) OOLUA::INTERNAL::userdata_gc_value(ud, false);
+		}
+
+		void assert_top_of_stack_const_value_equals(bool value)
+		{
+			OOLUA::INTERNAL::Lua_ud* ud = static_cast<OOLUA::INTERNAL::Lua_ud*>(lua_touserdata(m_lua->state(), -1));
+			CPPUNIT_ASSERT_EQUAL(value, OOLUA::INTERNAL::userdata_is_constant(ud));
 		}
 
 		void push_topOfStackIsUserData()
@@ -486,6 +493,13 @@ OOLUA_EXPORT_NO_FUNCTIONS(SharedConstructor)
 			typedef OOLUA_SHARED_TYPE<SharedFoo const> const_shared;
 			int value = OOLUA::in_p<const_shared>::is_constant;
 			CPPUNIT_ASSERT_EQUAL(1, value);
+		}
+		void push_sharedPointerToConstType_topOfStackIsConst()
+		{
+			OOLUA_SHARED_TYPE<SharedFoo const> const_shared(new SharedFoo);
+			m_lua->register_class<SharedFoo>();
+			m_lua->push(const_shared);
+			assert_top_of_stack_const_value_equals(true);
 		}
 	};
 

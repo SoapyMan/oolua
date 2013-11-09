@@ -223,7 +223,7 @@ namespace OOLUA
 
 		/*
 			This is required because when we want to change the metatable to a more
-			derived type, we do not acutally know the type that is already stored in
+			derived type, we do not actually know the type that is already stored in
 			the userdata member. So the userdata has to pay for another function
 			pointer to do the work.
 			When the type is not a userdata the function should translate to a nop.
@@ -346,16 +346,17 @@ namespace OOLUA
 		inline Lua_ud* add_ptr(lua_State* const vm, Shared_pointer_class<T> const&  shared_ptr, bool is_const, Owner /*owner*/)
 		{
 			typedef  Shared_pointer_class<T> shared;
+			typedef typename LVD::remove_const<T>::type raw;
 			Lua_ud* ud = new_userdata(vm, NULL, is_const
-									, &requested_ud_is_a_base<T>
-									, &register_class_imp<T>
+									, &requested_ud_is_a_base<raw>
+									, &register_class_imp<raw>
 									, &SharedHelper<shared >::release_pointer);
 
 			shared* p = SharedHelper<shared>::fixup_pointer(ud, &shared_ptr);
 
 			userdata_gc_value(ud, true);//yes it always needs destructing
 			userdata_shared_ptr(ud);//add the shared flag
-			add_ptr_imp(vm, p->get());
+			add_ptr_imp(vm, (raw*)p->get());
 			return ud;
 		}
 
