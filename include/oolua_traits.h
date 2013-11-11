@@ -317,7 +317,6 @@ The general naming convention for traits is:\n
 			enum {value = has_a_proxy_type<shared_type<T> >::value == 0
 					&& has_a_proxy_type<typename LVD::raw_type<T>::raw>::value == 1};
 			typedef T underlying_type;
-
 		};
 
 		template<typename T>

@@ -144,7 +144,6 @@ namespace OOLUA
 					get_class_type_error(vm, OOLUA::INTERNAL::param_type<T>::is_constant
 											  ? Proxy_class<typename OOLUA::INTERNAL::param_type<T>::raw>::class_name_const
 											  : Proxy_class<typename OOLUA::INTERNAL::param_type<T>::raw>::class_name);
-
 				}
 #endif
 			}

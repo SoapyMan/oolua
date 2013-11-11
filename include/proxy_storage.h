@@ -295,7 +295,7 @@ namespace OOLUA
 		Ptr_type* fixup_pointer(Lua_ud* ud, Shared_pointer_class<Ptr_type> const* shared)
 		{
 			typedef Shared_pointer_class<Ptr_type> none_const_sp;
-			none_const_sp* sp = new (ud->shared_object) none_const_sp(*shared);
+			none_const_sp* sp = new(ud->shared_object) none_const_sp(*shared);
 			return sp->get();
 		}
 #endif

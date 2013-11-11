@@ -43,7 +43,6 @@ struct SharedFoo
 	int count;
 	OOLUA_SHARED_TYPE<SharedFoo> m_shared;
 	OOLUA_SHARED_TYPE<SharedFoo const> m_const_shared;
-
 };
 
 OOLUA_PROXY(SharedFoo)
