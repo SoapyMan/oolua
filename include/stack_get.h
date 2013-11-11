@@ -135,15 +135,18 @@ namespace OOLUA
 		template<typename T, template <typename> class Shared_pointer_class>
 		struct get_basic_type<Shared_pointer_class<T>, 0, 0>
 		{
+			typedef typename LVD::remove_const<T>::type raw;
 			static void get(lua_State* const vm, int idx, Shared_pointer_class<T> & value)
 			{
-				value = stack_checker<Shared_pointer_class<T> >::check_index(vm, idx);
+				value = !LVD::is_const<T>::value
+							? stack_checker<Shared_pointer_class<raw> >::check_index_no_const(vm, idx)
+							: stack_checker<Shared_pointer_class<raw> >::check_index(vm, idx);
 #if OOLUA_RUNTIME_CHECKS_ENABLED  == 1
 				if (!value)
 				{
-					get_class_type_error(vm, OOLUA::INTERNAL::param_type<T>::is_constant
-											  ? Proxy_class<typename OOLUA::INTERNAL::param_type<T>::raw>::class_name_const
-											  : Proxy_class<typename OOLUA::INTERNAL::param_type<T>::raw>::class_name);
+					get_class_type_error(vm, LVD::is_const<T>::value
+											  ? Proxy_class<raw>::class_name_const
+											  : Proxy_class<raw>::class_name);
 				}
 #endif
 			}

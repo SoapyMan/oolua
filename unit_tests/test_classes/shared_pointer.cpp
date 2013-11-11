@@ -58,7 +58,14 @@ struct SharedFoo
 	{
 		return m_shared;
 	}
-
+	void shared_param_type_is_const(OOLUA_SHARED_TYPE<SharedFoo const> input)
+	{
+		m_const_shared = input;
+	}
+	OOLUA_SHARED_TYPE<SharedFoo const> returnsSharedConstPtr()
+	{
+		return m_const_shared;
+	}
 	int count;
 	OOLUA_SHARED_TYPE<SharedFoo> m_shared;
 	OOLUA_SHARED_TYPE<SharedFoo const> m_const_shared;
@@ -71,6 +78,8 @@ OOLUA_PROXY(SharedFoo)
 	OOLUA_MFUNC(shared_param_ref)
 	OOLUA_MFUNC(returnsSharedPtr)
 	OOLUA_MFUNC(returnsRefToSharedPtr)
+	OOLUA_MFUNC(shared_param_type_is_const)
+	OOLUA_MFUNC(returnsSharedConstPtr)
 OOLUA_PROXY_END
 
 OOLUA_EXPORT_FUNCTIONS(SharedFoo
@@ -79,7 +88,8 @@ OOLUA_EXPORT_FUNCTIONS(SharedFoo
 						, shared_param_ref
 						, returnsSharedPtr
 						, returnsRefToSharedPtr
-						)
+						, shared_param_type_is_const
+						, returnsSharedConstPtr)
 OOLUA_EXPORT_FUNCTIONS_CONST(SharedFoo, no_param_function_const)
 
 struct SharedConstructor{};
@@ -152,6 +162,11 @@ OOLUA_EXPORT_NO_FUNCTIONS(SharedConstructor)
 			CPPUNIT_TEST(pull_pushConstThenPullConst_useCountEqualsTwo);
 			CPPUNIT_TEST(pull_pushNoneConstThenPullConst_useCountEqualsTwo);
 			CPPUNIT_TEST(pull_pushConstThenPullNoneConst_callsPanic);
+
+			CPPUNIT_TEST(call_memberFunctionTakingConstSharedParam_paramUseCountEqualsTwo);
+			CPPUNIT_TEST(call_memberFunctionTakingConstSharedParam_paramAndMemberAreEqual);
+			CPPUNIT_TEST(call_memberFunctionReturnsSharedConst_resultEqualsMember);
+			CPPUNIT_TEST(call_memberFunctionReturnsSharedConst_memberUseCountEqualsTwo);
 		CPPUNIT_TEST_SUITE_END();
 		OOLUA::Script* m_lua;
 	public:
@@ -629,6 +644,52 @@ OOLUA_EXPORT_NO_FUNCTIONS(SharedConstructor)
 				CPPUNIT_ASSERT_EQUAL(true, true);//we hit the at panic
 		}
 		/* ====================== LuaJIT2 protected test ===========================*/
+
+		void call_memberFunctionTakingConstSharedParam_paramUseCountEqualsTwo()
+		{
+			m_lua->register_class<SharedFoo>();
+			SharedFoo object;
+			OOLUA_SHARED_TYPE<SharedFoo const> param(new SharedFoo);
+			m_lua->run_chunk("return function(obj, param) obj:shared_param_type_is_const(param) end");
+			m_lua->call(1, &object, param);
+			m_lua->gc();
+			CPPUNIT_ASSERT_EQUAL(long(2), param.use_count());
+		}
+
+		void call_memberFunctionTakingConstSharedParam_paramAndMemberAreEqual()
+		{
+			m_lua->register_class<SharedFoo>();
+			SharedFoo object;
+			OOLUA_SHARED_TYPE<SharedFoo const> param(new SharedFoo);
+			m_lua->run_chunk("return function(obj, param) obj:shared_param_type_is_const(param) end");
+			m_lua->call(1, &object, param);
+			CPPUNIT_ASSERT_EQUAL(object.m_const_shared.get(), param.get());
+		}
+
+		void call_memberFunctionReturnsSharedConst_resultEqualsMember()
+		{
+			m_lua->register_class<SharedFoo>();
+			SharedFoo object;
+			object.m_const_shared = OOLUA_SHARED_TYPE<SharedFoo const>(new SharedFoo);
+			m_lua->run_chunk("return function(obj) return obj:returnsSharedConstPtr() end");
+			m_lua->call(1, &object);
+			OOLUA_SHARED_TYPE<SharedFoo const> result;
+			m_lua->pull(result);
+			CPPUNIT_ASSERT_EQUAL(object.m_const_shared.get(), result.get());
+		}
+
+		void call_memberFunctionReturnsSharedConst_memberUseCountEqualsTwo()
+		{
+			m_lua->register_class<SharedFoo>();
+			SharedFoo object;
+			object.m_const_shared = OOLUA_SHARED_TYPE<SharedFoo const>(new SharedFoo);
+			m_lua->run_chunk("return function(obj) return obj:returnsSharedConstPtr() end");
+			m_lua->call(1, &object);
+			OOLUA_SHARED_TYPE<SharedFoo const> result;
+			m_lua->pull(result);
+			m_lua->gc();
+			CPPUNIT_ASSERT_EQUAL(long(2), object.m_const_shared.use_count());
+		}
 	};
 
 	CPPUNIT_TEST_SUITE_REGISTRATION(SharedPointer);
