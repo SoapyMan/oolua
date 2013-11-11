@@ -134,7 +134,7 @@ namespace OOLUA
 			typedef typename LVD::remove_const<T>::type raw;
 			static bool pull(lua_State* const vm, Shared_pointer_class<T> & value)
 			{
-				value = ! LVD::is_const<T>::value
+				value = !LVD::is_const<T>::value
 							? stack_checker<Shared_pointer_class<raw> >::check_index_no_const(vm, lua_gettop(vm))
 							: stack_checker<Shared_pointer_class<raw> >::check_index(vm, lua_gettop(vm));
 

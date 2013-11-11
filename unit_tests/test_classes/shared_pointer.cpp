@@ -627,10 +627,8 @@ OOLUA_EXPORT_NO_FUNCTIONS(SharedConstructor)
 			}
 			else
 				CPPUNIT_ASSERT_EQUAL(true, true);//we hit the at panic
-
 		}
 		/* ====================== LuaJIT2 protected test ===========================*/
-
 	};
 
 	CPPUNIT_TEST_SUITE_REGISTRATION(SharedPointer);
