@@ -144,13 +144,6 @@ namespace OOLUA
 			return 0;
 		}
 
-
-		/*
-			This resets the userdata's metatable.
-			When the type is a shared pointer methods that it calls also need to explictly
-			call the destructor of the current stored shard pointer and replace
-			it will the new instance
-		*/
 		//It is possible for a base class and a derived class pointer to have no offset.
 		//if found it is left on the top of the stack and returns the Lua_ud ptr
 		//else the stack is same as on entrance to the function and null is returned
@@ -226,50 +219,91 @@ namespace OOLUA
 			derived type, we do not actually know the type that is already stored in
 			the userdata member. So the userdata has to pay for another function
 			pointer to do the work.
-			When the type is not a userdata the function should translate to a nop.
-			TODO check generated assembly to see if this assumption is correct
 		*/
 		template<typename T>
 		struct SharedHelper;
 
+		/*
+			Handles shared<T const> and shared<T>
+		*/
 		template<typename Ptr_type, template <typename> class Shared_pointer_class>
 		struct SharedHelper<Shared_pointer_class<Ptr_type> >
 		{
-			typedef Shared_pointer_class<Ptr_type> shared;
+			typedef Shared_pointer_class<typename LVD::remove_const<Ptr_type>::type> shared;
 			static void release_pointer(Lua_ud* ud)
 			{
 #if OOLUA_USE_SHARED_PTR == 1
 				//this member is only defined when compiled with shared pointer support
 				shared* shared_ptr = reinterpret_cast<shared*>(ud->shared_object);
 				shared_ptr->~shared();
-
 #else
 				//otherwise this function should never be called
-//				typedef char error_library_is_not_configured_with_shared_ptr_support[-1];
-			 	assert(0 && "this function should never be called when not compiled with shared pointer support");
-#endif
-			}
-
-			static shared* fixup_pointer(Lua_ud* ud, shared const* ptr)
-			{
-#if OOLUA_USE_SHARED_PTR == 1
-				//correct the ud pointer
-				//we use placement new and later code will explicitly call the destructor
-			 	return new (ud->shared_object) shared(*ptr);
-#else
-				//otherwise this function should never be called
-//				typedef char error_library_is_not_configured_with_shared_ptr_support[-1];
 			 	assert(0 && "this function should never be called when not compiled with shared pointer support");
 #endif
 			}
 		};
 
+		/* raw pointer version does nothing*/
 		template<typename T>
 		struct SharedHelper
 		{
 			static void release_pointer(Lua_ud* /*ud*/){}//nop
-			static void fixup_pointer(Lua_ud* /*ud*/, T const* /*ptr*/){}//nop
 		};
+
+		/*
+			The library always stores the most derived type known for the instance
+			and the weakest type.
+			If there are two types A and B, where B derives from A.
+			shared<B const> is pushed
+			then shared<A> is pushed
+			The weakest and most derived type now is shared<B> yet the library does not
+			know the type stored in the userdata at this point and therefore how to cast
+			it to the new none constant derived type.
+
+			The problem is not unique for shared pointers but it adds another level of
+			stupidity. Raw pointers B* and B const* are related types, which is not true
+			for shared<B> and shared<B const>.
+			Shared<B> b(new B);
+			Shared<B const>* bb = &b; //BOOM unrelated types and undefined.
+			You could try a C style function cast / reinterpret_cast to quieten the compiler
+			but it is still undefined.
+			However Shared<B const> bb(b) is defined, so we can always get a constant version
+			from a none constant version. Therefore the library will use OOLUA_SHARED_CONST_CAST
+			to remove constness and then use the const flag in the userdata. This way when
+			constness changes the flag is switched off yet the type is still correct without
+			knowing it at that point and later when the instance has it's destructor called.
+
+		*/
+
+#if OOLUA_USE_SHARED_PTR == 1
+		/*
+			These must be protected as they use OOLUA_SHARED_CONST_CAST and ud->shared_object
+			which are only defined when using shared pointers.
+		*/
+
+		/*const version removes const*/
+		template<typename Ptr_type, template <typename> class Shared_pointer_class>
+		Ptr_type* fixup_pointer(Lua_ud* ud, Shared_pointer_class<Ptr_type const> const* shared)
+		{
+			typedef Shared_pointer_class<Ptr_type> none_const_sp;
+			none_const_sp * sp = new(ud->shared_object) none_const_sp(OOLUA_SHARED_CONST_CAST<Ptr_type>(*shared));
+			return sp->get();
+		}
+
+		/*none const version*/
+		template<typename Ptr_type, template <typename> class Shared_pointer_class>
+		Ptr_type* fixup_pointer(Lua_ud* ud, Shared_pointer_class<Ptr_type> const* shared)
+		{
+			typedef Shared_pointer_class<Ptr_type> none_const_sp;
+			none_const_sp* sp = new (ud->shared_object) none_const_sp(*shared);
+			return sp->get();
+		}
+#endif
+		/* raw pointer version does nothing*/
+		template<typename T>
+		void fixup_pointer(Lua_ud* /*ud*/, T const* /*raw*/)//nop //NOLINT(readability/casting)
+		{}
+
 
 		template<typename PossiblySharedType, typename ClassType>
 		inline Lua_ud* reset_metatable(lua_State* vm, PossiblySharedType const* shared_ptr
@@ -277,6 +311,10 @@ namespace OOLUA
 		{
 			Lua_ud *ud = static_cast<Lua_ud *>(lua_touserdata(vm, -1));//ud
 #if OOLUA_USE_SHARED_PTR == 1
+			/*
+				Member only defined when there is shared pointer support.
+				If the type is not a shared pointer then translates to a nop.
+			*/
 			ud->shared_ptr_release(ud);
 #endif
 			reset_userdata(ud, ptr, is_const
@@ -284,7 +322,7 @@ namespace OOLUA
 							, &register_class_imp<ClassType>
 							, &SharedHelper<PossiblySharedType>::release_pointer);
 
-			SharedHelper<PossiblySharedType>::fixup_pointer(ud, shared_ptr);
+			fixup_pointer(ud, shared_ptr);
 
 			//change the metatable associated with the ud
 			lua_getfield(vm, LUA_REGISTRYINDEX, OOLUA::Proxy_class<ClassType>::class_name);
@@ -345,18 +383,20 @@ namespace OOLUA
 		template<typename T, template <typename> class Shared_pointer_class>
 		inline Lua_ud* add_ptr(lua_State* const vm, Shared_pointer_class<T> const&  shared_ptr, bool is_const, Owner /*owner*/)
 		{
-			typedef  Shared_pointer_class<T> shared;
 			typedef typename LVD::remove_const<T>::type raw;
+			typedef  Shared_pointer_class<raw> shared;
+
 			Lua_ud* ud = new_userdata(vm, NULL, is_const
 									, &requested_ud_is_a_base<raw>
 									, &register_class_imp<raw>
-									, &SharedHelper<shared >::release_pointer);
+									, &SharedHelper<shared>::release_pointer);
 
-			shared* p = SharedHelper<shared>::fixup_pointer(ud, &shared_ptr);
+			raw* p = fixup_pointer(ud, &shared_ptr);
 
 			userdata_gc_value(ud, true);//yes it always needs destructing
 			userdata_shared_ptr(ud);//add the shared flag
-			add_ptr_imp(vm, (raw*)p->get());
+			add_ptr_imp(vm, p);
+
 			return ud;
 		}
 

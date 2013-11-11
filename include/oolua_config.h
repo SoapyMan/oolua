@@ -227,6 +227,7 @@ THE SOFTWARE.
 #		if OOLUA_USE_SHARED_PTR == 1
 #			define OOLUA_SHARED_HEADER <tr1/memory>
 #			define OOLUA_SHARED_TYPE std::tr1::shared_ptr
+#			define OOLUA_SHARED_CONST_CAST std::tr1::const_pointer_cast
 #		endif
 #	endif
 /**@}*/
