@@ -176,6 +176,7 @@ namespace OOLUA
 				typedef Shared_pointer_class<T> ptr;
 				typedef T raw;
 				enum {ud_flag = SHARED_FLAG};
+				typedef char never_call_with_const_type_always_raw_type[LVD::is_const<T>::value ? -1 : 1];
 			};
 
 			template<typename T>

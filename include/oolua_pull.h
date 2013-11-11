@@ -131,15 +131,19 @@ namespace OOLUA
 		template<typename T, template <typename> class Shared_pointer_class>
 		struct pull_basic_type<Shared_pointer_class<T>, 0, 0>
 		{
+			typedef typename LVD::remove_const<T>::type raw;
 			static bool pull(lua_State* const vm, Shared_pointer_class<T> & value)
 			{
-				value = stack_checker<Shared_pointer_class<T> >::check_index(vm, lua_gettop(vm));
+				value = ! LVD::is_const<T>::value
+							? stack_checker<Shared_pointer_class<raw> >::check_index_no_const(vm, lua_gettop(vm))
+							: stack_checker<Shared_pointer_class<raw> >::check_index(vm, lua_gettop(vm));
+
 				if(!value)
 				{
 #	if OOLUA_RUNTIME_CHECKS_ENABLED  == 1
-					INTERNAL::handle_cpp_pull_fail(vm, OOLUA::INTERNAL::param_type<T>::is_constant
-												   ? Proxy_class<typename OOLUA::INTERNAL::param_type<T>::raw>::class_name_const
-												   : Proxy_class<typename OOLUA::INTERNAL::param_type<T>::raw>::class_name);
+					INTERNAL::handle_cpp_pull_fail(vm, LVD::is_const<T>::value
+														   ? Proxy_class<raw>::class_name_const
+														   : Proxy_class<raw>::class_name);
 #	elif OOLUA_DEBUG_CHECKS == 1
 					assert(value);
 #	endif

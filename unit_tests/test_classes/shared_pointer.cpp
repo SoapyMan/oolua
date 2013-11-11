@@ -8,6 +8,25 @@
 
 #	if OOLUA_USE_SHARED_PTR == 1
 #		include OOLUA_SHARED_HEADER
+#		include <csetjmp>
+
+#		ifdef _MSC_VER
+#			pragma warning(push)
+#			pragma warning(disable : 4702)//unreachable code
+#		endif
+namespace
+{
+	jmp_buf mark;
+	int OOLua_panic(lua_State* /*vm*/) //NOLINT(readability/casting)
+	{
+		longjmp(mark, 1);
+		return 0;
+	}
+} //namespace
+
+#		ifdef _MSC_VER
+#			pragma warning(pop)
+#		endif
 
 int called = 0;
 struct SharedFoo
@@ -126,7 +145,13 @@ OOLUA_EXPORT_NO_FUNCTIONS(SharedConstructor)
 			CPPUNIT_TEST(call_memberFunctionWhichWantsSharedPointerYetIntIsOnTheStack_throwsOoluaRuntimeError);
 #		endif
 			CPPUNIT_TEST(push_sharedPointerToConstType_topOfStackIsConst);
-
+			CPPUNIT_TEST(push_sharedPointerToConstTypeThenSameInstanceAsNoneConst_firstIndexIsNoneConst);
+			CPPUNIT_TEST(push_sharedPointerToConstTypeThenSameInstanceAsNoneConst_secondIndexIsNoneConst);
+			CPPUNIT_TEST(push_sharedPointerToConstTypeThenSameInstanceAsNoneConst_useCountEqualsThree);
+			CPPUNIT_TEST(pull_pushConstThenPullConst_pullReturnsTrue);
+			CPPUNIT_TEST(pull_pushConstThenPullConst_useCountEqualsTwo);
+			CPPUNIT_TEST(pull_pushNoneConstThenPullConst_useCountEqualsTwo);
+			CPPUNIT_TEST(pull_pushConstThenPullNoneConst_callsPanic);
 		CPPUNIT_TEST_SUITE_END();
 		OOLUA::Script* m_lua;
 	public:
@@ -147,9 +172,9 @@ OOLUA_EXPORT_NO_FUNCTIONS(SharedConstructor)
 			if (ud) OOLUA::INTERNAL::userdata_gc_value(ud, false);
 		}
 
-		void assert_top_of_stack_const_value_equals(bool value)
+		void assert_stack_index_const_value_equals(int index, bool value)
 		{
-			OOLUA::INTERNAL::Lua_ud* ud = static_cast<OOLUA::INTERNAL::Lua_ud*>(lua_touserdata(m_lua->state(), -1));
+			OOLUA::INTERNAL::Lua_ud* ud = static_cast<OOLUA::INTERNAL::Lua_ud*>(lua_touserdata(m_lua->state(), index));
 			CPPUNIT_ASSERT_EQUAL(value, OOLUA::INTERNAL::userdata_is_constant(ud));
 		}
 
@@ -493,13 +518,119 @@ OOLUA_EXPORT_NO_FUNCTIONS(SharedConstructor)
 			int value = OOLUA::in_p<const_shared>::is_constant;
 			CPPUNIT_ASSERT_EQUAL(1, value);
 		}
+
 		void push_sharedPointerToConstType_topOfStackIsConst()
 		{
 			OOLUA_SHARED_TYPE<SharedFoo const> const_shared(new SharedFoo);
 			m_lua->register_class<SharedFoo>();
 			m_lua->push(const_shared);
-			assert_top_of_stack_const_value_equals(true);
+			assert_stack_index_const_value_equals(-1, true);
 		}
+
+		void push_sharedPointerToConstTypeThenSameInstanceAsNoneConst_firstIndexIsNoneConst()
+		{
+			OOLUA_SHARED_TYPE<SharedFoo> none_const_shared(new SharedFoo);
+			OOLUA_SHARED_TYPE<SharedFoo const> const_shared(none_const_shared);
+			m_lua->register_class<SharedFoo>();
+
+			m_lua->push(const_shared);
+			m_lua->push(none_const_shared);
+
+			assert_stack_index_const_value_equals(1, false);
+		}
+
+		void push_sharedPointerToConstTypeThenSameInstanceAsNoneConst_secondIndexIsNoneConst()
+		{
+			OOLUA_SHARED_TYPE<SharedFoo> none_const_shared(new SharedFoo);
+			OOLUA_SHARED_TYPE<SharedFoo const> const_shared(none_const_shared);
+			m_lua->register_class<SharedFoo>();
+
+			m_lua->push(const_shared);
+			m_lua->push(none_const_shared);
+
+			assert_stack_index_const_value_equals(2, false);
+		}
+
+		void push_sharedPointerToConstTypeThenSameInstanceAsNoneConst_useCountEqualsThree()
+		{
+			OOLUA_SHARED_TYPE<SharedFoo> none_const_shared(new SharedFoo);
+			OOLUA_SHARED_TYPE<SharedFoo const> const_shared(none_const_shared);
+			m_lua->register_class<SharedFoo>();
+
+			m_lua->push(const_shared);
+			m_lua->push(none_const_shared);
+
+			CPPUNIT_ASSERT_EQUAL(long(3), none_const_shared.use_count());
+		}
+
+		void pull_pushConstThenPullConst_pullReturnsTrue()
+		{
+			OOLUA_SHARED_TYPE<SharedFoo const> shared(new SharedFoo);
+			m_lua->register_class<SharedFoo>();
+			m_lua->push(shared);
+			OOLUA_SHARED_TYPE<SharedFoo const> result;
+
+			CPPUNIT_ASSERT_EQUAL(true, m_lua->pull(result));
+		}
+
+		void pull_pushConstThenPullConst_useCountEqualsTwo()
+		{
+			OOLUA_SHARED_TYPE<SharedFoo const> shared(new SharedFoo);
+			m_lua->register_class<SharedFoo>();
+			m_lua->push(shared);
+			OOLUA_SHARED_TYPE<SharedFoo const> result;
+			m_lua->pull(result);
+			m_lua->gc();
+			CPPUNIT_ASSERT_EQUAL(long(2), shared.use_count());
+		}
+
+		void pull_pushNoneConstThenPullConst_useCountEqualsTwo()
+		{
+			OOLUA_SHARED_TYPE<SharedFoo> shared(new SharedFoo);
+			m_lua->register_class<SharedFoo>();
+			m_lua->push(shared);
+			OOLUA_SHARED_TYPE<SharedFoo const> result;
+			m_lua->pull(result);
+			m_lua->gc();
+			CPPUNIT_ASSERT_EQUAL(long(2), shared.use_count());
+		}
+
+		bool isLuaJIT2()
+		{
+			/*
+			jit.version_num
+			Contains the version number of the LuaJIT core.
+			Version xx.yy.zz is represented by the decimal number xxyyzz.
+			*/
+			m_lua->run_chunk("local res, ret = pcall( "
+								"function() return require('jit').version_num >= 20000 end) "
+							"return res == true and ret == true");
+			bool result; m_lua->pull(result);
+			return result;
+		}
+		/* ====================== LuaJIT2 protected test ===========================*/
+		void pull_pushConstThenPullNoneConst_callsPanic()
+		{
+			if(isLuaJIT2()) return;
+
+			OOLUA_SHARED_TYPE<SharedFoo const> shared(new SharedFoo);
+			m_lua->register_class<SharedFoo>();
+			m_lua->push(shared);
+			OOLUA_SHARED_TYPE<SharedFoo> result;
+
+			lua_atpanic(*m_lua, &OOLua_panic);
+
+			if (setjmp(mark) == 0)
+			{
+				m_lua->pull(result);
+				CPPUNIT_ASSERT_EQUAL(false, true);//never jumped back
+			}
+			else
+				CPPUNIT_ASSERT_EQUAL(true, true);//we hit the at panic
+
+		}
+		/* ====================== LuaJIT2 protected test ===========================*/
+
 	};
 
 	CPPUNIT_TEST_SUITE_REGISTRATION(SharedPointer);
