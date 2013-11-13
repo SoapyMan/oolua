@@ -13,6 +13,7 @@ class SharedByDefault : public CppUnit::TestFixture
 		CPPUNIT_TEST(addOperator_createsSharedPtr_topOfStackSharedFlagIsSet);
 		CPPUNIT_TEST(subOperator_createsSharedPtr_topOfStackSharedFlagIsSet);
 		CPPUNIT_TEST(mulOperator_createsSharedPtr_topOfStackSharedFlagIsSet);
+		CPPUNIT_TEST(divOperator_createsSharedPtr_topOfStackSharedFlagIsSet);
 	CPPUNIT_TEST_SUITE_END();
 	OOLUA::Script* m_lua;
 public:
@@ -77,6 +78,15 @@ public:
 		CPPUNIT_ASSERT_EQUAL(true, stack_index_ud_shared_flag(-1));
 	}
 
+	void divOperator_createsSharedPtr_topOfStackSharedFlagIsSet()
+	{
+		m_lua->register_class<Class_ops>();
+
+		Class_ops a(1),b(2);
+		m_lua->run_chunk("return function(lhs, rhs) return lhs / rhs end");
+		m_lua->call(1, &a, &b);
+		CPPUNIT_ASSERT_EQUAL(true, stack_index_ud_shared_flag(-1));
+	}
 };
 
 CPPUNIT_TEST_SUITE_REGISTRATION(SharedByDefault);
