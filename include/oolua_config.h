@@ -37,7 +37,7 @@ THE SOFTWARE.
 		\brief
 		Defines how any errors are reported
 		\details Errors can be reported either by using exceptions or storing
-		a retreivable error string, only one of these methods is allowed
+		a retrievable error string, only one of these methods is allowed
 		and this condition is enforced, yet also neither are required. If both
 		are disabled then it depends on \ref OOLUA_DEBUG_CHECKS as to whether
 		any error will be reported
@@ -64,8 +64,8 @@ THE SOFTWARE.
 		\hideinitializer
 		\brief \b Default: Enabled
 		\details
-		Stores an error message in the registery overwriting any previous error,
-		the last error to have occured is retrievable via \ref OOLUA::get_last_error
+		Stores an error message in the registry overwriting any previous error,
+		the last error to have occurred is retrievable via \ref OOLUA::get_last_error
 		\see OOLUA::get_last_error
 		\see OOLUA::reset_error_value
 		\param 0 Disabled
@@ -208,18 +208,81 @@ THE SOFTWARE.
 #	endif
 
 
-/**
-	\def OOLUA_USE_SHARED_PTR
-		\brief \b Default: Disabled
-		If you need to change what shared_ptr you use here is where you do it
+	/** \addtogroup OOLuaSharedPtrSupport Shared Pointer
+	@{
+		\brief Enable and configure library support for a shared pointer type.
+		\details
+		Requirements for the shared pointer type.
 		\li The type must be non intrusive to the underlying type
 		\li Have a "get" member function which returns a raw pointer
-		\li Be constructable from a more dervied shared_ptr
+		\li Be constructable from a more derived shared_ptr
+		\li Have a constructor which enables construction of shared<foo const> from shared<foo>
 		\li Be of uniform size
+		\li Have a const cast template function
+		<p>
+		Defaults for the configuration options in this category only apply when shared pointer
+		support is enabled.
+
+		@{
+	*/
+/**
+	\def OOLUA_USE_SHARED_PTR
+		\hideinitializer
+		\brief \b Default: Disabled
+		\details
+		If you need to change what shared_ptr you use here is where you can do it
 		\param 0 Disabled
 		\param 1 Enabled
 */
-#	define OOLUA_USE_SHARED_PTR 1
+
+/**
+	\def OOLUA_SHARED_HEADER
+		\hideinitializer
+		\brief \b Default: <tr1/memory>
+		\details <p>
+		Header file for the shared pointer type, library code will include
+		the header using :
+		\code{.cpp}
+		#include OOLUA_SHARED_HEADER
+		\endcode
+*/
+
+/**
+	\def OOLUA_SHARED_TYPE
+		\hideinitializer
+		\brief \b Default: std::tr1::shared_ptr
+		\details
+		The templated shared pointer type.
+*/
+
+/**
+	\def OOLUA_SHARED_CONST_CAST
+		\hideinitializer
+		\brief \b Default: std::tr1::const_pointer_cast
+		\details
+		Templated function which casts away constness for the shared pointer type.
+*/
+
+/**
+	\def OOLUA_SHARED_IS_DEFAULT_FOR_CTOR_AND_OPERATOR
+		\hideinitializer
+		\brief \b Default: Disabled
+		\details
+		Controls how the results of both constructors and operators which return a proxy
+		type are stored. When the library is compiled with shared pointer support and this
+		is set to enabled, then you can disable it for specific types using the tag
+		\ref OOLUA::No_shared. When this option is set to disabled but the library is
+		compiled with shared pointer support you can enabled constructors and operators
+		to use a shared pointer by the type having the tag \ref OOLUA::Shared in it's
+		\ref OOLUA_TAGS "tag block".
+		\param 0 Disabled
+		\param 1 Enabled
+*/
+		/*@}*/
+	/*@}*/
+
+//#	define OOLUA_USE_SHARED_PTR 1
+//#	define OOLUA_SHARED_IS_DEFAULT_FOR_CTOR_AND_OPERATOR 0
 
 #	ifndef OOLUA_USE_SHARED_PTR
 #		define OOLUA_USE_SHARED_PTR 0
@@ -228,6 +291,9 @@ THE SOFTWARE.
 #			define OOLUA_SHARED_HEADER <tr1/memory>
 #			define OOLUA_SHARED_TYPE std::tr1::shared_ptr
 #			define OOLUA_SHARED_CONST_CAST std::tr1::const_pointer_cast
+#			ifndef OOLUA_SHARED_IS_DEFAULT_FOR_CTOR_AND_OPERATOR
+#				define OOLUA_SHARED_IS_DEFAULT_FOR_CTOR_AND_OPERATOR 0
+#			endif
 #		endif
 #	endif
 /**@}*/
