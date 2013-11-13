@@ -145,7 +145,10 @@ namespace OOLUA
 		template<typename RawClassType>
 		struct ConstructorAndOperatorReturnType
 		{
-			typedef OOLUA_SHARED_TYPE<RawClassType> ptr_type;
+			typedef typename LVD::if_else<has_tag<Proxy_class<RawClassType>, No_shared>::Result
+										, RawClassType*
+										, OOLUA_SHARED_TYPE<RawClassType>
+									>::type ptr_type;
 		};
 
 #	endif
