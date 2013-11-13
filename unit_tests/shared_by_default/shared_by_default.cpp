@@ -4,6 +4,7 @@
 #	include "expose_stub_classes.h"
 #	include "expose_class_constructors.h"
 #	include "expose_class_ops.h"
+#	include "cpp_class_ops.h"
 
 struct DefaultConstructorNoShared
 {};
@@ -30,6 +31,45 @@ OOLUA_PROXY_END
 
 OOLUA_EXPORT_NO_FUNCTIONS(ParamConstructorNoShared)
 
+struct NoSharedOps
+{
+	NoSharedOps()
+		: m_i(0)
+	{}
+	NoSharedOps(int input)
+		: m_i(input)
+	{}
+
+	NoSharedOps operator+(NoSharedOps const& rhs) const
+	{
+		return NoSharedOps(m_i + rhs.m_i);
+	}
+	NoSharedOps operator-(NoSharedOps const& rhs) const
+	{
+		return NoSharedOps(m_i - rhs.m_i);
+	}
+	NoSharedOps operator*(NoSharedOps const& rhs) const
+	{
+		return NoSharedOps(m_i + rhs.m_i);
+	}
+	NoSharedOps operator/(NoSharedOps const& rhs) const
+	{
+		return NoSharedOps(m_i - rhs.m_i);
+	}
+	int m_i;
+};
+
+OOLUA_PROXY(NoSharedOps)
+	OOLUA_TAGS(
+		No_shared
+		, Add_op
+		, Sub_op
+		, Mul_op
+		, Div_op
+	)
+OOLUA_PROXY_END
+OOLUA_EXPORT_NO_FUNCTIONS(NoSharedOps)
+
 class SharedByDefault : public CppUnit::TestFixture
 {
 	CPPUNIT_TEST_SUITE(SharedByDefault);
@@ -40,8 +80,13 @@ class SharedByDefault : public CppUnit::TestFixture
 		CPPUNIT_TEST(mulOperator_createsSharedPtr_topOfStackSharedFlagIsSet);
 		CPPUNIT_TEST(divOperator_createsSharedPtr_topOfStackSharedFlagIsSet);
 
-		CPPUNIT_TEST(defaultConstructor_hasNoSharedFlag_topOfStackSharedFlagIsNotSet);
-		CPPUNIT_TEST(paramConstructor_hasNoSharedFlag_topOfStackSharedFlagIsNotSet);
+		CPPUNIT_TEST(defaultConstructor_typeHasNoSharedTag_topOfStackSharedFlagIsNotSet);
+		CPPUNIT_TEST(paramConstructor_typeHasNoSharedTag_topOfStackSharedFlagIsNotSet);
+		CPPUNIT_TEST(addOperator_typeHasNoSharedTag_topOfStackSharedFlagIsNotSet);
+		CPPUNIT_TEST(subOperator_typeHasNoSharedTag_topOfStackSharedFlagIsNotSet);
+		CPPUNIT_TEST(mulOperator_typeHasNoSharedTag_topOfStackSharedFlagIsNotSet);
+		CPPUNIT_TEST(divOperator_typeHasNoSharedTag_topOfStackSharedFlagIsNotSet);
+
 	CPPUNIT_TEST_SUITE_END();
 	OOLUA::Script* m_lua;
 public:
@@ -116,17 +161,51 @@ public:
 		CPPUNIT_ASSERT_EQUAL(true, stack_index_ud_shared_flag(-1));
 	}
 
-	void defaultConstructor_hasNoSharedFlag_topOfStackSharedFlagIsNotSet()
+	void defaultConstructor_typeHasNoSharedTag_topOfStackSharedFlagIsNotSet()
 	{
 		m_lua->register_class<DefaultConstructorNoShared>();
 		m_lua->run_chunk("return DefaultConstructorNoShared.new()");
 		CPPUNIT_ASSERT_EQUAL(false, stack_index_ud_shared_flag(-1));
 	}
 
-	void paramConstructor_hasNoSharedFlag_topOfStackSharedFlagIsNotSet()
+	void paramConstructor_typeHasNoSharedTag_topOfStackSharedFlagIsNotSet()
 	{
 		m_lua->register_class<ParamConstructorNoShared>();
 		m_lua->run_chunk("return ParamConstructorNoShared.new(1)");
+		CPPUNIT_ASSERT_EQUAL(false, stack_index_ud_shared_flag(-1));
+	}
+
+	void addOperator_typeHasNoSharedTag_topOfStackSharedFlagIsNotSet()
+	{
+		m_lua->register_class<NoSharedOps>();
+		NoSharedOps a(1),b(2);
+		m_lua->run_chunk("return function(lhs, rhs) return lhs + rhs end");
+		m_lua->call(1, &a, &b);
+		CPPUNIT_ASSERT_EQUAL(false, stack_index_ud_shared_flag(-1));
+	}
+
+	void subOperator_typeHasNoSharedTag_topOfStackSharedFlagIsNotSet()
+	{
+		m_lua->register_class<NoSharedOps>();
+		NoSharedOps a(1),b(2);
+		m_lua->run_chunk("return function(lhs, rhs) return lhs - rhs end");
+		m_lua->call(1, &a, &b);
+		CPPUNIT_ASSERT_EQUAL(false, stack_index_ud_shared_flag(-1));
+	}
+	void mulOperator_typeHasNoSharedTag_topOfStackSharedFlagIsNotSet()
+	{
+		m_lua->register_class<NoSharedOps>();
+		NoSharedOps a(1),b(2);
+		m_lua->run_chunk("return function(lhs, rhs) return lhs * rhs end");
+		m_lua->call(1, &a, &b);
+		CPPUNIT_ASSERT_EQUAL(false, stack_index_ud_shared_flag(-1));
+	}
+	void divOperator_typeHasNoSharedTag_topOfStackSharedFlagIsNotSet()
+	{
+		m_lua->register_class<NoSharedOps>();
+		NoSharedOps a(1),b(2);
+		m_lua->run_chunk("return function(lhs, rhs) return lhs / rhs end");
+		m_lua->call(1, &a, &b);
 		CPPUNIT_ASSERT_EQUAL(false, stack_index_ud_shared_flag(-1));
 	}
 };
