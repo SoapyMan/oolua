@@ -80,6 +80,9 @@ OOLUA_PROXY(SharedFoo)
 	OOLUA_MFUNC(returnsRefToSharedPtr)
 	OOLUA_MFUNC(shared_param_type_is_const)
 	OOLUA_MFUNC(returnsSharedConstPtr)
+	OOLUA_MEM_FUNC_RENAME(returns_maybe_null_shared
+						, maybe_null<OOLUA_SHARED_TYPE<SharedFoo> >
+						, returnsSharedPtr)
 OOLUA_PROXY_END
 
 OOLUA_EXPORT_FUNCTIONS(SharedFoo
@@ -89,7 +92,8 @@ OOLUA_EXPORT_FUNCTIONS(SharedFoo
 						, returnsSharedPtr
 						, returnsRefToSharedPtr
 						, shared_param_type_is_const
-						, returnsSharedConstPtr)
+						, returnsSharedConstPtr
+						, returns_maybe_null_shared)
 OOLUA_EXPORT_FUNCTIONS_CONST(SharedFoo, no_param_function_const)
 
 struct SharedConstructor{};
@@ -167,6 +171,13 @@ OOLUA_EXPORT_NO_FUNCTIONS(SharedConstructor)
 			CPPUNIT_TEST(call_memberFunctionTakingConstSharedParam_paramAndMemberAreEqual);
 			CPPUNIT_TEST(call_memberFunctionReturnsSharedConst_resultEqualsMember);
 			CPPUNIT_TEST(call_memberFunctionReturnsSharedConst_memberUseCountEqualsTwo);
+
+			CPPUNIT_TEST(maybeNullTrait_isIntegral_equalsTrue);
+			CPPUNIT_TEST(maybeNullTrait_constType_isConstantEqualsTrue);
+			CPPUNIT_TEST(maybeNullTrait_noneConstType_isConstantEqualsFalse);
+			CPPUNIT_TEST(maybeNull_instanceReturnsValidSharedPtr_topOfStackIsUserData);
+			CPPUNIT_TEST(maybeNull_instanceReturnsValidSharedPtr_useCountEqualsTwo);
+			CPPUNIT_TEST(maybeNull_instanceReturnsNullSharedPtr_topOfStackIsNil);
 		CPPUNIT_TEST_SUITE_END();
 		OOLUA::Script* m_lua;
 	public:
@@ -689,6 +700,61 @@ OOLUA_EXPORT_NO_FUNCTIONS(SharedConstructor)
 			m_lua->pull(result);
 			m_lua->gc();
 			CPPUNIT_ASSERT_EQUAL(long(2), object.m_const_shared.use_count());
+		}
+
+		void maybeNullTrait_compiles()
+		{
+			OOLUA::maybe_null<OOLUA_SHARED_TYPE<Stub1> > foo; (void)foo;
+		}
+
+		void maybeNullTrait_isIntegral_equalsTrue()
+		{
+			int is_integral_result = OOLUA::maybe_null<OOLUA_SHARED_TYPE<Stub1> >::is_integral;
+			CPPUNIT_ASSERT_EQUAL(1, is_integral_result);
+		}
+
+		void maybeNullTrait_constType_isConstantEqualsTrue()
+		{
+			int is_constant_result = OOLUA::maybe_null<OOLUA_SHARED_TYPE<Stub1 const> >::is_constant;
+			CPPUNIT_ASSERT_EQUAL(1, is_constant_result);
+		}
+
+		void maybeNullTrait_noneConstType_isConstantEqualsFalse()
+		{
+			int is_constant_result = OOLUA::maybe_null<OOLUA_SHARED_TYPE<Stub1> >::is_constant;
+			CPPUNIT_ASSERT_EQUAL(0, is_constant_result);
+		}
+
+		void maybeNull_instanceReturnsValidSharedPtr_topOfStackIsUserData()
+		{
+			m_lua->register_class<SharedFoo>();
+			SharedFoo instance;
+			instance.m_shared = OOLUA_SHARED_TYPE<SharedFoo>(new SharedFoo);
+
+			m_lua->run_chunk("return function(instance) return instance:returns_maybe_null_shared() end");
+			m_lua->call(1, &instance);
+			CPPUNIT_ASSERT_EQUAL(LUA_TUSERDATA, lua_type(m_lua->state(), -1));
+		}
+		void maybeNull_instanceReturnsValidSharedPtr_useCountEqualsTwo()
+		{
+			m_lua->register_class<SharedFoo>();
+			SharedFoo instance;
+			instance.m_shared = OOLUA_SHARED_TYPE<SharedFoo>(new SharedFoo);
+
+			m_lua->run_chunk("return function(instance) return instance:returns_maybe_null_shared() end");
+			m_lua->call(1, &instance);
+			m_lua->gc();
+			CPPUNIT_ASSERT_EQUAL(long(2), instance.m_shared.use_count());
+		}
+
+		void maybeNull_instanceReturnsNullSharedPtr_topOfStackIsNil()
+		{
+			m_lua->register_class<SharedFoo>();
+			SharedFoo instance;
+
+			m_lua->run_chunk("return function(instance) return instance:returns_maybe_null_shared() end");
+			m_lua->call(1, &instance);
+			CPPUNIT_ASSERT_EQUAL(LUA_TNIL, lua_type(m_lua->state(), -1));
 		}
 	};
 

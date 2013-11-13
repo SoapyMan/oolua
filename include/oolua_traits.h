@@ -309,7 +309,8 @@ The general naming convention for traits is:\n
 			enum {value = 0};
 			typedef void underlying_type;
 		};
-
+		
+		//TODO disable this when not compiled with support
 		template<typename T, template <typename> class shared_type>
 		struct is_shared_type<shared_type<T> >
 		{
@@ -513,17 +514,22 @@ The general naming convention for traits is:\n
 	{
 		typedef T type;
 		typedef typename LVD::raw_type<T>::type raw;
-		typedef typename INTERNAL::Pull_type_<raw, T, LVD::is_integral_type<raw>::value >::type pull_type;
+		typedef typename INTERNAL::Pull_type_<raw, T
+												, LVD::is_integral_type<raw>::value
+												|| INTERNAL::is_shared_type<type>::value 
+											>::type pull_type;
 		enum { in = 0};
 		enum { out = 1};
 		enum { owner = No_change};
 		enum { is_by_value = INTERNAL::Type_enum_defaults<type>::is_by_value  };
-		enum { is_constant = INTERNAL::Type_enum_defaults<type>::is_constant  };
-		enum { is_integral = INTERNAL::Type_enum_defaults<type>::is_integral  };
-		typedef char type_can_not_be_integral [is_integral ? -1 : 1 ];
-		typedef char type_has_to_be_by_reference [is_by_value ? -1 : 1 ];
-		typedef char type_can_not_be_just_a_reference_to_type [	LVD::is_same<raw&, type>::value ? -1 : 1];
-		typedef char type_can_not_be_just_a_const_reference_to_type [ LVD::is_same<raw const&, type>::value ? -1 : 1];
+		enum { is_constant = INTERNAL::Type_enum_defaults<type>::is_constant
+										|| INTERNAL::is_shared_const<type>::value };
+		enum { is_integral = INTERNAL::Type_enum_defaults<type>::is_integral
+										|| INTERNAL::is_shared_type<type>::value };
+		typedef char type_can_not_be_normal_integral [INTERNAL::Type_enum_defaults<type>::is_integral ? -1 : 1 ];
+		typedef char type_has_to_be_by_reference_if_not_shared [!INTERNAL::is_shared_type<type>::value && is_by_value ? -1 : 1 ];
+		typedef char type_can_not_be_just_a_reference_to_type_if_not_shared [!INTERNAL::is_shared_type<type>::value && LVD::is_same<raw&, type>::value ? -1 : 1];
+		typedef char type_can_not_be_just_a_const_reference_to_type_if_not_shared [!INTERNAL::is_shared_type<type>::value && LVD::is_same<raw const&, type>::value ? -1 : 1];
 		/*Reference to pointer:
 		this could be valid in some situations, until such a time as it is required
 		or requested disable it*/

@@ -1,6 +1,6 @@
---OOLua test unit shared_by_default
+--OOLua test unit shared
 local root = "../../"
-local name = "shared_by_default"
+local name = "shared"
 create_package(name,root,"ConsoleApp")
 
 
@@ -27,6 +27,9 @@ files
 	  	root .. "unit_tests/bind_classes/expose_class_ops.h",
 		root .. "unit_tests/bind_classes/expose_class_ops.cpp",
 
+		root .. "unit_tests/cpp_classes/cpp_hierarchy.h",
+	  	root .. "unit_tests/bind_classes/expose_hierarchy.h",
+		root .. "unit_tests/bind_classes/expose_hierarchy.cpp",
 }
 
 includedirs
@@ -47,7 +50,7 @@ defines
 {
 	"OOLUA_RUNTIME_CHECKS_ENABLED=1",
 	"OOLUA_USE_SHARED_PTR=1",
-	"OOLUA_SHARED_IS_DEFAULT_FOR_CTOR_AND_OPERATOR=1",
+	"OOLUA_SHARED_IS_DEFAULT_FOR_CTOR_AND_OPERATOR=0",
 	"OOLUA_STORE_LAST_ERROR=1",
 	"OOLUA_USE_EXCEPTIONS=0"
 }

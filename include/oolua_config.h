@@ -222,8 +222,6 @@ THE SOFTWARE.
 		<p>
 		Defaults for the configuration options in this category only apply when shared pointer
 		support is enabled.
-
-		@{
 	*/
 /**
 	\def OOLUA_USE_SHARED_PTR
@@ -278,7 +276,6 @@ THE SOFTWARE.
 		\param 0 Disabled
 		\param 1 Enabled
 */
-		/*@}*/
 	/*@}*/
 
 //#	define OOLUA_USE_SHARED_PTR 1
