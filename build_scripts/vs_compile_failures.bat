@@ -68,6 +68,8 @@ call %testPrefix%maybe_null\maybe_null_ref_ptr_stub maybe_null_ref_ptr_stub %1 f
 call %testPrefix%maybe_null\maybe_null_ref_const_ptr_stub maybe_null_ref_const_ptr_stub %1 fail 
 call %testPrefix%maybe_null\maybe_null_ref_const_ptr_const_stub maybe_null_ref_const_ptr_const_stub %1 fail 
 call %testPrefix%maybe_null\maybe_null_ref_ptr_const_stub maybe_null_ref_ptr_const_stub %1 fail 
+call %testPrefix%maybe_null\maybe_null_shared maybe_null_shared %1 fail 
+call %testPrefix%maybe_null\maybe_null_shared_const maybe_null_shared_const %1 fail 
 
 
 call %testPrefix%lua_maybe_null\lua_maybe_null_int lua_maybe_null_int %1 fail 

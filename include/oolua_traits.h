@@ -309,8 +309,8 @@ The general naming convention for traits is:\n
 			enum {value = 0};
 			typedef void underlying_type;
 		};
-		
-		//TODO disable this when not compiled with support
+
+#if OOLUA_USE_SHARED_PTR == 1
 		template<typename T, template <typename> class shared_type>
 		struct is_shared_type<shared_type<T> >
 		{
@@ -319,7 +319,7 @@ The general naming convention for traits is:\n
 					&& has_a_proxy_type<typename LVD::raw_type<T>::raw>::value == 1};
 			typedef T underlying_type;
 		};
-
+#endif
 		template<typename T>
 		struct is_shared_const
 		{
