@@ -22,6 +22,11 @@ files
 		root .. "unit_tests/cpp_classes/cpp_constructor_mock.cpp",
 	  	root .. "unit_tests/bind_classes/expose_class_constructors.h",
 		root .. "unit_tests/bind_classes/expose_class_constructors.cpp",
+
+		root .. "unit_tests/cpp_classes/cpp_class_ops.h",
+	  	root .. "unit_tests/bind_classes/expose_class_ops.h",
+		root .. "unit_tests/bind_classes/expose_class_ops.cpp",
+
 }
 
 includedirs
