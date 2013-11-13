@@ -178,7 +178,7 @@ namespace OOLUA \
 				int index(1); \
 				OOLUA_CONSTRUCTOR_PARAM_##NUM \
 				OOLUA_CONSTRUCTOR_TRY \
-				Class* obj = new Class(OOLUA_CONVERTER_PARAMS_##NUM); \
+				typename ConstructorAndOperatorReturnType<Class>::ptr_type obj(new Class(OOLUA_CONVERTER_PARAMS_##NUM)); \
 				add_ptr(vm, obj, false, Lua); \
 				OOLUA_CONSTRUCTOR_CATCH(Class, NUM) \
 			} \

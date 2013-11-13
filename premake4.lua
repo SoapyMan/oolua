@@ -19,6 +19,7 @@ include("./profile/")
 include("./unit_tests/string_is_integral/")
 dofile("./unit_tests/test.unit.exceptions.lua")
 dofile("./unit_tests/test.coverage.lua")
+include("./unit_tests/shared_by_default/")
 
 include("./unit_tests/tests_must_fail/lua_out/")
 include("./unit_tests/tests_must_fail/cpp_in/")

@@ -132,8 +132,7 @@ namespace OOLUA
 			/**@}*/
 		/**@}*/
 #if OOLUA_USE_SHARED_PTR == 1
-//TODO
-//start off by having to request it otherwise is will break alot of tests.
+#	if OOLUA_SHARED_IS_DEFAULT_FOR_CTOR_AND_OPERATOR == 0
 		template<typename RawClassType>
 		struct ConstructorAndOperatorReturnType
 		{
@@ -142,6 +141,14 @@ namespace OOLUA
 										, RawClassType*
 									>::type ptr_type;
 		};
+#	else
+		template<typename RawClassType>
+		struct ConstructorAndOperatorReturnType
+		{
+			typedef OOLUA_SHARED_TYPE<RawClassType> ptr_type;
+		};
+
+#	endif
 #else
 		template<typename RawClassType>
 		struct ConstructorAndOperatorReturnType
