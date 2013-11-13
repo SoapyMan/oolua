@@ -108,7 +108,7 @@ namespace OOLUA
 			T const* rhs(0);
 			INTERNAL::LUA_CALLED::get(vm, 1, lhs);
 			INTERNAL::LUA_CALLED::get(vm, 2, rhs);
-			T* result(new T(*lhs - *rhs));
+			typename ConstructorAndOperatorReturnType<T>::ptr_type result(new T(*lhs + *rhs));
 			INTERNAL::add_ptr<T>(vm, result, false, OOLUA::Lua);
 			return 1;
 		}
