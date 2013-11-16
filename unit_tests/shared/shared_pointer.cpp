@@ -104,6 +104,36 @@ OOLUA_PROXY_END
 
 OOLUA_EXPORT_NO_FUNCTIONS(SharedConstructor)
 
+
+struct SharedValueReturn
+{
+	SharedValueReturn stack_return()
+	{
+		return SharedValueReturn();
+	}
+};
+
+OOLUA_PROXY(SharedValueReturn)
+	OOLUA_TAGS(Shared)
+	OOLUA_MFUNC(stack_return)
+OOLUA_PROXY_END
+OOLUA_EXPORT_FUNCTIONS(SharedValueReturn, stack_return)
+OOLUA_EXPORT_FUNCTIONS_CONST(SharedValueReturn)
+
+struct DefaultNoSharedValueReturn
+{
+	DefaultNoSharedValueReturn stack_return()
+	{
+		return DefaultNoSharedValueReturn();
+	}
+};
+
+OOLUA_PROXY(DefaultNoSharedValueReturn)
+	OOLUA_MFUNC(stack_return)
+OOLUA_PROXY_END
+OOLUA_EXPORT_FUNCTIONS(DefaultNoSharedValueReturn, stack_return)
+OOLUA_EXPORT_FUNCTIONS_CONST(DefaultNoSharedValueReturn)
+
 	class SharedPointer : public CppUnit::TestFixture
 	{
 		CPPUNIT_TEST_SUITE(SharedPointer);
@@ -178,6 +208,9 @@ OOLUA_EXPORT_NO_FUNCTIONS(SharedConstructor)
 			CPPUNIT_TEST(maybeNull_instanceReturnsValidSharedPtr_topOfStackIsUserData);
 			CPPUNIT_TEST(maybeNull_instanceReturnsValidSharedPtr_useCountEqualsTwo);
 			CPPUNIT_TEST(maybeNull_instanceReturnsNullSharedPtr_topOfStackIsNil);
+
+			CPPUNIT_TEST(sharedReturn_functionReturnsOnTheStack_topOfStackSharedFlagIsSet);
+			CPPUNIT_TEST(defaultNoSharedReturn_functionReturnsOnTheStack_topOfStackSharedFlagIsNotSet);
 		CPPUNIT_TEST_SUITE_END();
 		OOLUA::Script* m_lua;
 	public:
@@ -196,6 +229,12 @@ OOLUA_EXPORT_NO_FUNCTIONS(SharedConstructor)
 		{
 			OOLUA::INTERNAL::Lua_ud* ud = static_cast<OOLUA::INTERNAL::Lua_ud*>(lua_touserdata(m_lua->state(), index));
 			if (ud) OOLUA::INTERNAL::userdata_gc_value(ud, false);
+		}
+
+		bool stack_index_ud_shared_flag(int index)
+		{
+			OOLUA::INTERNAL::Lua_ud* ud = static_cast<OOLUA::INTERNAL::Lua_ud*>(lua_touserdata(m_lua->state(), index));
+			return OOLUA::INTERNAL::userdata_is_shared_ptr(ud);
 		}
 
 		void assert_stack_index_const_value_equals(int index, bool value)
@@ -755,6 +794,20 @@ OOLUA_EXPORT_NO_FUNCTIONS(SharedConstructor)
 			m_lua->run_chunk("return function(instance) return instance:returns_maybe_null_shared() end");
 			m_lua->call(1, &instance);
 			CPPUNIT_ASSERT_EQUAL(LUA_TNIL, lua_type(m_lua->state(), -1));
+		}
+
+		void defaultNoSharedReturn_functionReturnsOnTheStack_topOfStackSharedFlagIsNotSet()
+		{
+			m_lua->register_class<DefaultNoSharedValueReturn>();
+			m_lua->run_chunk("return DefaultNoSharedValueReturn.new():stack_return()");
+			CPPUNIT_ASSERT_EQUAL(false, stack_index_ud_shared_flag(-1));
+		}
+
+		void sharedReturn_functionReturnsOnTheStack_topOfStackSharedFlagIsSet()
+		{
+			m_lua->register_class<SharedValueReturn>();
+			m_lua->run_chunk("return SharedValueReturn.new():stack_return()");
+			CPPUNIT_ASSERT_EQUAL(true, stack_index_ud_shared_flag(-1));
 		}
 	};
 

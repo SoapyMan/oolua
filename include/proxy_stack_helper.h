@@ -63,8 +63,8 @@ namespace OOLUA
 		{
 			static void push(lua_State* const vm, T& value, Owner /*owner*/)
 			{
-				Raw* ptr = new Raw(value);//TODO this type should depend on shared config
-				OOLUA::INTERNAL::push_pointer_which_has_a_proxy_class<Raw>(vm, ptr, Lua);
+				typename OOLUA::INTERNAL::new_pointer<Raw>::type ptr(new Raw(value));
+				OOLUA::INTERNAL::add_ptr(vm, ptr, false, Lua);
 			}
 		};
 

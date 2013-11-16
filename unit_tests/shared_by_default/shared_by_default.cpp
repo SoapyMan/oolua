@@ -70,6 +70,35 @@ OOLUA_PROXY(NoSharedOps)
 OOLUA_PROXY_END
 OOLUA_EXPORT_NO_FUNCTIONS(NoSharedOps)
 
+
+struct DefaultShared
+{
+	DefaultShared stack_return()
+	{
+		return DefaultShared();
+	}
+};
+OOLUA_PROXY(DefaultShared)
+	OOLUA_MFUNC(stack_return)
+OOLUA_PROXY_END
+OOLUA_EXPORT_FUNCTIONS(DefaultShared, stack_return)
+OOLUA_EXPORT_FUNCTIONS_CONST(DefaultShared)
+
+struct NoSharedValueReturn
+{
+	NoSharedValueReturn stack_return()
+	{
+		return NoSharedValueReturn();
+	}
+};
+
+OOLUA_PROXY(NoSharedValueReturn)
+	OOLUA_TAGS(No_shared)
+	OOLUA_MFUNC(stack_return)
+OOLUA_PROXY_END
+OOLUA_EXPORT_FUNCTIONS(NoSharedValueReturn, stack_return)
+OOLUA_EXPORT_FUNCTIONS_CONST(NoSharedValueReturn)
+
 class SharedByDefault : public CppUnit::TestFixture
 {
 	CPPUNIT_TEST_SUITE(SharedByDefault);
@@ -87,6 +116,8 @@ class SharedByDefault : public CppUnit::TestFixture
 		CPPUNIT_TEST(mulOperator_typeHasNoSharedTag_topOfStackSharedFlagIsNotSet);
 		CPPUNIT_TEST(divOperator_typeHasNoSharedTag_topOfStackSharedFlagIsNotSet);
 
+		CPPUNIT_TEST(defaultReturn_functionReturnsOnTheStack_topOfStackSharedFlagIsSet);
+		CPPUNIT_TEST(noSharedReturn_functionReturnsOnTheStack_topOfStackSharedFlagIsNotSet);
 	CPPUNIT_TEST_SUITE_END();
 	OOLUA::Script* m_lua;
 public:
@@ -206,6 +237,19 @@ public:
 		NoSharedOps a(1),b(2);
 		m_lua->run_chunk("return function(lhs, rhs) return lhs / rhs end");
 		m_lua->call(1, &a, &b);
+		CPPUNIT_ASSERT_EQUAL(false, stack_index_ud_shared_flag(-1));
+	}
+
+	void defaultReturn_functionReturnsOnTheStack_topOfStackSharedFlagIsSet()
+	{
+		m_lua->register_class<DefaultShared>();
+		m_lua->run_chunk("return DefaultShared.new():stack_return()");
+		CPPUNIT_ASSERT_EQUAL(true, stack_index_ud_shared_flag(-1));
+	}
+	void noSharedReturn_functionReturnsOnTheStack_topOfStackSharedFlagIsNotSet()
+	{
+		m_lua->register_class<NoSharedValueReturn>();
+		m_lua->run_chunk("return NoSharedValueReturn.new():stack_return()");
 		CPPUNIT_ASSERT_EQUAL(false, stack_index_ud_shared_flag(-1));
 	}
 };
