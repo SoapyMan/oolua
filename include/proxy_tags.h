@@ -121,24 +121,24 @@ a class which is to be proxied.
 	\details
 	When the library is compiled with \ref OOLUA_USE_SHARED_PTR "shared pointer support"
 	and it is not configured to create shared pointers by 
-	\ref OOLUA_SHARED_IS_DEFAULT_FOR_CTOR_AND_OPERATOR "default", then this tag 
+	\ref OOLUA_NEW_POINTER_DEFAULT_IS_SHARED_TYPE "default", then this tag 
 	overrides that behaviour for the proxy type.
 	\note If the library is configured to use the shared pointer type by default
 	then this tag is ignored when present in a proxy \ref OOLUA_TAGS "tag block".
 	\see OOLUA_USE_SHARED_PTR
-	\see OOLUA_SHARED_IS_DEFAULT_FOR_CTOR_AND_OPERATOR
+	\see OOLUA_NEW_POINTER_DEFAULT_IS_SHARED_TYPE
 
 	\struct OOLUA::No_shared
 	\brief Overrides the configuration behaviour when creating proxied types
 	\details
 	When the library is compiled with \ref OOLUA_USE_SHARED_PTR "shared pointer support"
 	and it is also configured to create shared pointers by 
-	\ref OOLUA_SHARED_IS_DEFAULT_FOR_CTOR_AND_OPERATOR "default", then this tag 
+	\ref OOLUA_NEW_POINTER_DEFAULT_IS_SHARED_TYPE "default", then this tag 
 	overrides that behaviour for the proxy type.
 	\note If the library is configured to not use the shared pointer type by default
 	then this tag is ignored when present in a proxy \ref OOLUA_TAGS "tag block".
 	\see OOLUA_USE_SHARED_PTR
-	\see OOLUA_SHARED_IS_DEFAULT_FOR_CTOR_AND_OPERATOR
+	\see OOLUA_NEW_POINTER_DEFAULT_IS_SHARED_TYPE
 
 	@}
 */

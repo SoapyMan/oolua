@@ -262,24 +262,30 @@ THE SOFTWARE.
 */
 
 /**
-	\def OOLUA_SHARED_IS_DEFAULT_FOR_CTOR_AND_OPERATOR
+	\def OOLUA_NEW_POINTER_DEFAULT_IS_SHARED_TYPE
 		\hideinitializer
 		\brief \b Default: Disabled
 		\details
-		Controls how the results of both constructors and operators which return a proxy
-		type are stored. When the library is compiled with shared pointer support and this
-		is set to enabled, then you can disable it for specific types using the tag
-		\ref OOLUA::No_shared. When this option is set to disabled but the library is
-		compiled with shared pointer support you can enabled constructors and operators
-		to use a shared pointer by the type having the tag \ref OOLUA::Shared in it's
-		\ref OOLUA_TAGS "tag block".
+		When OOLua is compiled with support for a shared pointer type (\ref OOLUA_USE_SHARED_PTR)
+		and it encounters a situation in which it needs to create a new pointer for
+		a proxy type then it will depend upon a combination of this configuration 
+		option and if there are \ref SharedTags for the type as to how the situation
+		is handled. The aforementioned situations involve constructors, operators 
+		which return a proxy instance and functions which return a proxy by value.
+		| Configuration value | Has Shared tag | Has No_shared tag | Pointer type |
+		| :-----------------: | :------------: | :---------------: | :----------: | 
+		|      Disabled       |       No       |         X         |      Raw     |
+		|      Disabled       |      Yes       |         X         |    Shared    |
+		|      Enabled        |       X        |        No         |    Shared    |
+		|      Enabled        |       X        |        Yes        |      Raw     |
+
 		\param 0 Disabled
 		\param 1 Enabled
+		\see OOLUA_USE_SHARED_PTR
+		\see OOLUA::Shared
+		\see OOLUA::No_shared
 */
 	/*@}*/
-
-//#	define OOLUA_USE_SHARED_PTR 1
-//#	define OOLUA_SHARED_IS_DEFAULT_FOR_CTOR_AND_OPERATOR 0
 
 #	ifndef OOLUA_USE_SHARED_PTR
 #		define OOLUA_USE_SHARED_PTR 0
@@ -288,8 +294,8 @@ THE SOFTWARE.
 #			define OOLUA_SHARED_HEADER <tr1/memory>
 #			define OOLUA_SHARED_TYPE std::tr1::shared_ptr
 #			define OOLUA_SHARED_CONST_CAST std::tr1::const_pointer_cast
-#			ifndef OOLUA_SHARED_IS_DEFAULT_FOR_CTOR_AND_OPERATOR
-#				define OOLUA_SHARED_IS_DEFAULT_FOR_CTOR_AND_OPERATOR 0
+#			ifndef OOLUA_NEW_POINTER_DEFAULT_IS_SHARED_TYPE
+#				define OOLUA_NEW_POINTER_DEFAULT_IS_SHARED_TYPE 0
 #			endif
 #		endif
 #	endif

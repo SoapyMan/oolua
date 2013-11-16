@@ -132,31 +132,31 @@ namespace OOLUA
 			/**@}*/
 		/**@}*/
 #if OOLUA_USE_SHARED_PTR == 1
-#	if OOLUA_SHARED_IS_DEFAULT_FOR_CTOR_AND_OPERATOR == 0
+#	if OOLUA_NEW_POINTER_DEFAULT_IS_SHARED_TYPE == 0
 		template<typename RawClassType>
-		struct ConstructorAndOperatorReturnType
+		struct new_pointer
 		{
 			typedef typename LVD::if_else<has_tag<Proxy_class<RawClassType>, Shared>::Result
 										, OOLUA_SHARED_TYPE<RawClassType>
 										, RawClassType*
-									>::type ptr_type;
+									>::type type;
 		};
 #	else
 		template<typename RawClassType>
-		struct ConstructorAndOperatorReturnType
+		struct new_pointer
 		{
 			typedef typename LVD::if_else<has_tag<Proxy_class<RawClassType>, No_shared>::Result
 										, RawClassType*
 										, OOLUA_SHARED_TYPE<RawClassType>
-									>::type ptr_type;
+									>::type type;
 		};
 
 #	endif
 #else
 		template<typename RawClassType>
-		struct ConstructorAndOperatorReturnType
+		struct new_pointer
 		{
-			typedef RawClassType* ptr_type;
+			typedef RawClassType* type;
 		};
 #endif
 
