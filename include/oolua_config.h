@@ -228,7 +228,19 @@ THE SOFTWARE.
 		\hideinitializer
 		\brief \b Default: Disabled
 		\details
-		If you need to change what shared_ptr you use here is where you can do it
+		Configuration option to enable or disable the support of a shared pointer type.
+		When enabled the library supports:
+		\li Pushing a shared pointer to the stack.
+		\li Pulling a shared pointer from the stack, this is only defined if it is a shared pointer.
+		\li Pulling a raw pointer from the stack when the stack contains a shared pointer. It is
+			up to the user of the library to ensure the type will not be garbage collected.
+		\li Functions which return a shared pointer.
+		\li Shared pointer function returns which have the \ref OOLUA::maybe_null trait.
+		\li Functions which take a shared pointer as a parameter.
+		\li Decaying of a shared pointer to a raw pointer for functions parameters. The raw
+			pointer is defined to be valid for the duration of the call.
+		\note The \ref OOLUA::Shared and \ref OOLUA::No_shared tags maybe ignored, as they are
+			dependant on the value of \ref OOLUA_NEW_POINTER_DEFAULT_IS_SHARED_TYPE
 		\param 0 Disabled
 		\param 1 Enabled
 */
@@ -268,12 +280,12 @@ THE SOFTWARE.
 		\details
 		When OOLua is compiled with support for a shared pointer type (\ref OOLUA_USE_SHARED_PTR)
 		and it encounters a situation in which it needs to create a new pointer for
-		a proxy type then it will depend upon a combination of this configuration 
+		a proxy type then it will depend upon a combination of this configuration
 		option and if there are \ref SharedTags for the type as to how the situation
-		is handled. The aforementioned situations involve constructors, operators 
+		is handled. The aforementioned situations involve constructors, operators
 		which return a proxy instance and functions which return a proxy by value.
 		| Configuration value | Has Shared tag | Has No_shared tag | Pointer type |
-		| :-----------------: | :------------: | :---------------: | :----------: | 
+		| :-----------------: | :------------: | :---------------: | :----------: |
 		|      Disabled       |       No       |         X         |      Raw     |
 		|      Disabled       |      Yes       |         X         |    Shared    |
 		|      Enabled        |       X        |        No         |    Shared    |

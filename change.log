@@ -38,6 +38,13 @@ compatible with Lua 5.1 and 5.2
 - Added assignment operator for \ref OOLUA::Lua_ref
 - Added equality operator for \ref OOLUA::Lua_ref
 - Added assignment operator for \ref OOLUA::Table
+- Added \ref OOLUA_USE_SHARED_PTR Enables support for a shared pointer type
+- Added \ref OOLUA_SHARED_HEADER Specifies the header for the shared pointer type
+- Added \ref OOLUA_SHARED_TYPE The shared pointer type which is supported
+- Added \ref OOLUA_SHARED_CONST_CAST Template function to cast away shared type constness
+- Added \ref OOLUA_NEW_POINTER_DEFAULT_IS_SHARED_TYPE Defines the default type to use when a new instance is created
+- Added \ref OOLUA::Shared When the default is to use raw pointers then this tag overrides it for a type
+- Added \ref OOLUA::No_shared When the default is to use a shared pointer this tag overrides it for a type
 
 \section OOLuaChanges1-4-0 1.4.0
 - Added OOLUA_DEDUCE_FUNC(_CONST) for when there is no ambiguity for a function
