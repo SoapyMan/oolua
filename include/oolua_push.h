@@ -102,6 +102,7 @@ namespace OOLUA
 		{
 			static bool push(lua_State* const vm, Shared_pointer_class<Ptr_type> const& value)
 			{
+				assert(vm && value);
 				push_shared_pointer(vm, value);
 				return true;
 			}
