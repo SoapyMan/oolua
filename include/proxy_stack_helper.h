@@ -168,6 +168,22 @@ namespace OOLUA
 			}
 		};
 
+
+		template<typename PtrType>
+		struct Proxy_stack_helper<shared_return<PtrType>, No_change>
+		{
+			static void push(lua_State* vm, PtrType ptr)
+			{
+#if OOLUA_USE_SHARED_PTR == 1
+				OOLUA_SHARED_TYPE<typename LVD::remove_ptr<PtrType>::type > shared(ptr);
+				OOLUA::push(vm, shared);
+#else
+				assert(0 && "this is only valid when the library is compiled with"
+						"shared pointer support");
+#endif
+			}
+		};
+
 		template<typename TypeWithTraits>
 		struct Proxy_stack_helper<TypeWithTraits, No_change>
 		{

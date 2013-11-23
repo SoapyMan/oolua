@@ -134,6 +134,20 @@ OOLUA_PROXY_END
 OOLUA_EXPORT_FUNCTIONS(DefaultNoSharedValueReturn, stack_return)
 OOLUA_EXPORT_FUNCTIONS_CONST(DefaultNoSharedValueReturn)
 
+struct PointerChangesToShared
+{
+	PointerChangesToShared* ptr(){ return new PointerChangesToShared; }
+	PointerChangesToShared const* ptr_const(){ return new PointerChangesToShared; }
+
+};
+
+OOLUA_PROXY(PointerChangesToShared)
+	OOLUA_MEM_FUNC(shared_return<PointerChangesToShared*>, ptr)
+	OOLUA_MEM_FUNC(shared_return<PointerChangesToShared const*>, ptr_const)
+OOLUA_PROXY_END
+OOLUA_EXPORT_FUNCTIONS(PointerChangesToShared, ptr, ptr_const)
+OOLUA_EXPORT_FUNCTIONS_CONST(PointerChangesToShared)
+
 	class SharedPointer : public CppUnit::TestFixture
 	{
 		CPPUNIT_TEST_SUITE(SharedPointer);
@@ -209,8 +223,13 @@ OOLUA_EXPORT_FUNCTIONS_CONST(DefaultNoSharedValueReturn)
 			CPPUNIT_TEST(maybeNull_instanceReturnsValidSharedPtr_useCountEqualsTwo);
 			CPPUNIT_TEST(maybeNull_instanceReturnsNullSharedPtr_topOfStackIsNil);
 
-			CPPUNIT_TEST(sharedReturn_functionReturnsOnTheStack_topOfStackSharedFlagIsSet);
+			CPPUNIT_TEST(classHasSharedReturn_functionReturnsOnTheStack_topOfStackSharedFlagIsSet);
 			CPPUNIT_TEST(defaultNoSharedReturn_functionReturnsOnTheStack_topOfStackSharedFlagIsNotSet);
+
+			CPPUNIT_TEST(sharedReturn_functionReturnsPtr_topOfStackSharedFlagIsSet);
+			CPPUNIT_TEST(sharedReturn_functionReturnsPtr_topOfStackConstFlagIsNotSet);
+			CPPUNIT_TEST(sharedReturn_functionReturnsPtrConst_topOfStackSharedFlagIsSet);
+			CPPUNIT_TEST(sharedReturn_functionReturnsPtrConst_topOfStackConstFlagIsSet);
 		CPPUNIT_TEST_SUITE_END();
 		OOLUA::Script* m_lua;
 	public:
@@ -803,12 +822,39 @@ OOLUA_EXPORT_FUNCTIONS_CONST(DefaultNoSharedValueReturn)
 			CPPUNIT_ASSERT_EQUAL(false, stack_index_ud_shared_flag(-1));
 		}
 
-		void sharedReturn_functionReturnsOnTheStack_topOfStackSharedFlagIsSet()
+		void classHasSharedReturn_functionReturnsOnTheStack_topOfStackSharedFlagIsSet()
 		{
 			m_lua->register_class<SharedValueReturn>();
 			m_lua->run_chunk("return SharedValueReturn.new():stack_return()");
 			CPPUNIT_ASSERT_EQUAL(true, stack_index_ud_shared_flag(-1));
 		}
+		void sharedReturn_functionReturnsPtr_topOfStackSharedFlagIsSet()
+		{
+			m_lua->register_class<PointerChangesToShared>();
+			m_lua->run_chunk("return PointerChangesToShared.new():ptr()");
+			CPPUNIT_ASSERT_EQUAL(true, stack_index_ud_shared_flag(-1));
+		}
+		void sharedReturn_functionReturnsPtr_topOfStackConstFlagIsNotSet()
+		{
+			m_lua->register_class<PointerChangesToShared>();
+			m_lua->run_chunk("return PointerChangesToShared.new():ptr()");
+			assert_stack_index_const_value_equals(-1, false);
+		}
+
+		void sharedReturn_functionReturnsPtrConst_topOfStackSharedFlagIsSet()
+		{
+			m_lua->register_class<PointerChangesToShared>();
+			m_lua->run_chunk("return PointerChangesToShared.new():ptr_const()");
+			CPPUNIT_ASSERT_EQUAL(true, stack_index_ud_shared_flag(-1));
+		}
+
+		void sharedReturn_functionReturnsPtrConst_topOfStackConstFlagIsSet()
+		{
+			m_lua->register_class<PointerChangesToShared>();
+			m_lua->run_chunk("return PointerChangesToShared.new():ptr_const()");
+			assert_stack_index_const_value_equals(-1, true);
+		}
+
 	};
 
 	CPPUNIT_TEST_SUITE_REGISTRATION(SharedPointer);

@@ -45,6 +45,7 @@ compatible with Lua 5.1 and 5.2
 - Added \ref OOLUA_NEW_POINTER_DEFAULT_IS_SHARED_TYPE Defines the default type to use when a new instance is created
 - Added \ref OOLUA::Shared When the default is to use raw pointers then this tag overrides it for a type
 - Added \ref OOLUA::No_shared When the default is to use a shared pointer this tag overrides it for a type
+- Added \ref OOLUA::shared_return trait which creates a shared pointer from raw
 
 \section OOLuaChanges1-4-0 1.4.0
 - Added OOLUA_DEDUCE_FUNC(_CONST) for when there is no ambiguity for a function
