@@ -79,5 +79,12 @@ run_test lua_maybe_null_ref_const_ptr_stub
 run_test lua_maybe_null_ref_const_ptr_const_stub
 run_test lua_maybe_null_ref_ptr_const_stub
 
+run_test shared_return_int
+run_test shared_return_ptr_int
+run_test shared_return_stub
+run_test shared_return_ref_stub
+run_test shared_return_ref_const_stub
+run_test shared_return_ptr_shared_ptr
+
 premake4 clean >/dev/null 2>&1
 cd build_scripts

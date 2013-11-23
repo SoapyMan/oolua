@@ -192,6 +192,17 @@ The general naming convention for traits is:\n
 		trait so "return" has been dropped.
 	*/
 	template<typename T>struct lua_maybe_null;
+
+	/** \struct shared_return
+		\brief Converts a raw pointer return type to the supported shared pointer type
+		\details
+		A shared_return does not define that a function returns a shared_ptr
+		instead it informs the proxy to create a new shared object for the returned
+		pointer. This trait therefore requires that there is not a reference to the
+		pointer already known to the library.
+	*/
+	template<typename T>struct shared_return;
+
 	/**@}*/
 
 	/** \addtogroup OOLuaStackTraits Stack Traits
@@ -510,13 +521,32 @@ The general naming convention for traits is:\n
 	};
 
 	template<typename T>
+	struct shared_return
+	{
+		typedef T type;
+		typedef typename LVD::raw_type<T>::type raw;
+		typedef void pull_type;//It is a return trait, therefore we are not interested in the pull type
+		enum { in = 0 };
+		enum { out = 1 };
+		enum { owner = No_change };
+		enum { is_by_value = 0 };
+		enum { is_constant = INTERNAL::Type_enum_defaults<type>::is_constant  };
+		enum { is_integral = 1 };
+		typedef char type_can_not_be_integral [INTERNAL::Type_enum_defaults<type>::is_integral ? -1 : 1 ];
+		typedef char type_has_to_be_by_reference [INTERNAL::Type_enum_defaults<type>::is_by_value ? -1 : 1 ];
+		typedef char type_can_not_be_just_a_reference_to_type [LVD::is_same<raw&, type>::value ? -1 : 1];
+		typedef char type_can_not_be_just_a_reference_const_to_type [LVD::is_same<raw const&, type>::value ? -1 : 1];
+		typedef char type_has_to_have_a_proxy[ has_a_proxy_type<raw>::value ? 1 : -1];
+	};
+
+	template<typename T>
 	struct maybe_null
 	{
 		typedef T type;
 		typedef typename LVD::raw_type<T>::type raw;
 		typedef typename INTERNAL::Pull_type_<raw, T
 												, LVD::is_integral_type<raw>::value
-												|| INTERNAL::is_shared_type<type>::value 
+												|| INTERNAL::is_shared_type<type>::value
 											>::type pull_type;
 		enum { in = 0};
 		enum { out = 1};
@@ -790,6 +820,12 @@ The general naming convention for traits is:\n
 
 		template<typename T>
 		struct has_return_traits< lua_maybe_null<T> >
+		{
+			enum {value = 1};
+		};
+
+		template<typename T>
+		struct has_return_traits< shared_return<T> >
 		{
 			enum {value = 1};
 		};
