@@ -223,25 +223,22 @@ namespace OOLUA
 		template<typename T>
 		struct SharedHelper;
 
+#if OOLUA_USE_SHARED_PTR == 1
 		/*
 			Handles shared<T const> and shared<T>
 		*/
-		template<typename Ptr_type, template <typename> class Shared_pointer_class>
-		struct SharedHelper<Shared_pointer_class<Ptr_type> >
+		template<typename Ptr_type>//, template <typename> class Shared_pointer_class>
+		struct SharedHelper<OOLUA_SHARED_TYPE<Ptr_type> >
 		{
-			typedef Shared_pointer_class<typename LVD::remove_const<Ptr_type>::type> shared;
+			typedef OOLUA_SHARED_TYPE<typename LVD::remove_const<Ptr_type>::type> shared;
 			static void release_pointer(Lua_ud* ud)
 			{
-#if OOLUA_USE_SHARED_PTR == 1
 				//this member is only defined when compiled with shared pointer support
 				shared* shared_ptr = reinterpret_cast<shared*>(ud->shared_object);
 				shared_ptr->~shared();
-#else
-				//otherwise this function should never be called
-			 	assert(0 && "this function should never be called when not compiled with shared pointer support");
-#endif
 			}
 		};
+#endif
 
 		/* raw pointer version does nothing*/
 		template<typename T>
@@ -282,19 +279,19 @@ namespace OOLUA
 		*/
 
 		/*const version removes const*/
-		template<typename Ptr_type, template <typename> class Shared_pointer_class>
-		Ptr_type* fixup_pointer(Lua_ud* ud, Shared_pointer_class<Ptr_type const> const* shared)
+		template<typename Ptr_type>
+		Ptr_type* fixup_pointer(Lua_ud* ud, OOLUA_SHARED_TYPE<Ptr_type const> const* shared)
 		{
-			typedef Shared_pointer_class<Ptr_type> none_const_sp;
+			typedef OOLUA_SHARED_TYPE<Ptr_type> none_const_sp;
 			none_const_sp * sp = new(ud->shared_object) none_const_sp(OOLUA_SHARED_CONST_CAST<Ptr_type>(*shared));
 			return sp->get();
 		}
 
 		/*none const version*/
-		template<typename Ptr_type, template <typename> class Shared_pointer_class>
-		Ptr_type* fixup_pointer(Lua_ud* ud, Shared_pointer_class<Ptr_type> const* shared)
+		template<typename Ptr_type>
+		Ptr_type* fixup_pointer(Lua_ud* ud, OOLUA_SHARED_TYPE<Ptr_type> const* shared)
 		{
-			typedef Shared_pointer_class<Ptr_type> none_const_sp;
+			typedef OOLUA_SHARED_TYPE<Ptr_type> none_const_sp;
 			none_const_sp* sp = new(ud->shared_object) none_const_sp(*shared);
 			return sp->get();
 		}
@@ -380,11 +377,12 @@ namespace OOLUA
 			return ud;
 		}
 
-		template<typename T, template <typename> class Shared_pointer_class>
-		inline Lua_ud* add_ptr(lua_State* const vm, Shared_pointer_class<T> const&  shared_ptr, bool is_const, Owner /*owner*/)
+#if OOLUA_USE_SHARED_PTR == 1
+		template<typename T>
+		inline Lua_ud* add_ptr(lua_State* const vm, OOLUA_SHARED_TYPE<T> const&  shared_ptr, bool is_const, Owner /*owner*/)
 		{
 			typedef typename LVD::remove_const<T>::type raw;
-			typedef  Shared_pointer_class<raw> shared;
+			typedef  OOLUA_SHARED_TYPE<raw> shared;
 
 			Lua_ud* ud = new_userdata(vm, NULL, is_const
 									, &requested_ud_is_a_base<raw>
@@ -399,6 +397,7 @@ namespace OOLUA
 
 			return ud;
 		}
+#endif
 
 		template<typename Type, typename Bases, int BaseIndex, typename BaseType>
 		struct Add_ptr

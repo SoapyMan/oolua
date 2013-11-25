@@ -170,10 +170,10 @@ namespace OOLUA
 				enum {ud_flag = 0};
 			};
 
-			template<typename T, template <typename> class Shared_pointer_class>
-			struct pointer_type<Shared_pointer_class<T> >
+			template<typename T>
+			struct pointer_type<OOLUA_SHARED_TYPE<T> >
 			{
-				typedef Shared_pointer_class<T> ptr;
+				typedef OOLUA_SHARED_TYPE<T> ptr;
 				typedef T raw;
 				enum {ud_flag = SHARED_FLAG};
 				typedef char never_call_with_const_type_always_raw_type[LVD::is_const<T>::value ? -1 : 1];
