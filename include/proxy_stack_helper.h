@@ -157,7 +157,7 @@ namespace OOLUA
 		If NULL it pushes nil to the stack else calls the normal helper static function.
 		*/
 		template<typename MaybeNullType>
-		struct Proxy_stack_helper<lua_maybe_null<MaybeNullType>, Lua>
+		struct Proxy_stack_helper<maybe_null<lua_return<MaybeNullType> >, Lua>
 		{
 			static void push(lua_State* vm, MaybeNullType ptr)
 			{

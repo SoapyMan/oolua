@@ -2,5 +2,5 @@
 
 int main()
 {
-	return OOLUA::lua_maybe_null<int>::out;
+	return OOLUA::maybe_null<OOLUA::lua_return<int> >::out;
 }

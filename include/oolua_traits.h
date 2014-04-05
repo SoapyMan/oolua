@@ -179,20 +179,6 @@ The general naming convention for traits is:\n
 	*/
 	template<typename T>struct maybe_null;
 
-	/** \struct lua_maybe_null
-		\brief Return trait for a pointer which at runtime maybe NULL and also
-		allowing transfer of ownership.
-		\details
-		The type returned from the function is a pointer instance whose
-		runtime value maybe NULL. If it is NULL then lua_pushnil will be called
-		else the pointer will be pushed and transfer ownership of the instance
-		to Lua. This is only valid for function return types.
-		\note To be consistent in naming this should really be called
-		lua_maybe_null_return, however I feel this would be too long a name for the
-		trait so "return" has been dropped.
-	*/
-	template<typename T>struct lua_maybe_null;
-
 	/** \struct shared_return
 		\brief Converts a raw pointer return type to the supported shared pointer type
 		\details
@@ -569,23 +555,19 @@ The general naming convention for traits is:\n
 		typedef char type_can_not_be_a_reference_to_ptr_const [ LVD::is_same<raw const*&, type>::value ? -1 : 1];
 	};
 
-
 	template<typename T>
-	struct lua_maybe_null
+	struct maybe_null<lua_return<T> >
 	{
-		typedef T type;
-		typedef typename LVD::raw_type<T>::type raw;
-		typedef typename INTERNAL::Pull_type_<raw, T, LVD::is_integral_type<raw>::value >::type pull_type;
-		enum { in = 0};
-		enum { out = 1};
-		enum { owner = Lua};
-		enum { is_by_value = INTERNAL::Type_enum_defaults<type>::is_by_value  };
-		enum { is_constant = INTERNAL::Type_enum_defaults<type>::is_constant  };
-		enum { is_integral = INTERNAL::Type_enum_defaults<type>::is_integral  };
-		typedef char type_can_not_be_integral [is_integral ? -1 : 1 ];
-		typedef char type_has_to_be_by_reference [is_by_value ? -1 : 1 ];
-		typedef char type_can_not_be_just_a_reference_to_type [	LVD::is_same<raw&, type>::value ? -1 : 1];
-		typedef char type_can_not_be_just_a_const_reference_to_type [ LVD::is_same<raw const&, type>::value ? -1 : 1];
+		typedef lua_return<T> return_trait;
+		typedef typename return_trait::type type;
+		typedef typename return_trait::raw raw;
+		typedef typename return_trait::pull_type pull_type;
+		enum { in = return_trait::in};
+		enum { out = return_trait::out};
+		enum { owner = return_trait::owner};
+		enum { is_by_value = return_trait::is_by_value  };
+		enum { is_constant = return_trait::is_constant };
+		enum { is_integral = return_trait::is_integral };
 		/*Reference to pointer:
 		this could be valid in some situations, until such a time as it is required
 		or requested disable it*/
@@ -814,12 +796,6 @@ The general naming convention for traits is:\n
 
 		template<typename T>
 		struct has_return_traits< maybe_null<T> >
-		{
-			enum {value = 1};
-		};
-
-		template<typename T>
-		struct has_return_traits< lua_maybe_null<T> >
 		{
 			enum {value = 1};
 		};

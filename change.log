@@ -21,7 +21,6 @@
 - Added a base class exception type \ref OOLUA::Exception
 - Added \ref OOLUA::lua_return which is a specific trait for return types which will be owned by Lua.
 - Added \ref OOLUA::maybe_null which allows C functions and member functions to return NULL
-- Added \ref OOLUA::lua_maybe_null which allows C functions and member functions to return a runtime value of NULL, if it is not NULL then the instance will be owned by Lua
 - Changed \ref OOLUA_C_FUNCTION, it now requires a lua_State pointer instance identified as "vm" instead of 'l'
 - Added \ref OOLUA::light_p This pulls a light userdata from the stack and casts to the requested type
 - Added \ref OOLUA::light_return This is a function return type which pushes a light userdata onto the stack

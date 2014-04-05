@@ -62,9 +62,6 @@ namespace OOLUA
 	struct maybe_null;
 
 	template<typename T>
-	struct lua_maybe_null;
-
-	template<typename T>
 	struct cpp_acquire_ptr;
 
 	template<typename T>

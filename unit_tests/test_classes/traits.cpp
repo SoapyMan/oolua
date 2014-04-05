@@ -33,7 +33,7 @@ class Traits_test : public CPPUNIT_NS::TestFixture
 	CPPUNIT_TEST(outP_refToPtrToUserType_pullIsPtrToUserType);
 
 	CPPUNIT_TEST(callingLuaState_luaPassesNoParameterYetFunctionWantsALuaInstance_calledOnceWithCorrectInstance);
-	CPPUNIT_TEST(luaMaybeNull_onwershipIsSetToLua);
+	CPPUNIT_TEST(luaMaybeNull_ownershipIsSetToLua);
 	CPPUNIT_TEST_SUITE_END();
 	OOLUA::Script * m_lua;
 public:
@@ -170,9 +170,9 @@ public:
 	}
 	/**[TestCallingLuaStateTrait]*/
 
-	void luaMaybeNull_onwershipIsSetToLua()
+	void luaMaybeNull_ownershipIsSetToLua()
 	{
-		CPPUNIT_ASSERT_EQUAL(static_cast<int>(OOLUA::Lua), static_cast<int>(OOLUA::lua_maybe_null<Stub1*>::owner));
+		CPPUNIT_ASSERT_EQUAL(static_cast<int>(OOLUA::Lua), static_cast<int>(OOLUA::maybe_null<OOLUA::lua_return<Stub1*> >::owner));
 	}
 };
 
@@ -279,10 +279,10 @@ void maybeNull_validTraits_willCompile()
 
 void luaMaybeNull_validTraits_willCompile()
 {
-	OOLUA::lua_maybe_null<Stub1 *>				pass1; (void)pass1;
-	OOLUA::lua_maybe_null<Stub1 *const>			pass2; (void)pass2;
-	OOLUA::lua_maybe_null<Stub1 const *>		pass3; (void)pass3;
-	OOLUA::lua_maybe_null<Stub1 const *const>	pass4; (void)pass4;
+	OOLUA::maybe_null<OOLUA::lua_return<Stub1 *> >				pass1; (void)pass1;
+	OOLUA::maybe_null<OOLUA::lua_return<Stub1 *const> >			pass2; (void)pass2;
+	OOLUA::maybe_null<OOLUA::lua_return<Stub1 const *> >		pass3; (void)pass3;
+	OOLUA::maybe_null<OOLUA::lua_return<Stub1 const *const> >	pass4; (void)pass4;
 }
 
 CPPUNIT_TEST_SUITE_REGISTRATION(Traits_test);
