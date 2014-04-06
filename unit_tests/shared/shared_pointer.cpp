@@ -138,14 +138,16 @@ struct PointerChangesToShared
 {
 	PointerChangesToShared* ptr(){ return new PointerChangesToShared; }
 	PointerChangesToShared const* ptr_const(){ return new PointerChangesToShared; }
-
+	PointerChangesToShared* null(){ return NULL; }
 };
 
 OOLUA_PROXY(PointerChangesToShared)
 	OOLUA_MEM_FUNC(shared_return<PointerChangesToShared*>, ptr)
 	OOLUA_MEM_FUNC(shared_return<PointerChangesToShared const*>, ptr_const)
+	OOLUA_MEM_FUNC(maybe_null<shared_return<PointerChangesToShared*> >, null)
+	OOLUA_MEM_FUNC_RENAME(none_null, maybe_null<shared_return<PointerChangesToShared*> >, ptr)
 OOLUA_PROXY_END
-OOLUA_EXPORT_FUNCTIONS(PointerChangesToShared, ptr, ptr_const)
+OOLUA_EXPORT_FUNCTIONS(PointerChangesToShared, ptr, ptr_const, null, none_null)
 OOLUA_EXPORT_FUNCTIONS_CONST(PointerChangesToShared)
 
 	class SharedPointer : public CppUnit::TestFixture
@@ -230,6 +232,9 @@ OOLUA_EXPORT_FUNCTIONS_CONST(PointerChangesToShared)
 			CPPUNIT_TEST(sharedReturn_functionReturnsPtr_topOfStackConstFlagIsNotSet);
 			CPPUNIT_TEST(sharedReturn_functionReturnsPtrConst_topOfStackSharedFlagIsSet);
 			CPPUNIT_TEST(sharedReturn_functionReturnsPtrConst_topOfStackConstFlagIsSet);
+			
+			CPPUNIT_TEST(sharedReturnMaybeNull_functionReturnsNullPointer_topOfStackIsNil);
+			CPPUNIT_TEST(sharedReturnMaybeNull_functionReturnsNoneNullPointer_topOfStackSharedFlagIsSet);
 		CPPUNIT_TEST_SUITE_END();
 		OOLUA::Script* m_lua;
 	public:
@@ -855,6 +860,19 @@ OOLUA_EXPORT_FUNCTIONS_CONST(PointerChangesToShared)
 			assert_stack_index_const_value_equals(-1, true);
 		}
 
+		void sharedReturnMaybeNull_functionReturnsNullPointer_topOfStackIsNil()
+		{
+			m_lua->register_class<PointerChangesToShared>();
+			m_lua->run_chunk("return PointerChangesToShared.new():null()");
+			CPPUNIT_ASSERT_EQUAL(LUA_TNIL, lua_type(m_lua->state(), -1));
+		}
+
+		void sharedReturnMaybeNull_functionReturnsNoneNullPointer_topOfStackSharedFlagIsSet()
+		{
+			m_lua->register_class<PointerChangesToShared>();
+			m_lua->run_chunk("return PointerChangesToShared.new():none_null()");
+			CPPUNIT_ASSERT_EQUAL(true, stack_index_ud_shared_flag(-1));
+		}
 	};
 
 	CPPUNIT_TEST_SUITE_REGISTRATION(SharedPointer);

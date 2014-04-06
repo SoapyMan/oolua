@@ -528,6 +528,7 @@ The general naming convention for traits is:\n
 	template<typename T>
 	struct maybe_null
 	{
+		typedef INTERNAL::function_return<T> return_trait;
 		typedef T type;
 		typedef typename LVD::raw_type<T>::type raw;
 		typedef typename INTERNAL::Pull_type_<raw, T
@@ -559,6 +560,28 @@ The general naming convention for traits is:\n
 	struct maybe_null<lua_return<T> >
 	{
 		typedef lua_return<T> return_trait;
+		typedef typename return_trait::type type;
+		typedef typename return_trait::raw raw;
+		typedef typename return_trait::pull_type pull_type;
+		enum { in = return_trait::in};
+		enum { out = return_trait::out};
+		enum { owner = return_trait::owner};
+		enum { is_by_value = return_trait::is_by_value  };
+		enum { is_constant = return_trait::is_constant };
+		enum { is_integral = return_trait::is_integral };
+		/*Reference to pointer:
+		this could be valid in some situations, until such a time as it is required
+		or requested disable it*/
+		typedef char type_can_not_be_a_reference_to_ptr [ LVD::is_same<raw *&, type>::value ? -1 : 1];
+		typedef char type_can_not_be_a_reference_to_const_ptr [ LVD::is_same<raw *const&, type>::value ? -1 : 1];
+		typedef char type_can_not_be_a_reference_to_const_ptr_const [ LVD::is_same<raw const*const&, type>::value ? -1 : 1];
+		typedef char type_can_not_be_a_reference_to_ptr_const [ LVD::is_same<raw const*&, type>::value ? -1 : 1];
+	};
+
+	template<typename T>
+	struct maybe_null<shared_return<T> >
+	{
+		typedef shared_return<T> return_trait;
 		typedef typename return_trait::type type;
 		typedef typename return_trait::raw raw;
 		typedef typename return_trait::pull_type pull_type;

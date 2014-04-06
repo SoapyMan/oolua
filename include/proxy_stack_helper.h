@@ -87,6 +87,18 @@ namespace OOLUA
 				proxy_maybe_by_ref<typename WT::raw, T, WT::is_by_value>::push(vm, value, (Owner)WT::owner);
 			}
 		};
+
+		template<typename T>
+		struct add_ref
+		{
+			typedef T& type;
+		};
+
+		template<typename T>
+		struct add_ref<T&>
+		{
+			typedef T& type;
+		};
 	} // namespace //NOLINT
 	/** \endcond */
 
@@ -143,17 +155,17 @@ namespace OOLUA
 		template<typename MaybeNullType>
 		struct Proxy_stack_helper<maybe_null<MaybeNullType>, No_change>
 		{
-			static void push(lua_State* vm, MaybeNullType ptr)
+			static void push(lua_State* vm, typename add_ref<typename maybe_null<MaybeNullType>::type>::type ptr)
 			{
 				if (ptr)
-					Proxy_stack_helper<function_return<MaybeNullType>, No_change>::push(vm, ptr);
+					Proxy_stack_helper<typename maybe_null<MaybeNullType>::return_trait, No_change>::push(vm, ptr);
 				else
 					lua_pushnil(vm);
 			}
 		};
 
 		/*
-		Specialisation for the lua_maybe_null type.
+		Specialisation for the maybe_null<lua_return<T> > type.
 		If NULL it pushes nil to the stack else calls the normal helper static function.
 		*/
 		template<typename MaybeNullType>
