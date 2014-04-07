@@ -41,10 +41,11 @@ namespace OOLUA
 		static const char lua_owns_str[] = "Lua_owns";
 		static const char cpp_owns_str[] = "Cpp_owns";
 		static const char weak_lookup_name [] = "__weak_lookup";
+		static const char collision_mt_lookup_name [] = "__weak_collision_mt_lookup";
 		static const char new_str [] = "new";
 		static const char oolua_str [] = "OOLua";
-	} // namespace INTERNAL
-} // namespace OOLUA
+	} // namespace INTERNAL // NOLINT
+} // namespace OOLUA // NOLINT
 
 #define OOLUA_PUSH_CARRAY(lua, carray) lua_pushlstring(lua, carray, sizeof(carray)-1)
 

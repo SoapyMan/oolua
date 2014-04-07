@@ -38,6 +38,7 @@ compatible with Lua 5.1 and 5.2
 - Added assignment operator for \ref OOLUA::Lua_ref
 - Added equality operator for \ref OOLUA::Lua_ref
 - Added assignment operator for \ref OOLUA::Table
+- Bug Pointer to first member of a class, without an offset from the class instance, was being incorrectly handled (Juan Batovi) Bitbucket issue #2
 
 \section OOLuaChanges1-4-0 1.4.0
 - Added OOLUA_DEDUCE_FUNC(_CONST) for when there is no ambiguity for a function

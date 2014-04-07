@@ -141,14 +141,94 @@ namespace OOLUA
 	namespace INTERNAL
 	{
 
+		//userdata is at index 1
+		//weak table is at index 2
+		inline void gc_clean_table(lua_State* vm, void* ptr)
+		{
+			lua_pushlightuserdata(vm, ptr);
+			lua_rawget(vm, 2);
+			if (lua_type(vm, 3) == LUA_TTABLE)
+			{
+				lua_pushnil(vm);
+				if (lua_next(vm, 3) == 0)
+				{
+					//then table is empty and needs cleaning up
+					lua_pushlightuserdata(vm, ptr);
+					lua_pushnil(vm);
+					lua_rawset(vm, 2);
+
+					lua_pushnil(vm);
+					lua_rawset(vm, 2);
+				}
+			}
+			lua_settop(vm, 2);
+		}
+
+
+		template<typename T, typename TL, int Index, typename Base>
+		struct gc_table_cleaner;
+
+		//usersdata is at index 1
+		//weak table is at index 2
+		template<typename T, typename TL, int Index, typename Base>
+		struct gc_table_cleaner
+		{
+			static void clean(lua_State* vm, T* ptr)
+			{
+				//is there is an offset
+				if (static_cast<void*>(ptr) != static_cast<void*>(static_cast<Base*>(ptr)))
+				{
+					//there is a separate caching of the base pointer
+					gc_clean_table(vm, static_cast<Base*>(ptr));
+				}
+				//clean next base
+				gc_table_cleaner<T
+								, TL
+								, Index + 1
+								, typename TYPELIST::At_default<TL, Index + 1, TYPE::Null_type>::Result
+								>::clean(vm, ptr);
+				//move to the bases of base
+				gc_table_cleaner<Base
+								, typename Proxy_class<Base>::Bases
+								, 0
+								, typename TYPELIST::At_default<typename Proxy_class<Base>::Bases, 0, TYPE::Null_type>::Result
+								>::clean(vm, ptr);
+			}
+		};
+
+		template<typename T, typename Bases, int Index>
+		struct gc_table_cleaner<T, Bases, Index, TYPE::Null_type>
+		{
+			static void clean(lua_State* /*vm*/, T* /*ptr*/){}
+		};
+
 		template<typename T>
 		struct garbage_collect
 		{
 			static int gc(lua_State * vm)
 			{
 				Lua_ud *ud = static_cast<Lua_ud*>(lua_touserdata(vm, 1));
+				cleanup_collision_tables(vm, ud);
 				if( ud->flags & GC_FLAG )delete static_cast<T*>(ud->void_class_ptr);
 				return 0;
+			}
+			static int gc_no_destructor(lua_State * vm)
+			{
+				cleanup_collision_tables(vm, static_cast<Lua_ud*>(lua_touserdata(vm, 1)));
+				return 0;
+			}
+			static void cleanup_collision_tables(lua_State * vm, Lua_ud *ud)
+			{
+				if( ud->flags & COLLISION_FLAG )
+				{
+					Weak_table::getWeakTable(vm);
+					gc_clean_table(vm, ud->void_class_ptr);
+					gc_table_cleaner<T
+								, typename Proxy_class<T>::Bases
+								, 0
+								, typename TYPELIST::At_default<typename Proxy_class<T>::Bases, 0, TYPE::Null_type>::Result
+								>::clean(vm, static_cast<T*>(ud->void_class_ptr));
+				}
 			}
 		};
 
@@ -190,7 +270,10 @@ namespace OOLUA
 		template<typename T>
 		struct set_delete_function<T, 1>
 		{
-			static void set(lua_State* /*vm*/, int /*methods*/){}//no op
+			static void set(lua_State* vm, int methods)
+			{
+				set_function_in_table(vm, "__gc", &INTERNAL::garbage_collect<T>::gc_no_destructor, methods);
+			}
 		};
 
 

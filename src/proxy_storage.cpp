@@ -70,21 +70,77 @@ namespace OOLUA
 			return false;
 		}
 
-		//on entering user data and weaktable are on the stack
-		void add_ptr_if_required(lua_State* const vm, void* ptr, int udIndex, int weakIndex)
+		void add_ptr_if_required(lua_State* const vm, void* ptr, int ud_index, int weak_index)
 		{
 			lua_pushlightuserdata(vm, ptr);//ptr
-			lua_rawget(vm, weakIndex);//(null or ptr)
-			if( lua_isnil(vm, -1) == 0 )
+			lua_rawget(vm, weak_index);//(null, ud or table)
+			switch(lua_type(vm, -1))
 			{
-				lua_pop(vm, 1);//pop the ud
-				return;
-			}
-			lua_pop(vm, 1);//pop the null
+				case LUA_TNIL:
+				{
+					lua_pop(vm, 1);//pop the null
+					lua_pushlightuserdata(vm, ptr);//key
+					lua_pushvalue(vm, ud_index);//key ud
+					lua_rawset(vm, weak_index);//table[key] = ud
+					break;
+				}
+				case LUA_TUSERDATA:
+				{
+					//(weak_index ... ud_index ...) ud
+					if( lua_rawequal(vm, -1, ud_index) == 1)
+						lua_pop(vm, 1);//pop the ud
+					else
+					{
+						lua_createtable(vm, 0, 2);////(weak_index ... ud_index ...) foundUd, collision_table
+						lua_pushlightuserdata(vm, ptr);//key //(weak_index ... ud_index ...) foundUd, collisionTable, lightUd
+						//lua_createtable(vm, 0, 2);//value
+						lua_pushvalue(vm, -2); //(weak_index ... ud_index ...) foundUd, collisionTable, lightUd, collisionTable
 
-			lua_pushlightuserdata(vm, ptr);//key
-			lua_pushvalue(vm, udIndex);//key ud
-			lua_rawset(vm, weakIndex);//table[key]=value
+						Weak_table::getCollisionMetatable(vm);// foundUd, collisionTable, lightUd, collisionTable, collisionMetaTable
+
+						//setmetatable(collisionTable, collisionMetaTable)
+						lua_setmetatable(vm, -2); // foundUd, collisionTable, lightUd, collisionTable
+
+						lua_pushvalue(vm, ud_index);//key
+						lua_pushvalue(vm, ud_index);//value
+						//collisionTable[newLightUd] = newLightUd
+						lua_rawset(vm, -3); // foundUd, collisionTable, lightUd, collisionTable
+
+						lua_pushvalue(vm, -4);//key // foundUd, collisionTable, lightUd, collisionTable, foundUd
+						lua_pushvalue(vm, -5);//value // foundUd, collisionTable, lightUd, collisionTable, foundUd, foundUd
+						//collisionTable[foundUd] = foundUd
+						lua_rawset(vm, -3);// foundUd, collisionTable, lightUd, collisionTable
+
+						//weakTable[lightUd] = collisionTable
+						lua_rawset(vm, weak_index);// foundUd, collisionTable,
+
+						lua_pushboolean(vm, 1);// foundUd, collisionTable, boolean
+						lua_rawset(vm, weak_index);// foundUd,
+						//weakTable[collisionTable] = 1
+
+						userdata_ptr_collision(static_cast<Lua_ud*>(lua_touserdata(vm, ud_index)));
+						userdata_ptr_collision(static_cast<Lua_ud*>(lua_touserdata(vm, -1)));
+						lua_pop(vm, 1);//pop ud that was not this ptr
+					}
+					break;
+				}
+				case LUA_TTABLE:
+				{
+					lua_pushvalue(vm, ud_index);
+					lua_rawget(vm, -2);
+					if(lua_type(vm, -1) != LUA_TNIL)
+						lua_pop(vm, 2);//pop found ud and the collision table
+					else
+					{
+						lua_pushvalue(vm, ud_index);//collisionTable, nil, ud
+						lua_pushvalue(vm, ud_index);//collisionTable, nil, ud, ud
+						//collisionTable[ud] = ud
+						lua_rawset(vm, -4);//collisionTable, nil
+						lua_pop(vm, 2); //pop nil and the collision table
+						userdata_ptr_collision(static_cast<Lua_ud*>(lua_touserdata(vm, ud_index)));
+					}
+				}
+			}
 		}
 
 		bool ud_at_index_is_const(lua_State* vm, int index)

@@ -61,6 +61,16 @@ namespace OOLUA
 				lua_pushvalue(vm, value_index);
 				lua_rawset(vm, LUA_REGISTRYINDEX);
 			}
+			static void getCollisionMetatable(lua_State* vm)
+			{
+				lua_getfield(vm, LUA_REGISTRYINDEX, OOLUA::INTERNAL::collision_mt_lookup_name);
+			}
+			static void setCollisionMetatable(lua_State* vm, int value_index)
+			{
+				OOLUA_PUSH_CARRAY(vm, OOLUA::INTERNAL::collision_mt_lookup_name);
+				lua_pushvalue(vm, value_index);
+				lua_rawset(vm, LUA_REGISTRYINDEX);
+			}
 		};
 
 
@@ -83,6 +93,24 @@ namespace OOLUA
 				//yet we need to stop warnings
 				//NOTE: in 5.2 we can push a light c function here
 				is_const_func_sig func = OOLUA::INTERNAL::userdata_is_constant;
+				void** stopwarnings = reinterpret_cast<void**>(&func);
+				lua_pushlightuserdata(vm, *stopwarnings);
+				lua_pushvalue(vm, value_index);
+				lua_rawset(vm, LUA_REGISTRYINDEX);
+			}
+			static void getCollisionMetatable(lua_State* vm)
+			{
+				//it is safe as the pointers are the same size
+				//yet we need to stop warnings
+				//NOTE: in 5.2 we can push a light c function here
+				is_const_func_sig func = OOLUA::INTERNAL::userdata_is_to_be_gced;
+				void** stopwarnings = reinterpret_cast<void**>(&func);
+				lua_pushlightuserdata(vm, *stopwarnings);
+				lua_rawget(vm, LUA_REGISTRYINDEX);
+			}
+			static void setCollisionMetatable(lua_State* vm, int value_index)
+			{
+				is_const_func_sig func = OOLUA::INTERNAL::userdata_is_to_be_gced;
 				void** stopwarnings = reinterpret_cast<void**>(&func);
 				lua_pushlightuserdata(vm, *stopwarnings);
 				lua_pushvalue(vm, value_index);
@@ -138,72 +166,108 @@ namespace OOLUA
 			return 0;
 		}
 
+		template<typename T>
+		inline bool is_derived_ptr(oolua_type_check_function base_type_checker, T* ptr)
+		{
+			Lua_ud fake_stack_ud = {ptr, 0 , register_class_imp<T>, 0};
+			Lua_ud fake_requested_ud = {0, 0, base_type_checker, 0};
+			requested_ud_is_a_base<T>(&fake_requested_ud, &fake_stack_ud);
+			return fake_requested_ud.void_class_ptr != NULL;
+		}
 
-		//It is possible for a base class and a derived class pointer to have no offset.
+		template<typename T>
+		inline Lua_ud* is_correct_ud(lua_State* vm, Lua_ud* ud, T* ptr, bool const is_const)
+		{
+			bool const was_const = OOLUA::INTERNAL::userdata_is_constant(ud);
+			if (ud_is_type<T>(ud) || valid_base_ptr_or_null<T>(ud))
+			{
+				ud->flags &= ((!is_const && was_const) ? (~CONST_FLAG) : ud->flags);
+				return ud;
+			}
+			else if (is_derived_ptr(ud->type_check, ptr))
+				return reset_metatable(vm, ptr, was_const && is_const);
+
+			return NULL;
+		}
+
+		template<typename T>
+		inline Lua_ud* check_roots(lua_State* vm, T * ptr, bool const is_const, int cache_table_index)
+		{
+			/*
+				possibilities:
+				a base class is stored.
+				none of the hierarchy is stored
+			*/
+			Lua_ud* ud(0);
+			bool base_is_stored(false);
+			Has_a_root_entry<
+					T
+					, typename FindRootBases<T>::Result
+					, 0
+					, typename TYPELIST::At_default< typename FindRootBases<T>::Result, 0, TYPE::Null_type >::Result
+				> checkRoots;
+			checkRoots(vm, ptr, cache_table_index, base_is_stored);
+			if(base_is_stored)
+			{
+				bool was_const = ud_at_index_is_const(vm, -1);
+				ud = reset_metatable(vm, ptr, was_const && is_const);
+			}
+			return ud;
+		}
+
+
 		//if found it is left on the top of the stack and returns the Lua_ud ptr
 		//else the stack is same as on entrance to the function and null is returned
 		template<typename T>
-		inline Lua_ud* find_ud(lua_State*  vm, T* ptr, bool const is_const)
+		inline Lua_ud* find_ud(lua_State* vm, T * ptr, bool const is_const)
 		{
-			bool has_entry = is_there_an_entry_for_this_void_pointer(vm, ptr);//(ud or no addition to the stack)
 			Lua_ud* ud(0);
-			if(has_entry )//ud
+			int cache_table_index = push_weak_table(vm);
+			lua_pushlightuserdata(vm, ptr);
+			lua_rawget(vm, cache_table_index);
+			switch(lua_type(vm, -1))
 			{
-				/*
-				possibilities:
-					top of stack is the representation of the T ptr
-					top of stack is derived from T with no offset pointer and it can be upcast to T
-					top of stack is a registered base class of T with no offset pointer
-				*/
-				ud = static_cast<Lua_ud *>(lua_touserdata(vm, -1));
-				bool const was_const = OOLUA::INTERNAL::userdata_is_constant(ud);
-
-				if (is_const)
+				case LUA_TNIL: //no cache entry
 				{
-					if(class_from_stack_top<T>(vm)) return ud;
+					lua_pop(vm, 1); //pop the nil
+					ud = check_roots(vm, ptr, is_const, cache_table_index);
+					lua_remove(vm, cache_table_index);
+					break;
 				}
-				else if (was_const)//change
+				case LUA_TUSERDATA: //one cached entry
 				{
-					if(class_from_stack_top<T>(vm))
+					ud = static_cast<Lua_ud *>(lua_touserdata(vm, -1));
+					if ((ud = is_correct_ud(vm, ud, ptr, is_const)) == NULL)
 					{
-						INTERNAL::userdata_const_value(ud, false);
-						return ud;
+						lua_pop(vm, 1);//pop the found ud
+						ud = check_roots(vm, ptr, is_const, cache_table_index);
+						lua_remove(vm, cache_table_index);
 					}
-				}
-				else //was not const and is not const
-				{
-					if( none_const_class_from_stack_top<T>(vm) )
-						return ud;
-				}
+					else
+						lua_remove(vm, cache_table_index);
 
-				//if T was a base of the stack or T was the stack it has been returned
-				//top of stack is a registered base class of T with no offset pointer
-				return reset_metatable(vm, ptr, was_const && is_const);
-			}
-			else
-			{
-				/*
-				possibilities:
-					a base class is stored.
-					none of the hierarchy is stored
-				*/
-
-				int weak_table = push_weak_table(vm);
-				bool base_is_stored(false);
-				Has_a_root_entry<
-						T
-						, typename FindRootBases<T>::Result
-						, 0
-						, typename TYPELIST::At_default< typename FindRootBases<T>::Result, 0, TYPE::Null_type >::Result
-					> checkRoots;
-				checkRoots(vm, ptr, weak_table, base_is_stored);
-				lua_remove(vm, weak_table);
-				if(base_is_stored)
+					break;
+				}
+				case LUA_TTABLE: //pointer collision
 				{
-					bool was_const = ud_at_index_is_const(vm, -1);
-					ud = reset_metatable(vm, ptr, was_const && is_const);
+					lua_pushnil(vm);
+					while(lua_next(vm, -2) != 0)
+					{
+						ud = static_cast<Lua_ud *>(lua_touserdata(vm, -1));
+						if ((ud = is_correct_ud(vm, ud, ptr, is_const)) == NULL)
+							lua_pop(vm, 1);//pop the ud value to continue iteration
+						else
+						{
+							lua_replace(vm, cache_table_index);
+							lua_settop(vm, cache_table_index);
+							return ud;
+						}
+					}
+					lua_pop(vm, 2); //remove cache_table and collision table
+					break;
 				}
 			}
+
 			return ud;
 		}
 
@@ -290,8 +354,48 @@ namespace OOLUA
 			void operator()(lua_State * const vm, Type* ptr, int weakIndex, bool& result)
 			{
 				if(result)return;
-				result = is_there_an_entry_for_this_void_pointer(vm, static_cast<BaseType*>(ptr), weakIndex);
-				if(result)return;
+
+				void* void_base_ptr = static_cast<void*>(static_cast<BaseType*>(ptr));
+				if(static_cast<void*>(ptr) != void_base_ptr
+				   && is_there_an_entry_for_this_void_pointer(vm, void_base_ptr, weakIndex))
+				{
+					switch(lua_type(vm, -1))
+					{
+						case LUA_TUSERDATA:
+						{
+							Lua_ud* ud = static_cast<Lua_ud*>(lua_touserdata(vm, -1));
+							if( is_derived_ptr(ud->type_check, ptr))
+							{
+								result = true;
+								return;
+							}
+							else
+								lua_pop(vm, 1);//remove the incorrect ud
+
+							break;
+						}
+						case LUA_TTABLE:
+						{
+							lua_pushnil(vm);//collisionTable, nil
+							while(lua_next(vm, -2) != 0)
+							{
+								//collisionTable, ud, ud
+								Lua_ud* ud = static_cast<Lua_ud *>(lua_touserdata(vm, -1));
+								if( is_derived_ptr(ud->type_check, ptr))
+								{
+									result = true;
+									lua_replace(vm, -3);
+									lua_pop(vm, 1);
+									return;
+								}
+								//keep the ud(key) for the next iteration
+								lua_pop(vm, 1);//collisionTable, ud
+							}
+							lua_pop(vm, 1);//remove the collision table
+							break;
+						}
+					}
+				}
 				Has_a_root_entry<
 						Type
 						, Bases

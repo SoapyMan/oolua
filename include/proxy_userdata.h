@@ -65,7 +65,7 @@ namespace OOLUA
 		bool userdata_is_to_be_gced(Lua_ud const * ud);
 		void userdata_gc_value(Lua_ud* ud, bool value);
 
-		enum UD_FLAGS {CONST_FLAG = 0x01, GC_FLAG = 0x02};
+		enum UD_FLAGS {CONST_FLAG = 0x01, GC_FLAG = 0x02, COLLISION_FLAG = 0x08};
 
 		inline void userdata_const_value(Lua_ud* ud, bool value)
 		{
@@ -85,7 +85,14 @@ namespace OOLUA
 			if(value) ud->flags |= GC_FLAG;
 			else ud->flags &= (~GC_FLAG);
 		}
-
+		inline void userdata_ptr_collision(Lua_ud* ud)
+		{
+			ud->flags |= COLLISION_FLAG;
+		}
+		inline bool userdata_is_ptr_collision(Lua_ud* ud)
+		{
+			return (ud->flags & COLLISION_FLAG) != 0;
+		}
 	} // namespace INTERNAL //NOLINT
 	/**\endcond */
 

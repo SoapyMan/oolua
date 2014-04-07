@@ -50,6 +50,18 @@ namespace
 
 		lua_pop(vm, 1);//empty
 	}
+
+	void add_collision_metatable(lua_State* vm)
+	{
+		lua_createtable(vm, 0, 1);
+		lua_pushliteral(vm, "__mode");
+		lua_pushliteral(vm, "kv");
+		//collisionMetaTable['__mode'] = 'kv'
+		lua_rawset(vm, -3); //collisionMetaTable
+		OOLUA::INTERNAL::Weak_table::setCollisionMetatable(vm, -2);
+		lua_pop(vm, 1);
+	}
+
 	void add_ownership_globals(lua_State* vm)
 	{
 		lua_pushinteger(vm, OOLUA::Cpp);//int
@@ -106,6 +118,7 @@ namespace OOLUA
 	void setup_user_lua_state(lua_State* vm)
 	{
 		add_weaklookup_table(vm);
+		add_collision_metatable(vm);
 		register_oolua_module(vm);
 		add_ownership_globals(vm);
 	}
