@@ -258,6 +258,7 @@ OOLUA_EXPORT_NO_FUNCTIONS(NonePod)
 			CPPUNIT_TEST(sharedReturnMaybeNull_functionReturnsNoneNullPointer_topOfStackSharedFlagIsSet);
 
 			CPPUNIT_TEST(collisionIncludingSharedPtr_popInstancesThenCallGc_ThereIsNotEntryInTheWeakTableForThePointer);
+			CPPUNIT_TEST(collisionIncludingNonePodSharedPtr_popInstancesThenCallGc_ThereIsNotEntryInTheWeakTableForThePointer);
 		CPPUNIT_TEST_SUITE_END();
 		OOLUA::Script* m_lua;
 	public:
@@ -911,6 +912,24 @@ OOLUA_EXPORT_NO_FUNCTIONS(NonePod)
 
 			int weakIndex = OOLUA::INTERNAL::push_weak_table(*m_lua);
 			lua_pushlightuserdata(*m_lua, instance.get());
+			lua_rawget(*m_lua, weakIndex);
+			CPPUNIT_ASSERT_EQUAL(LUA_TNIL, lua_type(*m_lua, -1));
+		}
+
+		void collisionIncludingNonePodSharedPtr_popInstancesThenCallGc_ThereIsNotEntryInTheWeakTableForThePointer()
+		{
+			//userdata gc methods are called in reverse order of construction
+			//therefore makesure the shared pointer gc is called second
+			m_lua->register_class<Pod>();
+			m_lua->register_class<NonePod>();
+			OOLUA_SHARED_TYPE<NonePod> instance(new NonePod);
+			m_lua->push(instance);
+			m_lua->push(&instance->first_member);
+			lua_pop(*m_lua, 2);
+			m_lua->gc();
+
+			int weakIndex = OOLUA::INTERNAL::push_weak_table(*m_lua);
+			lua_pushlightuserdata(*m_lua, static_cast<PodWithFirstMemberPod*>(instance.get()));
 			lua_rawget(*m_lua, weakIndex);
 			CPPUNIT_ASSERT_EQUAL(LUA_TNIL, lua_type(*m_lua, -1));
 		}
