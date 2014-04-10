@@ -234,14 +234,22 @@ namespace OOLUA
 			static void cleanup_collision_tables(lua_State * vm, Lua_ud *ud)
 			{
 				if( ud->flags & COLLISION_FLAG )
-				{//TODO : void_class_ptr is wrong here when it is a shared_ptr
+				{
 					Weak_table::getWeakTable(vm);
-					gc_clean_table(vm, ud->void_class_ptr);
+#if OOLUA_USE_SHARED_PTR == 1
+					//let's not depend on how shared_ptr is implemented
+					void* void_class_ptr = ud->flags & SHARED_FLAG ?
+								reinterpret_cast<OOLUA_SHARED_TYPE<T>* >(ud->shared_object)->get()
+								: ud->void_class_ptr;
+#else
+					void* void_class_ptr = ud->void_class_ptr;
+#endif
+					gc_clean_table(vm, void_class_ptr);
 					gc_table_cleaner<T
 								, typename Proxy_class<T>::Bases
 								, 0
 								, typename TYPELIST::At_default<typename Proxy_class<T>::Bases, 0, TYPE::Null_type>::Result
-								>::clean(vm, static_cast<T*>(ud->void_class_ptr));
+								>::clean(vm, static_cast<T*>(void_class_ptr));
 				}
 			}
 		};

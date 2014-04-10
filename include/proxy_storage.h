@@ -125,7 +125,7 @@ namespace OOLUA
 		template<typename T>Lua_ud* add_ptr(lua_State* vm, T* const ptr, bool is_const, Owner owner);
 
 		template<typename PossiblySharedPtrType, typename ClassType>
-		Lua_ud* find_ud(lua_State* vm, PossiblySharedType const * shared_ptr, ClassType* ptr, bool is_const);
+		Lua_ud* find_ud(lua_State* vm, PossiblySharedPtrType const * shared_ptr, ClassType* ptr, bool is_const);
 
 		bool is_there_an_entry_for_this_void_pointer(lua_State* vm, void* ptr);
 		bool is_there_an_entry_for_this_void_pointer(lua_State* vm, void* ptr, int tableIndex);

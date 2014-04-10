@@ -150,6 +150,27 @@ OOLUA_PROXY_END
 OOLUA_EXPORT_FUNCTIONS(PointerChangesToShared, ptr, ptr_const, null, none_null)
 OOLUA_EXPORT_FUNCTIONS_CONST(PointerChangesToShared)
 
+struct Pod{};
+struct PodWithFirstMemberPod
+{
+	Pod first_member;
+};
+OOLUA_PROXY(Pod)
+OOLUA_PROXY_END
+OOLUA_EXPORT_NO_FUNCTIONS(Pod)
+
+OOLUA_PROXY(PodWithFirstMemberPod)
+OOLUA_PROXY_END
+OOLUA_EXPORT_NO_FUNCTIONS(PodWithFirstMemberPod)
+
+struct NonePod : PodWithFirstMemberPod
+{
+	virtual ~NonePod(){};
+};
+OOLUA_PROXY(NonePod, PodWithFirstMemberPod)
+OOLUA_PROXY_END
+OOLUA_EXPORT_NO_FUNCTIONS(NonePod)
+
 	class SharedPointer : public CppUnit::TestFixture
 	{
 		CPPUNIT_TEST_SUITE(SharedPointer);
@@ -232,9 +253,11 @@ OOLUA_EXPORT_FUNCTIONS_CONST(PointerChangesToShared)
 			CPPUNIT_TEST(sharedReturn_functionReturnsPtr_topOfStackConstFlagIsNotSet);
 			CPPUNIT_TEST(sharedReturn_functionReturnsPtrConst_topOfStackSharedFlagIsSet);
 			CPPUNIT_TEST(sharedReturn_functionReturnsPtrConst_topOfStackConstFlagIsSet);
-			
+
 			CPPUNIT_TEST(sharedReturnMaybeNull_functionReturnsNullPointer_topOfStackIsNil);
 			CPPUNIT_TEST(sharedReturnMaybeNull_functionReturnsNoneNullPointer_topOfStackSharedFlagIsSet);
+
+			CPPUNIT_TEST(collisionIncludingSharedPtr_popInstancesThenCallGc_ThereIsNotEntryInTheWeakTableForThePointer);
 		CPPUNIT_TEST_SUITE_END();
 		OOLUA::Script* m_lua;
 	public:
@@ -872,6 +895,24 @@ OOLUA_EXPORT_FUNCTIONS_CONST(PointerChangesToShared)
 			m_lua->register_class<PointerChangesToShared>();
 			m_lua->run_chunk("return PointerChangesToShared.new():none_null()");
 			CPPUNIT_ASSERT_EQUAL(true, stack_index_ud_shared_flag(-1));
+		}
+
+		void collisionIncludingSharedPtr_popInstancesThenCallGc_ThereIsNotEntryInTheWeakTableForThePointer()
+		{
+			//userdata gc methods are called in reverse order of construction
+			//therefore makesure the shared pointer gc is called second
+			m_lua->register_class<Pod>();
+			m_lua->register_class<PodWithFirstMemberPod>();
+			OOLUA_SHARED_TYPE<PodWithFirstMemberPod> instance(new PodWithFirstMemberPod);
+			m_lua->push(instance);
+			m_lua->push(&instance->first_member);
+			lua_pop(*m_lua, 2);
+			m_lua->gc();
+
+			int weakIndex = OOLUA::INTERNAL::push_weak_table(*m_lua);
+			lua_pushlightuserdata(*m_lua, instance.get());
+			lua_rawget(*m_lua, weakIndex);
+			CPPUNIT_ASSERT_EQUAL(LUA_TNIL, lua_type(*m_lua, -1));
 		}
 	};
 
