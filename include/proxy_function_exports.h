@@ -1,7 +1,7 @@
 /*
 The MIT License
 
-Copyright (c) 2009 - 2013 Liam Devine
+Copyright (c) 2009 - 2014 Liam Devine
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -23,7 +23,7 @@ THE SOFTWARE.
 */
 /** 
 	\file proxy_function_exports.h
-	\date Wed Oct 23 17:57:13 2013
+	\date Thu Apr 10 18:41:11 2014
 	\details 
 	Configurable values as set when generating this file
 	\li class_functions 15 - Maximum amount of class functions that can be registered for each proxied type	(Default 15)

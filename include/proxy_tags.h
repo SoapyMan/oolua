@@ -1,7 +1,7 @@
 /*
 The MIT License
 
-Copyright (c) 2009 - 2013 Liam Devine
+Copyright (c) 2009 - 2014 Liam Devine
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -120,8 +120,8 @@ a class which is to be proxied.
 	\brief Overrides the configuration behaviour when creating proxied types
 	\details
 	When the library is compiled with \ref OOLUA_USE_SHARED_PTR "shared pointer support"
-	and it is not configured to create shared pointers by 
-	\ref OOLUA_NEW_POINTER_DEFAULT_IS_SHARED_TYPE "default", then this tag 
+	and it is not configured to create shared pointers by
+	\ref OOLUA_NEW_POINTER_DEFAULT_IS_SHARED_TYPE "default", then this tag
 	overrides that behaviour for the proxy type.
 	\note If the library is configured to use the shared pointer type by default
 	then this tag is ignored when present in a proxy \ref OOLUA_TAGS "tag block".
@@ -132,8 +132,8 @@ a class which is to be proxied.
 	\brief Overrides the configuration behaviour when creating proxied types
 	\details
 	When the library is compiled with \ref OOLUA_USE_SHARED_PTR "shared pointer support"
-	and it is also configured to create shared pointers by 
-	\ref OOLUA_NEW_POINTER_DEFAULT_IS_SHARED_TYPE "default", then this tag 
+	and it is also configured to create shared pointers by
+	\ref OOLUA_NEW_POINTER_DEFAULT_IS_SHARED_TYPE "default", then this tag
 	overrides that behaviour for the proxy type.
 	\note If the library is configured to not use the shared pointer type by default
 	then this tag is ignored when present in a proxy \ref OOLUA_TAGS "tag block".
