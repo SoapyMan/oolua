@@ -31,6 +31,7 @@ THE SOFTWARE.
 #include "oolua_string.h"
 #include "lvd_types.h"
 #include "lvd_type_traits.h"
+#include "oolua_config.h"
 
 namespace OOLUA
 {
@@ -48,6 +49,11 @@ namespace OOLUA
 		template<typename T>
 		T* check_index_no_const(lua_State * vm, int index);
 
+#if OOLUA_USE_SHARED_PTR == 1
+		template<typename T>
+		struct stack_checker;
+#endif
+
 
 		namespace PULL
 		{
@@ -57,7 +63,6 @@ namespace OOLUA
 
 		namespace LUA_CALLED
 		{
-
 			void get_class_type_error(lua_State* const vm, char const* expected_type);
 			void get_error(lua_State* vm, int idx, char const* expected_type);
 
@@ -126,7 +131,27 @@ namespace OOLUA
 				}
 			};
 
-
+#if OOLUA_USE_SHARED_PTR == 1
+		template<typename T, template <typename> class Shared_pointer_class>
+		struct get_basic_type<Shared_pointer_class<T>, 0, 0>
+		{
+			typedef typename LVD::remove_const<T>::type raw;
+			static void get(lua_State* const vm, int idx, Shared_pointer_class<T> & value)
+			{
+				value = !LVD::is_const<T>::value
+							? stack_checker<Shared_pointer_class<raw> >::check_index_no_const(vm, idx)
+							: stack_checker<Shared_pointer_class<raw> >::check_index(vm, idx);
+#if OOLUA_RUNTIME_CHECKS_ENABLED  == 1
+				if (!value)
+				{
+					get_class_type_error(vm, LVD::is_const<T>::value
+											  ? Proxy_class<raw>::class_name_const
+											  : Proxy_class<raw>::class_name);
+				}
+#endif
+			}
+		};
+#endif
 			template<typename T, int is_integral>
 			struct get_ptr;
 

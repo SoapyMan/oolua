@@ -129,16 +129,21 @@ namespace OOLUA
 		bool is_there_an_entry_for_this_void_pointer(lua_State* vm, void* ptr);
 		bool is_there_an_entry_for_this_void_pointer(lua_State* vm, void* ptr, int tableIndex);
 
-		template<typename T>
-		Lua_ud* reset_metatable(lua_State*  vm, T* ptr, bool is_const);
+		template<typename PossiblySharedType, typename ClassType>
+		Lua_ud* reset_metatable(lua_State* vm, PossiblySharedType const* shared_ptr
+										, ClassType* ptr, bool is_const);
 
 		void add_ptr_if_required(lua_State* const vm, void* ptr, int udIndex, int weakIndex);
 
 
 		Lua_ud* new_userdata(lua_State* vm, void* ptr, bool is_const
-							 , oolua_function_check_base base_checker, oolua_type_check_function type_check);
+							 , oolua_function_check_base base_checker
+							 , oolua_type_check_function type_check
+							 , oolua_release_shared_ptr shared_release);
 		void reset_userdata(Lua_ud* ud, void* ptr, bool is_const
-							, oolua_function_check_base base_checker, oolua_type_check_function type_check);
+							, oolua_function_check_base base_checker
+							, oolua_type_check_function type_check
+							, oolua_release_shared_ptr shared_release);
 
 		template<typename Type, typename Bases, int BaseIndex, typename BaseType>
 		struct Add_ptr;
@@ -151,7 +156,7 @@ namespace OOLUA
 
 		bool ud_at_index_is_const(lua_State* vm, int index);
 
-
+		//TODO: can not change gc on shared_ptrs
 		template<typename T>
 		int lua_set_owner(lua_State*  vm)
 		{
@@ -169,29 +174,35 @@ namespace OOLUA
 		template<typename T>
 		inline bool is_derived_ptr(oolua_type_check_function base_type_checker, T* ptr)
 		{
+#if OOLUA_USE_SHARED_PTR == 1
+			Lua_ud fake_stack_ud = {{ptr}, 0 , register_class_imp<T>, 0, 0};
+			Lua_ud fake_requested_ud = {{0}, 0, base_type_checker, 0, 0};
+#else
 			Lua_ud fake_stack_ud = {ptr, 0 , register_class_imp<T>, 0};
 			Lua_ud fake_requested_ud = {0, 0, base_type_checker, 0};
+#endif
 			requested_ud_is_a_base<T>(&fake_requested_ud, &fake_stack_ud);
 			return fake_requested_ud.void_class_ptr != NULL;
 		}
 
-		template<typename T>
-		inline Lua_ud* is_correct_ud(lua_State* vm, Lua_ud* ud, T* ptr, bool const is_const)
+		template<typename PossiblySharedPtrType, typename ClassType>
+		inline Lua_ud* is_correct_ud(lua_State* vm, Lua_ud* ud, PossiblySharedPtrType const* shared_ptr, ClassType* ptr, bool const is_const)
 		{
 			bool const was_const = OOLUA::INTERNAL::userdata_is_constant(ud);
-			if (ud_is_type<T>(ud) || valid_base_ptr_or_null<T>(ud))
+			if (ud_is_type<ClassType>(ud) || valid_base_ptr_or_null<ClassType>(ud))
 			{
 				ud->flags &= ((!is_const && was_const) ? (~CONST_FLAG) : ud->flags);
 				return ud;
 			}
 			else if (is_derived_ptr(ud->type_check, ptr))
-				return reset_metatable(vm, ptr, was_const && is_const);
+				return reset_metatable(vm, shared_ptr, ptr, was_const && is_const);
 
 			return NULL;
 		}
 
-		template<typename T>
-		inline Lua_ud* check_roots(lua_State* vm, T * ptr, bool const is_const, int cache_table_index)
+		template<typename PossiblySharedPtrType, typename ClassType>
+		inline Lua_ud* check_roots(lua_State* vm, PossiblySharedPtrType const* shared_ptr
+								, ClassType * ptr, bool const is_const, int cache_table_index)
 		{
 			/*
 				possibilities:
@@ -201,16 +212,16 @@ namespace OOLUA
 			Lua_ud* ud(0);
 			bool base_is_stored(false);
 			Has_a_root_entry<
-					T
-					, typename FindRootBases<T>::Result
+					ClassType
+					, typename FindRootBases<ClassType>::Result
 					, 0
-					, typename TYPELIST::At_default< typename FindRootBases<T>::Result, 0, TYPE::Null_type >::Result
+					, typename TYPELIST::At_default< typename FindRootBases<ClassType>::Result, 0, TYPE::Null_type >::Result
 				> checkRoots;
 			checkRoots(vm, ptr, cache_table_index, base_is_stored);
 			if(base_is_stored)
 			{
 				bool was_const = ud_at_index_is_const(vm, -1);
-				ud = reset_metatable(vm, ptr, was_const && is_const);
+				ud = reset_metatable(vm, shared_ptr, ptr, was_const && is_const);
 			}
 			return ud;
 		}
@@ -218,8 +229,9 @@ namespace OOLUA
 
 		//if found it is left on the top of the stack and returns the Lua_ud ptr
 		//else the stack is same as on entrance to the function and null is returned
-		template<typename T>
-		inline Lua_ud* find_ud(lua_State* vm, T * ptr, bool const is_const)
+		template<typename PossiblySharedPtrType, typename ClassType>
+		inline Lua_ud* find_ud(lua_State*  vm, PossiblySharedPtrType const* shared_ptr
+								, ClassType* ptr, bool const is_const)
 		{
 			Lua_ud* ud(0);
 			int cache_table_index = push_weak_table(vm);
@@ -230,17 +242,17 @@ namespace OOLUA
 				case LUA_TNIL: //no cache entry
 				{
 					lua_pop(vm, 1); //pop the nil
-					ud = check_roots(vm, ptr, is_const, cache_table_index);
+					ud = check_roots(vm, shared_ptr, ptr, is_const, cache_table_index);
 					lua_remove(vm, cache_table_index);
 					break;
 				}
 				case LUA_TUSERDATA: //one cached entry
 				{
 					ud = static_cast<Lua_ud *>(lua_touserdata(vm, -1));
-					if ((ud = is_correct_ud(vm, ud, ptr, is_const)) == NULL)
+					if ((ud = is_correct_ud(vm, ud, shared_ptr, ptr, is_const)) == NULL)
 					{
 						lua_pop(vm, 1);//pop the found ud
-						ud = check_roots(vm, ptr, is_const, cache_table_index);
+						ud = check_roots(vm, shared_ptr, ptr, is_const, cache_table_index);
 						lua_remove(vm, cache_table_index);
 					}
 					else
@@ -254,7 +266,7 @@ namespace OOLUA
 					while(lua_next(vm, -2) != 0)
 					{
 						ud = static_cast<Lua_ud *>(lua_touserdata(vm, -1));
-						if ((ud = is_correct_ud(vm, ud, ptr, is_const)) == NULL)
+						if ((ud = is_correct_ud(vm, ud, shared_ptr, ptr, is_const)) == NULL)
 							lua_pop(vm, 1);//pop the ud value to continue iteration
 						else
 						{
@@ -271,22 +283,125 @@ namespace OOLUA
 			return ud;
 		}
 
+
+		/*
+			This is required because when we want to change the metatable to a more
+			derived type, we do not actually know the type that is already stored in
+			the userdata member. So the userdata has to pay for another function
+			pointer to do the work.
+		*/
 		template<typename T>
-		inline Lua_ud* reset_metatable(lua_State* vm, T* ptr, bool is_const)
+		struct SharedHelper;
+
+#if OOLUA_USE_SHARED_PTR == 1
+		/*
+			Handles shared<T const> and shared<T>
+		*/
+		template<typename Ptr_type>//, template <typename> class Shared_pointer_class>
+		struct SharedHelper<OOLUA_SHARED_TYPE<Ptr_type> >
+		{
+			typedef OOLUA_SHARED_TYPE<typename LVD::remove_const<Ptr_type>::type> shared;
+			static void release_pointer(Lua_ud* ud)
+			{
+				//this member is only defined when compiled with shared pointer support
+				shared* shared_ptr = reinterpret_cast<shared*>(ud->shared_object);
+				shared_ptr->~shared();
+			}
+		};
+#endif
+
+		/* raw pointer version does nothing*/
+		template<typename T>
+		struct SharedHelper
+		{
+			static void release_pointer(Lua_ud* /*ud*/){}//nop
+		};
+
+		/*
+			The library always stores the most derived type known for the instance
+			and the weakest type.
+			If there are two types A and B, where B derives from A.
+			shared<B const> is pushed
+			then shared<A> is pushed
+			The weakest and most derived type now is shared<B> yet the library does not
+			know the type stored in the userdata at this point and therefore how to cast
+			it to the new none constant derived type.
+
+			The problem is not unique for shared pointers but it adds another level of
+			stupidity. Raw pointers B* and B const* are related types, which is not true
+			for shared<B> and shared<B const>.
+			Shared<B> b(new B);
+			Shared<B const>* bb = &b; //BOOM unrelated types and undefined.
+			You could try a C style function cast / reinterpret_cast to quieten the compiler
+			but it is still undefined.
+			However Shared<B const> bb(b) is defined, so we can always get a constant version
+			from a none constant version. Therefore the library will use OOLUA_SHARED_CONST_CAST
+			to remove constness and then use the const flag in the userdata. This way when
+			constness changes the flag is switched off yet the type is still correct without
+			knowing it at that point and later when the instance has it's destructor called.
+
+		*/
+
+#if OOLUA_USE_SHARED_PTR == 1
+		/*
+			These must be protected as they use OOLUA_SHARED_CONST_CAST and ud->shared_object
+			which are only defined when using shared pointers.
+		*/
+
+		/*const version removes const*/
+		template<typename Ptr_type>
+		Ptr_type* fixup_pointer(Lua_ud* ud, OOLUA_SHARED_TYPE<Ptr_type const> const* shared)
+		{
+			typedef OOLUA_SHARED_TYPE<Ptr_type> none_const_sp;
+			none_const_sp * sp = new(ud->shared_object) none_const_sp(OOLUA_SHARED_CONST_CAST<Ptr_type>(*shared));
+			return sp->get();
+		}
+
+		/*none const version*/
+		template<typename Ptr_type>
+		Ptr_type* fixup_pointer(Lua_ud* ud, OOLUA_SHARED_TYPE<Ptr_type> const* shared)
+		{
+			typedef OOLUA_SHARED_TYPE<Ptr_type> none_const_sp;
+			none_const_sp* sp = new(ud->shared_object) none_const_sp(*shared);
+			return sp->get();
+		}
+#endif
+		/* raw pointer version does nothing*/
+		template<typename T>
+		void fixup_pointer(Lua_ud* /*ud*/, T const* /*raw*/)//nop //NOLINT(readability/casting)
+		{}
+
+
+		template<typename PossiblySharedType, typename ClassType>
+		inline Lua_ud* reset_metatable(lua_State* vm, PossiblySharedType const* shared_ptr
+										, ClassType* ptr, bool is_const)
 		{
 			Lua_ud *ud = static_cast<Lua_ud *>(lua_touserdata(vm, -1));//ud
-			reset_userdata(ud, ptr, is_const, &requested_ud_is_a_base<T>, &register_class_imp<T>);
+#if OOLUA_USE_SHARED_PTR == 1
+			/*
+				Member only defined when there is shared pointer support.
+				If the type is not a shared pointer then translates to a nop.
+			*/
+			ud->shared_ptr_release(ud);
+#endif
+			reset_userdata(ud, ptr, is_const
+							, &requested_ud_is_a_base<ClassType>
+							, &register_class_imp<ClassType>
+							, &SharedHelper<PossiblySharedType>::release_pointer);
+
+			fixup_pointer(ud, shared_ptr);
+
 			//change the metatable associated with the ud
-			lua_getfield(vm, LUA_REGISTRYINDEX, OOLUA::Proxy_class<T>::class_name);
+			lua_getfield(vm, LUA_REGISTRYINDEX, OOLUA::Proxy_class<ClassType>::class_name);
 
 			lua_setmetatable(vm, -2);//set ud's metatable to this
 
 			int weak_index = push_weak_table(vm);//ud weakTable
 			//then register all the bases that need it
-			Add_ptr<T
-					, typename OOLUA::Proxy_class<T>::AllBases
+			Add_ptr<ClassType
+					, typename OOLUA::Proxy_class<ClassType>::AllBases
 					, 0
-					, typename TYPELIST::At_default< typename OOLUA::Proxy_class<T>::AllBases, 0, TYPE::Null_type >::Result
+					, typename TYPELIST::At_default< typename OOLUA::Proxy_class<ClassType>::AllBases, 0, TYPE::Null_type >::Result
 				> addThisTypesBases;
 			addThisTypesBases(vm, ptr, weak_index-1, weak_index);
 			lua_pop(vm, 1);//ud
@@ -294,11 +409,8 @@ namespace OOLUA
 		}
 
 		template<typename T>
-		inline Lua_ud* add_ptr(lua_State* const vm, T* const ptr, bool is_const, Owner owner)
+		inline void add_ptr_imp(lua_State* const vm, T* const ptr)
 		{
-			Lua_ud* ud = new_userdata(vm, ptr, is_const, &requested_ud_is_a_base<T>, &register_class_imp<T>);
-			if(owner != No_change)userdata_gc_value(ud, owner == Lua);
-
 			lua_getfield(vm, LUA_REGISTRYINDEX, OOLUA::Proxy_class<T>::class_name);
 
 #if	OOLUA_DEBUG_CHECKS == 1
@@ -320,8 +432,42 @@ namespace OOLUA
 			addThisTypesBases(vm, ptr, udIndex, weakIndex);
 
 			lua_pop(vm, 1);//ud
+		}
+
+		template<typename T>
+		inline Lua_ud* add_ptr(lua_State* const vm, T* const ptr, bool is_const, Owner owner)
+		{
+			Lua_ud* ud = new_userdata(vm, ptr, is_const
+										, &requested_ud_is_a_base<T>
+										, &register_class_imp<T>
+										, &SharedHelper<T>::release_pointer);
+			if(owner != No_change)userdata_gc_value(ud, owner == Lua);
+
+			add_ptr_imp(vm, ptr);
 			return ud;
 		}
+
+#if OOLUA_USE_SHARED_PTR == 1
+		template<typename T>
+		inline Lua_ud* add_ptr(lua_State* const vm, OOLUA_SHARED_TYPE<T> const&  shared_ptr, bool is_const, Owner /*owner*/)
+		{
+			typedef typename LVD::remove_const<T>::type raw;
+			typedef  OOLUA_SHARED_TYPE<raw> shared;
+
+			Lua_ud* ud = new_userdata(vm, NULL, is_const
+									, &requested_ud_is_a_base<raw>
+									, &register_class_imp<raw>
+									, &SharedHelper<shared>::release_pointer);
+
+			raw* p = fixup_pointer(ud, &shared_ptr);
+
+			userdata_gc_value(ud, true);//yes it always needs destructing
+			userdata_shared_ptr(ud);//add the shared flag
+			add_ptr_imp(vm, p);
+
+			return ud;
+		}
+#endif
 
 		template<typename Type, typename Bases, int BaseIndex, typename BaseType>
 		struct Add_ptr

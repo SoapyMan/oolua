@@ -3,5 +3,5 @@
 
 int main()
 {
-	return OOLUA::maybe_null<OOLUA::lua_return<Stub1 *const&> >::out;
+	return OOLUA::shared_return<Stub1>::out;
 }

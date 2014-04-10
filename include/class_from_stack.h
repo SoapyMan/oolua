@@ -38,6 +38,7 @@ THE SOFTWARE.
 #	include "proxy_class.h"
 #	include "proxy_userdata.h"
 #	include "oolua_config.h"
+#	include "lvd_type_traits.h"
 
 #	include "proxy_base_checker.h"
 
@@ -137,7 +138,11 @@ namespace OOLUA
 		template<typename T>
 		T* valid_base_ptr_or_null(Lua_ud const* stack_ud)
 		{
+#if OOLUA_USE_SHARED_PTR == 1
+			Lua_ud requested_ud = {{0}, 0, &register_class_imp<T>, 0, 0};
+#else
 			Lua_ud requested_ud = {0, 0, &register_class_imp<T>, 0};
+#endif
 			stack_ud->base_checker(&requested_ud, stack_ud);
 			return static_cast<T* >(requested_ud.void_class_ptr);
 		}
@@ -153,6 +158,117 @@ namespace OOLUA
 			}
 			return static_cast<T* >(ud->void_class_ptr);
 		}
+#if OOLUA_USE_SHARED_PTR == 1
+
+		namespace
+		{
+			template<typename T>
+			struct pointer_type
+			{
+				typedef T* ptr;
+				typedef T raw;
+				enum {ud_flag = 0};
+			};
+
+			template<typename T>
+			struct pointer_type<OOLUA_SHARED_TYPE<T> >
+			{
+				typedef OOLUA_SHARED_TYPE<T> ptr;
+				typedef T raw;
+				enum {ud_flag = SHARED_FLAG};
+				typedef char never_call_with_const_type_always_raw_type[LVD::is_const<T>::value ? -1 : 1];
+			};
+
+			template<typename T>
+			inline T** ud_member_cast(Lua_ud* ud, T*&)
+			{
+				return reinterpret_cast<T**>(&ud->void_class_ptr);
+			}
+
+			template<typename T, template <typename> class Shared_pointer_class>
+			inline Shared_pointer_class<T>* ud_member_cast(Lua_ud* ud, Shared_pointer_class<T>&)
+			{
+				return reinterpret_cast<Shared_pointer_class<T>*>(ud->shared_object);
+			}
+
+			template<typename T>
+			inline T* ptr_null(T**) // NOLINT(readability/casting)
+			{
+				return NULL;
+			}
+
+			template<typename T, template <typename> class Shared_pointer_class>
+			inline Shared_pointer_class<T> ptr_null(Shared_pointer_class<T>*)
+			{
+				return Shared_pointer_class<T>();
+			}
+			template<typename T>
+			inline void destroy_ud_ptr(T** /*ud_ptr*/) // NOLINT(readability/casting)
+			{}
+
+			template<typename T, template <typename> class Shared_pointer_class>
+			inline void destroy_ud_ptr(Shared_pointer_class<T>* ud_ptr)
+			{
+				ud_ptr->~Shared_pointer_class<T>();
+			}
+		} // namespace //NOLINT(readability/namespace)
+
+		template<typename T>
+		struct stack_checker
+		{
+			typedef pointer_type<T> type;
+			typedef typename type::ptr ptr_type;
+			typedef typename type::raw raw_type;
+
+			static ptr_type& valid_base_ptr_or_null(Lua_ud const* stack_ud, ptr_type& ptr )
+			{
+#if OOLUA_USE_SHARED_PTR == 1
+				Lua_ud requested_ud = {{0}, 0, &register_class_imp<raw_type>, 0, type::ud_flag};
+#else
+				Lua_ud requested_ud = {0, 0, &register_class_imp<raw_type>, 0};
+#endif
+				stack_ud->base_checker(&requested_ud, stack_ud);
+
+				//this may not be a void class pointer but if found it will have some
+				//value other than NULL. C99 TR3 allows this type casting
+				if (requested_ud.void_class_ptr)
+				{
+					ptr_type* result = ud_member_cast(&requested_ud, ptr);
+					ptr = *result;
+					destroy_ud_ptr(result);
+				}
+				return ptr;
+			}
+			static ptr_type check_index(lua_State * vm, int index)
+			{
+				Lua_ud * ud;
+				ptr_type ptr(ptr_null(static_cast<ptr_type*>(NULL)));
+				if( !index_is_userdata(vm, index, ud))return ptr;
+				if( !ud_is_type<raw_type>(ud))
+				{
+					return valid_base_ptr_or_null(ud, ptr);
+				}
+				return *ud_member_cast(ud, ptr);
+			}
+			static ptr_type check_index_no_const(lua_State * vm, int index)
+			{
+				Lua_ud * ud;
+				ptr_type ptr(ptr_null(static_cast<ptr_type*>(NULL)));
+				if( !index_is_userdata(vm, index, ud))return ptr;
+				if( userdata_is_constant(ud) )
+				{
+					report_error_userdata_is_constant(vm, OOLUA::Proxy_class<raw_type>::class_name);
+					//does not return
+				}
+				if( !ud_is_type<raw_type>(ud))
+				{
+					return valid_base_ptr_or_null(ud, ptr);
+				}
+				return *ud_member_cast(ud, ptr);
+			}
+		};
+
+#endif
 
 		template<typename T>
 		T* check_index_no_const(lua_State * vm, int index)

@@ -45,6 +45,9 @@ namespace OOLUA
 		//fwd
 		template<typename Raw, typename TypeMaybeConst>
 		void push_pointer_which_has_a_proxy_class(lua_State * vm, TypeMaybeConst * const ptr, Owner owner);
+
+		template<typename Underlying_pointer_type, template <typename> class Shared_pointer_class>
+		void push_shared_pointer(lua_State* vm, Shared_pointer_class<Underlying_pointer_type> const & instance);
 		//fwd
 
 		template<typename T, int is_integral, int is_convertable_to_int>
@@ -94,6 +97,16 @@ namespace OOLUA
 			}
 		};
 
+		template<typename Ptr_type, template <typename> class Shared_pointer_class>
+		struct push_basic_type<Shared_pointer_class<Ptr_type>, 0, 0>
+		{
+			static bool push(lua_State* const vm, Shared_pointer_class<Ptr_type> const& value)
+			{
+				assert(vm && value);
+				push_shared_pointer(vm, value);
+				return true;
+			}
+		};
 
 
 		template<typename T>

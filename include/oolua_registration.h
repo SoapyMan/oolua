@@ -66,6 +66,10 @@ THE SOFTWARE.
 #include "char_arrays.h"
 #include "lvd_types.h"
 
+#if OOLUA_USE_SHARED_PTR == 1
+#	include OOLUA_SHARED_HEADER
+#endif
+
 
 namespace OOLUA
 {
@@ -141,6 +145,12 @@ namespace OOLUA
 	namespace INTERNAL
 	{
 
+		template<typename T>
+		inline void shared_delete(T* p)
+		{
+			p->~T();
+		}
+
 		//userdata is at index 1
 		//weak table is at index 2
 		inline void gc_clean_table(lua_State* vm, void* ptr)
@@ -163,7 +173,6 @@ namespace OOLUA
 			}
 			lua_settop(vm, 2);
 		}
-
 
 		template<typename T, typename TL, int Index, typename Base>
 		struct gc_table_cleaner;
@@ -209,7 +218,12 @@ namespace OOLUA
 			{
 				Lua_ud *ud = static_cast<Lua_ud*>(lua_touserdata(vm, 1));
 				cleanup_collision_tables(vm, ud);
-				if( ud->flags & GC_FLAG )delete static_cast<T*>(ud->void_class_ptr);
+#if OOLUA_USE_SHARED_PTR == 1
+				if( ud->flags & SHARED_FLAG)
+					shared_delete(reinterpret_cast<OOLUA_SHARED_TYPE<T>* >(ud->shared_object));
+				else
+#endif
+					if( ud->flags & GC_FLAG )delete static_cast<T*>(ud->void_class_ptr);
 				return 0;
 			}
 			static int gc_no_destructor(lua_State * vm)
@@ -220,7 +234,7 @@ namespace OOLUA
 			static void cleanup_collision_tables(lua_State * vm, Lua_ud *ud)
 			{
 				if( ud->flags & COLLISION_FLAG )
-				{
+				{//TODO : void_class_ptr is wrong here when it is a shared_ptr
 					Weak_table::getWeakTable(vm);
 					gc_clean_table(vm, ud->void_class_ptr);
 					gc_table_cleaner<T

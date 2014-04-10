@@ -148,22 +148,33 @@ namespace OOLUA
 			return INTERNAL::userdata_is_constant( static_cast<Lua_ud *>( lua_touserdata(vm, index) ) );
 		}
 
-		Lua_ud* new_userdata(lua_State* vm, void* ptr, bool is_const, oolua_function_check_base base_checker, oolua_type_check_function type_check)
+		Lua_ud* new_userdata(lua_State* vm, void* ptr, bool is_const
+							, oolua_function_check_base base_checker
+							, oolua_type_check_function type_check
+							, oolua_release_shared_ptr shared_release)
 		{
 			Lua_ud* ud = static_cast<Lua_ud*>(lua_newuserdata(vm, sizeof(Lua_ud)));
 			ud->flags = 0;
-			reset_userdata(ud, ptr, is_const, base_checker, type_check);
+			reset_userdata(ud, ptr, is_const, base_checker, type_check, shared_release);
 #if OOLUA_CHECK_EVERY_USERDATA_IS_CREATED_BY_OOLUA == 1 && OOLUA_USERDATA_OPTIMISATION == 1
 			OOLUA_SET_COOKIE(ud->flags);
 #endif
 			return ud;
 		}
 
-		void reset_userdata(Lua_ud* ud, void* ptr, bool is_const, oolua_function_check_base base_checker, oolua_type_check_function type_check)
+		void reset_userdata(Lua_ud* ud, void* ptr, bool is_const
+							, oolua_function_check_base base_checker
+							, oolua_type_check_function type_check
+							, oolua_release_shared_ptr shared_release)
 		{
 			ud->void_class_ptr = ptr;
 			ud->base_checker = base_checker;
 			ud->type_check = type_check;
+#if OOLUA_USE_SHARED_PTR == 1
+			ud->shared_ptr_release = shared_release;
+#else
+			(void)shared_release;
+#endif
 			userdata_const_value(ud, is_const);
 		}
 

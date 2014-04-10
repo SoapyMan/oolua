@@ -34,6 +34,11 @@ THE SOFTWARE.
 #include "type_list.h"
 #include "proxy_userdata.h"
 #include "proxy_class.h"
+#include "oolua_config.h"
+
+#if OOLUA_USE_SHARED_PTR == 1
+#	include OOLUA_SHARED_HEADER
+#endif
 
 struct lua_State;
 
@@ -102,23 +107,66 @@ namespace OOLUA
 		template<typename ProxyStackType, typename BaseType, int DoWork = 1>
 		struct CastToRequestedProxyType
 		{
-			static void* cast(INTERNAL::Lua_ud const* stack_ud)
+#if OOLUA_USE_SHARED_PTR == 1
+			/*
+				If the type in the stack_ud is a shared pointer you can request a shared pointer
+				or a normal pointer from it which will be stored in requested_ud.
+
+				If the type in the stack_ud is not a shared pointer it is undefined to
+				reqest a shared pointer from it.
+			*/
+			static void cast(INTERNAL::Lua_ud * requested_ud, INTERNAL::Lua_ud const* stack_ud)
+			{
+				stack_ud->flags & SHARED_FLAG ?
+						do_shared_cast(requested_ud, const_cast<Lua_ud*>(stack_ud))
+						: do_ptr_cast(requested_ud, stack_ud);
+			}
+
+			static void do_ptr_cast(INTERNAL::Lua_ud * requested_ud, INTERNAL::Lua_ud const* stack_ud)
 			{
 				//cast the class void ptr from the stack to the stacktype
 				//then to base type to get correct offset
-				return static_cast<BaseType*>(static_cast<typename ProxyStackType::class_* > ( stack_ud->void_class_ptr) );
+				requested_ud->void_class_ptr = static_cast<BaseType*>(static_cast<typename ProxyStackType::class_* >(stack_ud->void_class_ptr));
 			}
+
+			static void do_shared_cast(INTERNAL::Lua_ud * requested_ud, INTERNAL::Lua_ud * stack_ud)
+			{
+				//cast the generic shared ptr to the the stacktype shared_ptr
+				OOLUA_SHARED_TYPE<typename ProxyStackType::class_>* stack_shared_ptr = reinterpret_cast<OOLUA_SHARED_TYPE<typename ProxyStackType::class_>* >(stack_ud->shared_object);
+
+				//the type wanted is a shared pointer
+				if(requested_ud->flags & SHARED_FLAG)
+				{
+					//worried that this may get optimised away by clang, I recall something like this
+					//in an old mailing list thread!
+					//construct a base class shared ptr using placement new
+					new(requested_ud->shared_object) OOLUA_SHARED_TYPE<BaseType>(*stack_shared_ptr);
+				}
+				else //the type wanted is a normal pointer
+				{
+					//cast from stack type to base type and store in requested_ud
+					requested_ud->void_class_ptr = static_cast<BaseType*>(stack_shared_ptr->get());
+				}
+			}
+#else
+			static void cast(INTERNAL::Lua_ud * requested_ud, INTERNAL::Lua_ud const* stack_ud)
+			{
+				//cast the class void ptr from the stack to the stacktype
+				//then to base type to get correct offset
+				requested_ud->void_class_ptr = static_cast<BaseType*>(static_cast<typename ProxyStackType::class_* >(stack_ud->void_class_ptr));
+			}
+#endif
 		};
 
 		template<typename ProxyStackType, typename Bases, int BaseIndex, typename BaseType>
 		struct Is_a_base
 		{
-			void operator()(INTERNAL::Lua_ud const* __restrict stack_ud, Lua_ud* __restrict requested_ud)
+			void operator()(Lua_ud* __restrict requested_ud, INTERNAL::Lua_ud const* __restrict stack_ud)
 			{
 				//is this a base
 				if( ud_is_type<BaseType>(requested_ud) )
 				{
-					requested_ud->void_class_ptr = CastToRequestedProxyType<ProxyStackType, BaseType, 1>::cast(stack_ud);
+					CastToRequestedProxyType<ProxyStackType, BaseType, 1>::cast(requested_ud, stack_ud);
 					return;
 				}
 				//check the next in the type list
@@ -128,15 +176,15 @@ namespace OOLUA
 					, BaseIndex + 1
 					, typename TYPELIST::At_default< Bases, BaseIndex + 1, TYPE::Null_type >::Result
 				> nextIsBase;
-				nextIsBase(stack_ud, requested_ud);
+				nextIsBase(requested_ud, stack_ud);
 			}
 		};
 
 		template<typename ProxyStackType, typename Bases, int BaseIndex>
 		struct Is_a_base<ProxyStackType, Bases, BaseIndex, TYPE::Null_type>
 		{
-			void operator()(INTERNAL::Lua_ud const* __restrict/*stack_ud*/
-							, INTERNAL::Lua_ud* __restrict/*requested_ud*/)
+			void operator()(INTERNAL::Lua_ud* __restrict/*requested_ud*/
+							, INTERNAL::Lua_ud const* __restrict/*stack_ud*/)
 			{}//noop
 		};
 
@@ -148,7 +196,7 @@ namespace OOLUA
 					, 0
 					, typename TYPELIST::At_default< typename OOLUA::Proxy_class<T>::AllBases, 0, TYPE::Null_type >::Result
 				> checkBases;
-			checkBases(stack_ud, requested_ud);
+			checkBases(requested_ud, stack_ud);
 		}
 
 		template<typename T>

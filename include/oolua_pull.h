@@ -37,7 +37,6 @@ THE SOFTWARE.
 #include "lvd_types.h"
 #include "lvd_type_traits.h"
 
-
 #include <cassert>
 
 namespace OOLUA
@@ -69,6 +68,11 @@ namespace OOLUA
 		T* class_from_stack_top(lua_State * vm);
 		template<typename T>
 		T* none_const_class_from_stack_top(lua_State * vm);
+
+#if OOLUA_USE_SHARED_PTR == 1
+		template<typename T>
+		struct stack_checker;
+#endif
 		//fwd
 
 		template<typename T, int is_integral, int is_convertable_to_int>
@@ -122,6 +126,36 @@ namespace OOLUA
 				return OOLUA::STRING::pull(vm, value);
 			}
 		};
+
+#if OOLUA_USE_SHARED_PTR == 1
+		template<typename T, template <typename> class Shared_pointer_class>
+		struct pull_basic_type<Shared_pointer_class<T>, 0, 0>
+		{
+			typedef typename LVD::remove_const<T>::type raw;
+			static bool pull(lua_State* const vm, Shared_pointer_class<T> & value)
+			{
+				value = !LVD::is_const<T>::value
+							? stack_checker<Shared_pointer_class<raw> >::check_index_no_const(vm, lua_gettop(vm))
+							: stack_checker<Shared_pointer_class<raw> >::check_index(vm, lua_gettop(vm));
+
+				if(!value)
+				{
+#	if OOLUA_RUNTIME_CHECKS_ENABLED  == 1
+					INTERNAL::handle_cpp_pull_fail(vm, LVD::is_const<T>::value
+														   ? Proxy_class<raw>::class_name_const
+														   : Proxy_class<raw>::class_name);
+#	elif OOLUA_DEBUG_CHECKS == 1
+					assert(value);
+#	endif
+#	if OOLUA_USE_EXCEPTIONS == 0
+					return false;
+#	endif
+				}
+				lua_pop(vm, 1);
+				return true;
+			}
+		};
+#endif
 
 		///////////////////////////////////////////////////////////////////////////////
 		///  @struct pull_ptr

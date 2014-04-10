@@ -56,15 +56,13 @@ namespace OOLUA
 	struct lua_return;
 
 	template<typename T>
-	struct maybe_null;
-
+	struct shared_return;
 
 	template<typename T>
-	struct lua_maybe_null;
+	struct maybe_null;
 
 	template<typename T>
 	struct cpp_acquire_ptr;
-
 
 	template<typename T>
 	struct lua_acquire_ptr;

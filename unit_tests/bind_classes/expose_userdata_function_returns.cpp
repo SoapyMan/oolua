@@ -40,12 +40,12 @@ int lua_proxy_returns_valid_ptr(lua_State* vm)
 
 int lua_proxy_returns_lua_null_ptr(lua_State* vm)
 {
-	OOLUA_C_FUNCTION(OOLUA::lua_maybe_null<Stub1*>, MaybeNullStaticFuncs::returns_null_ptr)
+	OOLUA_C_FUNCTION(OOLUA::maybe_null<OOLUA::lua_return<Stub1*> >, MaybeNullStaticFuncs::returns_null_ptr)
 }
 
 int lua_proxy_returns_lua_valid_ptr(lua_State* vm)
 {
-	OOLUA_C_FUNCTION(OOLUA::lua_maybe_null<Stub1*>, MaybeNullStaticFuncs::valid_ptr)
+	OOLUA_C_FUNCTION(OOLUA::maybe_null<OOLUA::lua_return<Stub1*> >, MaybeNullStaticFuncs::valid_ptr)
 }
 
 OOLUA_EXPORT_FUNCTIONS(UserDataFunctionReturnLuaMaybeNullTraits

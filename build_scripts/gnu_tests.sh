@@ -48,6 +48,13 @@ function_to_call_on_error=failing_may_not_be_an_error
 run_test tests_may_fail debug
 run_test tests_may_fail release
 
+function_to_call_on_error=failed
+run_test shared debug
+run_test shared release
+
+run_test shared_by_default debug
+run_test shared_by_default release
+
 timeEnd=$(date +%s)
 timeDiff=$(( $timeEnd - $timeStart ))
 echo "Time to compile and run all tests was $timeDiff seconds"

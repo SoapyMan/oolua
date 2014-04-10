@@ -147,7 +147,7 @@ public:
 		m_lua->register_class<Pod>();
 		PodWithPodMember p;
 		m_lua->push(&p);
-		OOLUA::INTERNAL::Lua_ud* ud = OOLUA::INTERNAL::find_ud(*m_lua, &p.first_member, false);
+		OOLUA::INTERNAL::Lua_ud* ud = OOLUA::INTERNAL::find_ud(*m_lua, &p.first_member, &p.first_member, false);
 		CPPUNIT_ASSERT(NULL == ud);
 	}
 
@@ -251,9 +251,8 @@ public:
 		m_lua->register_class<PodWithPodMember>();
 		m_lua->register_class<Pod>();
 		PodWithMemberWhichItselfHasAMember instance;
-		CPPUNIT_ASSERT_EQUAL((void*)&instance, (void*)&instance.first_member);
-		CPPUNIT_ASSERT_EQUAL((void*)&instance, (void*)&instance.first_member.first_member);
-
+		CPPUNIT_ASSERT_EQUAL(static_cast<void*>(&instance), static_cast<void*>(&instance.first_member));
+		CPPUNIT_ASSERT_EQUAL(static_cast<void*>(&instance), static_cast<void*>(&instance.first_member.first_member));
 	}
 
 	void addPtr_samePointerAsThreeDifferentTypes_findUdFindsFirstEntry()
@@ -265,7 +264,7 @@ public:
 		m_lua->push(&instance);
 		m_lua->push(&instance.first_member);
 		m_lua->push(&instance.first_member.first_member);
-		CPPUNIT_ASSERT( OOLUA::INTERNAL::find_ud(*m_lua, &instance, false) != NULL );
+		CPPUNIT_ASSERT(OOLUA::INTERNAL::find_ud(*m_lua, &instance, &instance, false) != NULL);
 	}
 
 	void addPtr_samePointerAsThreeDifferentTypes_findUdFindsSecondEntry()
@@ -277,7 +276,7 @@ public:
 		m_lua->push(&instance);
 		m_lua->push(&instance.first_member);
 		m_lua->push(&instance.first_member.first_member);
-		CPPUNIT_ASSERT( OOLUA::INTERNAL::find_ud(*m_lua, &instance.first_member, false) != NULL );
+		CPPUNIT_ASSERT(OOLUA::INTERNAL::find_ud(*m_lua, &instance.first_member, &instance.first_member, false) != NULL);
 	}
 
 	void addPtr_samePointerAsThreeDifferentTypes_findUdFindsThirdEntry()
@@ -289,8 +288,9 @@ public:
 		m_lua->push(&instance);
 		m_lua->push(&instance.first_member);
 		m_lua->push(&instance.first_member.first_member);
-		CPPUNIT_ASSERT( OOLUA::INTERNAL::find_ud(*m_lua, &instance.first_member.first_member, false) != NULL );
+		CPPUNIT_ASSERT(OOLUA::INTERNAL::find_ud(*m_lua, &instance.first_member.first_member, &instance.first_member.first_member, false) != NULL);
 	}
+
 	void addPtr_samePointerAsThreeDifferentTypes_thirdUdHasCollisionFlagSet()
 	{
 		m_lua->register_class<PodWithMemberWhichItselfHasAMember>();

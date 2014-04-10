@@ -37,7 +37,7 @@ THE SOFTWARE.
 		\brief
 		Defines how any errors are reported
 		\details Errors can be reported either by using exceptions or storing
-		a retreivable error string, only one of these methods is allowed
+		a retrievable error string, only one of these methods is allowed
 		and this condition is enforced, yet also neither are required. If both
 		are disabled then it depends on \ref OOLUA_DEBUG_CHECKS as to whether
 		any error will be reported
@@ -64,8 +64,8 @@ THE SOFTWARE.
 		\hideinitializer
 		\brief \b Default: Enabled
 		\details
-		Stores an error message in the registery overwriting any previous error,
-		the last error to have occured is retrievable via \ref OOLUA::get_last_error
+		Stores an error message in the registry overwriting any previous error,
+		the last error to have occurred is retrievable via \ref OOLUA::get_last_error
 		\see OOLUA::get_last_error
 		\see OOLUA::reset_error_value
 		\param 0 Disabled
@@ -207,6 +207,110 @@ THE SOFTWARE.
 #		define OOLUA_STD_STRING_IS_INTEGRAL 1
 #	endif
 
+
+	/** \addtogroup OOLuaSharedPtrSupport Shared Pointer
+	@{
+		\brief Enable and configure library support for a shared pointer type.
+		\details
+		Requirements for the shared pointer type.
+		\li The type must be non intrusive to the underlying type
+		\li Have a "get" member function which returns a raw pointer
+		\li Be constructable from a more derived shared_ptr
+		\li Have a constructor which enables construction of shared<foo const> from shared<foo>
+		\li Be of uniform size
+		\li Have a const cast template function
+		<p>
+		Defaults for the configuration options in this category only apply when shared pointer
+		support is enabled.
+	*/
+/**
+	\def OOLUA_USE_SHARED_PTR
+		\hideinitializer
+		\brief \b Default: Disabled
+		\details
+		Configuration option to enable or disable the support of a shared pointer type.
+		When enabled the library supports:
+		\li Pushing a shared pointer to the stack.
+		\li Pulling a shared pointer from the stack, this is only defined if it is a shared pointer.
+		\li Pulling a raw pointer from the stack when the stack contains a shared pointer. It is
+			up to the user of the library to ensure the type will not be garbage collected.
+		\li Functions which return a shared pointer.
+		\li Shared pointer function returns which have the \ref OOLUA::maybe_null trait.
+		\li Functions which take a shared pointer as a parameter.
+		\li Decaying of a shared pointer to a raw pointer for functions parameters. The raw
+			pointer is defined to be valid for the duration of the call.
+		\note The \ref OOLUA::Shared and \ref OOLUA::No_shared tags maybe ignored, as they are
+			dependant on the value of \ref OOLUA_NEW_POINTER_DEFAULT_IS_SHARED_TYPE
+		\param 0 Disabled
+		\param 1 Enabled
+*/
+
+/**
+	\def OOLUA_SHARED_HEADER
+		\hideinitializer
+		\brief \b Default: <tr1/memory>
+		\details <p>
+		Header file for the shared pointer type, library code will include
+		the header using :
+		\code{.cpp}
+		#include OOLUA_SHARED_HEADER
+		\endcode
+*/
+
+/**
+	\def OOLUA_SHARED_TYPE
+		\hideinitializer
+		\brief \b Default: std::tr1::shared_ptr
+		\details
+		The templated shared pointer type.
+*/
+
+/**
+	\def OOLUA_SHARED_CONST_CAST
+		\hideinitializer
+		\brief \b Default: std::tr1::const_pointer_cast
+		\details
+		Templated function which casts away constness for the shared pointer type.
+*/
+
+/**
+	\def OOLUA_NEW_POINTER_DEFAULT_IS_SHARED_TYPE
+		\hideinitializer
+		\brief \b Default: Disabled
+		\details
+		When OOLua is compiled with support for a shared pointer type (\ref OOLUA_USE_SHARED_PTR)
+		and it encounters a situation in which it needs to create a new pointer for
+		a proxy type then it will depend upon a combination of this configuration
+		option and if there are \ref SharedTags for the type as to how the situation
+		is handled. The aforementioned situations involve constructors, operators
+		which return a proxy instance and functions which return a proxy by value.
+		| Configuration value | Has Shared tag | Has No_shared tag | Pointer type |
+		| :-----------------: | :------------: | :---------------: | :----------: |
+		|      Disabled       |       No       |         X         |      Raw     |
+		|      Disabled       |      Yes       |         X         |    Shared    |
+		|      Enabled        |       X        |        No         |    Shared    |
+		|      Enabled        |       X        |        Yes        |      Raw     |
+
+		\param 0 Disabled
+		\param 1 Enabled
+		\see OOLUA_USE_SHARED_PTR
+		\see OOLUA::Shared
+		\see OOLUA::No_shared
+*/
+	/*@}*/
+
+#	ifndef OOLUA_USE_SHARED_PTR
+#		define OOLUA_USE_SHARED_PTR 0
+#	else
+#		if OOLUA_USE_SHARED_PTR == 1
+#			define OOLUA_SHARED_HEADER <tr1/memory>
+#			define OOLUA_SHARED_TYPE std::tr1::shared_ptr
+#			define OOLUA_SHARED_CONST_CAST std::tr1::const_pointer_cast
+#			ifndef OOLUA_NEW_POINTER_DEFAULT_IS_SHARED_TYPE
+#				define OOLUA_NEW_POINTER_DEFAULT_IS_SHARED_TYPE 0
+#			endif
+#		endif
+#	endif
 /**@}*/
 
 /** \cond INTERNAL */

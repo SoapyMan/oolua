@@ -28,6 +28,8 @@ THE SOFTWARE.
 #	include "proxy_class.h"
 #	include "type_list.h"
 #	include "lvd_type_traits.h"
+#	include "oolua_config.h"
+#	include "lvd_types.h"
 
 namespace OOLUA
 {
@@ -129,6 +131,36 @@ namespace OOLUA
 
 			/**@}*/
 		/**@}*/
+#if OOLUA_USE_SHARED_PTR == 1
+#	if OOLUA_NEW_POINTER_DEFAULT_IS_SHARED_TYPE == 0
+		template<typename RawClassType>
+		struct new_pointer
+		{
+			typedef typename LVD::if_else<has_tag<Proxy_class<RawClassType>, Shared>::Result
+										, OOLUA_SHARED_TYPE<RawClassType>
+										, RawClassType*
+									>::type type;
+		};
+#	else
+		template<typename RawClassType>
+		struct new_pointer
+		{
+			typedef typename LVD::if_else<has_tag<Proxy_class<RawClassType>, No_shared>::Result
+										, RawClassType*
+										, OOLUA_SHARED_TYPE<RawClassType>
+									>::type type;
+		};
+
+#	endif
+#else
+		template<typename RawClassType>
+		struct new_pointer
+		{
+			typedef RawClassType* type;
+		};
+#endif
+
+
 		/** \endcond */
 	} // namespace INTERNAL // NOLINT
 } // namespace OOLUA

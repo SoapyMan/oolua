@@ -45,6 +45,11 @@ namespace OOLUA
 	/** \cond INTERNAL */
 	namespace INTERNAL
 	{
+		/*fwd*/
+		template<typename RawClassType>
+		struct new_pointer;
+		/*fwd*/
+
 		//rhs is top of stack lhs is below (lhs op rhs)
 		template<typename T>
 		int lua_equal(lua_State*  const vm)
@@ -90,7 +95,7 @@ namespace OOLUA
 			T const* rhs(0);
 			INTERNAL::LUA_CALLED::get(vm, 1, lhs);
 			INTERNAL::LUA_CALLED::get(vm, 2, rhs);
-			T* result(new T(*lhs + *rhs));
+			typename new_pointer<T>::type result(new T(*lhs + *rhs));
 			INTERNAL::add_ptr<T>(vm, result, false, OOLUA::Lua);
 			return 1;
 		}
@@ -103,7 +108,7 @@ namespace OOLUA
 			T const* rhs(0);
 			INTERNAL::LUA_CALLED::get(vm, 1, lhs);
 			INTERNAL::LUA_CALLED::get(vm, 2, rhs);
-			T* result(new T(*lhs - *rhs));
+			typename new_pointer<T>::type result(new T(*lhs - *rhs));
 			INTERNAL::add_ptr<T>(vm, result, false, OOLUA::Lua);
 			return 1;
 		}
@@ -115,7 +120,7 @@ namespace OOLUA
 			T const* rhs(0);
 			INTERNAL::LUA_CALLED::get(vm, 1, lhs);
 			INTERNAL::LUA_CALLED::get(vm, 2, rhs);
-			T* result(new T(*lhs * *rhs));
+			typename new_pointer<T>::type result(new T(*lhs * *rhs));
 			INTERNAL::add_ptr<T>(vm, result, false, OOLUA::Lua);
 			return 1;
 		}
@@ -127,7 +132,7 @@ namespace OOLUA
 			T const* rhs(0);
 			INTERNAL::LUA_CALLED::get(vm, 1, lhs);
 			INTERNAL::LUA_CALLED::get(vm, 2, rhs);
-			T* result(new T(*lhs / *rhs));
+			typename new_pointer<T>::type result(new T(*lhs / *rhs));
 			INTERNAL::add_ptr<T>(vm, result, false, OOLUA::Lua);
 			return 1;
 		}

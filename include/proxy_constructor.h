@@ -103,7 +103,7 @@ namespace OOLUA
 			static int construct(lua_State * vm)
 			{
 				OOLUA_CONSTRUCTOR_TRY
-				Type* obj = new Type;
+				typename new_pointer<Type>::type obj(new Type);
 				add_ptr(vm, obj, false, Lua);
 				OOLUA_CONSTRUCTOR_CATCH(Type, 0)
 				return 1;
@@ -178,7 +178,7 @@ namespace OOLUA \
 				int index(1); \
 				OOLUA_CONSTRUCTOR_PARAM_##NUM \
 				OOLUA_CONSTRUCTOR_TRY \
-				Class* obj = new Class(OOLUA_CONVERTER_PARAMS_##NUM); \
+				typename new_pointer<Class>::type obj(new Class(OOLUA_CONVERTER_PARAMS_##NUM)); \
 				add_ptr(vm, obj, false, Lua); \
 				OOLUA_CONSTRUCTOR_CATCH(Class, NUM) \
 			} \

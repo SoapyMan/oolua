@@ -50,11 +50,11 @@ int lua_proxy_returns_lua_valid_ptr(lua_State* vm);
 OOLUA_PROXY(UserDataFunctionReturnLuaMaybeNullTraits)
 	OOLUA_TAGS(Abstract)
 	/**[UserDataProxyLuaMaybeNullTrait]*/
-	OOLUA_MEM_FUNC(lua_maybe_null<Stub1*>, ptr)
+	OOLUA_MEM_FUNC(maybe_null<lua_return<Stub1*> >, ptr)
 	/**[UserDataProxyLuaMaybeNullTrait]*/
-	OOLUA_MEM_FUNC(lua_maybe_null<Stub1 *const>, constPtr)
-	OOLUA_MEM_FUNC(lua_maybe_null<Stub1 const*>, ptrConst)
-	OOLUA_MEM_FUNC(lua_maybe_null<Stub1 const*const>, constPtrConst)
+	OOLUA_MEM_FUNC(maybe_null<lua_return<Stub1 *const> >, constPtr)
+	OOLUA_MEM_FUNC(maybe_null<lua_return<Stub1 const*> >, ptrConst)
+	OOLUA_MEM_FUNC(maybe_null<lua_return<Stub1 const*const> >, constPtrConst)
 OOLUA_PROXY_END
 
 

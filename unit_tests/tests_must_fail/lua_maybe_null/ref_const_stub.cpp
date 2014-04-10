@@ -3,5 +3,5 @@
 
 int main()
 {
-	return OOLUA::lua_maybe_null<Stub1 const&>::out;
+	return OOLUA::maybe_null<OOLUA::lua_return<Stub1 const&> >::out;
 }

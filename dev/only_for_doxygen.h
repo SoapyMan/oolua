@@ -20,3 +20,8 @@ namespace std
 	*/
 	struct exception{};
 }
+
+#define OOLUA_NEW_POINTER_DEFAULT_IS_SHARED_TYPE
+#define OOLUA_SHARED_HEADER
+#define OOLUA_SHARED_TYPE
+#define OOLUA_SHARED_CONST_CAST
