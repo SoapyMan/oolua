@@ -437,7 +437,7 @@ namespace OOLUA
 		oolua_pairs(table)
 		{
 			\\do what ever
-			lua_pop(vm);\\Pop the value, leaving the key at the top of stack
+			lua_pop(vm, 1);\\Pop the value, leaving the key at the top of stack
 		}
 		oolua_pairs_end()
 		\endcode
