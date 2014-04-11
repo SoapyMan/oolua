@@ -165,7 +165,7 @@ OOLUA_EXPORT_NO_FUNCTIONS(PodWithFirstMemberPod)
 
 struct NonePod : PodWithFirstMemberPod
 {
-	virtual ~NonePod(){};
+	virtual ~NonePod(){}
 };
 OOLUA_PROXY(NonePod, PodWithFirstMemberPod)
 OOLUA_PROXY_END

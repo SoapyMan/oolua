@@ -7,7 +7,7 @@
 #	include "cpp_class_ops.h"
 
 struct DefaultConstructorNoShared
-{};
+{}; // NOLINT(readability/braces)
 OOLUA_PROXY(DefaultConstructorNoShared)
 	OOLUA_TAGS(No_shared)
 OOLUA_PROXY_END
@@ -16,16 +16,16 @@ OOLUA_EXPORT_NO_FUNCTIONS(DefaultConstructorNoShared)
 
 struct ParamConstructorNoShared
 {
-	ParamConstructorNoShared(int)
+	ParamConstructorNoShared(int) // NOLINT(readability/casting)
 	{}
 };
 OOLUA_PROXY(ParamConstructorNoShared)
 	OOLUA_TAGS(
 		No_shared
-		,No_default_constructor
+		, No_default_constructor
 	)
 	OOLUA_CTORS(
-		OOLUA_CTOR(int)
+		OOLUA_CTOR(int) // NOLINT(readability/casting)
 	)
 OOLUA_PROXY_END
 
@@ -156,7 +156,7 @@ public:
 	{
 		m_lua->register_class<Class_ops>();
 
-		Class_ops a(1),b(2);
+		Class_ops a(1), b(2);
 		m_lua->run_chunk("return function(lhs, rhs) return lhs + rhs end");
 		m_lua->call(1, &a, &b);
 		CPPUNIT_ASSERT_EQUAL(true, stack_index_ud_shared_flag(-1));
@@ -166,7 +166,7 @@ public:
 	{
 		m_lua->register_class<Class_ops>();
 
-		Class_ops a(1),b(2);
+		Class_ops a(1), b(2);
 		m_lua->run_chunk("return function(lhs, rhs) return lhs - rhs end");
 		m_lua->call(1, &a, &b);
 		CPPUNIT_ASSERT_EQUAL(true, stack_index_ud_shared_flag(-1));
@@ -176,7 +176,7 @@ public:
 	{
 		m_lua->register_class<Class_ops>();
 
-		Class_ops a(1),b(2);
+		Class_ops a(1), b(2);
 		m_lua->run_chunk("return function(lhs, rhs) return lhs * rhs end");
 		m_lua->call(1, &a, &b);
 		CPPUNIT_ASSERT_EQUAL(true, stack_index_ud_shared_flag(-1));
@@ -186,7 +186,7 @@ public:
 	{
 		m_lua->register_class<Class_ops>();
 
-		Class_ops a(1),b(2);
+		Class_ops a(1), b(2);
 		m_lua->run_chunk("return function(lhs, rhs) return lhs / rhs end");
 		m_lua->call(1, &a, &b);
 		CPPUNIT_ASSERT_EQUAL(true, stack_index_ud_shared_flag(-1));
@@ -209,7 +209,7 @@ public:
 	void addOperator_typeHasNoSharedTag_topOfStackSharedFlagIsNotSet()
 	{
 		m_lua->register_class<NoSharedOps>();
-		NoSharedOps a(1),b(2);
+		NoSharedOps a(1), b(2);
 		m_lua->run_chunk("return function(lhs, rhs) return lhs + rhs end");
 		m_lua->call(1, &a, &b);
 		CPPUNIT_ASSERT_EQUAL(false, stack_index_ud_shared_flag(-1));
@@ -218,7 +218,7 @@ public:
 	void subOperator_typeHasNoSharedTag_topOfStackSharedFlagIsNotSet()
 	{
 		m_lua->register_class<NoSharedOps>();
-		NoSharedOps a(1),b(2);
+		NoSharedOps a(1), b(2);
 		m_lua->run_chunk("return function(lhs, rhs) return lhs - rhs end");
 		m_lua->call(1, &a, &b);
 		CPPUNIT_ASSERT_EQUAL(false, stack_index_ud_shared_flag(-1));
@@ -226,7 +226,7 @@ public:
 	void mulOperator_typeHasNoSharedTag_topOfStackSharedFlagIsNotSet()
 	{
 		m_lua->register_class<NoSharedOps>();
-		NoSharedOps a(1),b(2);
+		NoSharedOps a(1), b(2);
 		m_lua->run_chunk("return function(lhs, rhs) return lhs * rhs end");
 		m_lua->call(1, &a, &b);
 		CPPUNIT_ASSERT_EQUAL(false, stack_index_ud_shared_flag(-1));
@@ -234,7 +234,7 @@ public:
 	void divOperator_typeHasNoSharedTag_topOfStackSharedFlagIsNotSet()
 	{
 		m_lua->register_class<NoSharedOps>();
-		NoSharedOps a(1),b(2);
+		NoSharedOps a(1), b(2);
 		m_lua->run_chunk("return function(lhs, rhs) return lhs / rhs end");
 		m_lua->call(1, &a, &b);
 		CPPUNIT_ASSERT_EQUAL(false, stack_index_ud_shared_flag(-1));
