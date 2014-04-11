@@ -122,10 +122,20 @@ namespace OOLUA
 				}
 			};
 
-			template<typename StringType>
-			struct get_basic_type<StringType, 0, 0>
+			//either a C++11 scoped enum or a string class
+			template<typename T>
+			struct get_basic_type<T, 0, 0>
 			{
-				static void get(lua_State* const vm, int idx, StringType &  value)
+				static void get(lua_State* const vm, int idx, T &  value)
+				{
+					return get_imp(vm, idx, value, LVD::Int2type<STRING::is_integral_string_class<T>::value>());
+				}
+				static void get_imp(lua_State* const vm, int idx, T& value, LVD::Int2type<0>)
+				{
+					//C++11 scoped enum
+					get_basic_type<T, 1, 1>::get(vm, idx, value);
+				}
+				static void get_imp(lua_State* const vm, int idx, T& value, LVD::Int2type<1>)
 				{
 					OOLUA::STRING::get(vm, idx, value);
 				}

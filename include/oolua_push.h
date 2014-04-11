@@ -88,10 +88,23 @@ namespace OOLUA
 			}
 		};
 
+		//either a C++11 scoped enum or a string class
 		template<typename T>
 		struct push_basic_type<T, 0, 0>
 		{
 			static bool push(lua_State* const vm, T const& value)
+			{
+				return push_imp(vm, value, LVD::Int2type<is_scoped_enum<T>::value>());
+			}
+
+			static bool push_imp(lua_State* const vm, T const& value, LVD::Int2type<1>)
+			{
+				//C++11 scoped enum
+				lua_pushinteger(vm, static_cast<lua_Integer>(value));
+				return true;
+			}
+
+			static bool push_imp(lua_State* const vm, T const& value, LVD::Int2type<0>)
 			{
 				return OOLUA::STRING::push(vm, value);
 			}

@@ -117,11 +117,20 @@ namespace OOLUA
 			}
 		};
 
-
+		//either a C++11 scoped enum or a string class
 		template<typename T>
 		struct pull_basic_type<T, 0, 0>
 		{
 			static bool pull(lua_State* const vm, T&  value)
+			{
+				return pull_imp(vm, value, LVD::Int2type<is_scoped_enum<T>::value>());
+			}
+			static bool pull_imp(lua_State* const vm, T& value, LVD::Int2type<1>)
+			{
+				//C++11 scoped enum
+				return pull_basic_type<T, 1, 1>::pull(vm, value);
+			}
+			static bool pull_imp(lua_State* const vm, T& value, LVD::Int2type<0>)
 			{
 				return OOLUA::STRING::pull(vm, value);
 			}

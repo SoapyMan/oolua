@@ -91,6 +91,8 @@ namespace OOLUA
 		template<typename T>
 		struct lua_return_count;
 
+		template<typename EnumType>
+		struct is_scoped_enum;
 	} //namespace INTERNAL //NOLINT(readability/namespace)
 	/** \endcond */
 } // namespace OOLUA

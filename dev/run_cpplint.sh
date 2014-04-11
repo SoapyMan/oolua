@@ -31,6 +31,7 @@ fi
 ./unit_tests/tests_must_fail/lua_return/* \
 ./unit_tests/tests_must_fail/maybe_null/* \
 ./unit_tests/tests_must_fail/out/* \
+./unit_tests/scoped_enum/* \
  2> ./build_logs/cpplint.out
 
 # ./unit_tests/cpp_classes/* ./unit_tests/test_classes/* ./unit_tests/bind_classes/* 2> ./build_logs/cpplint.out

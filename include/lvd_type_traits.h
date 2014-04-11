@@ -375,6 +375,18 @@ namespace LVD
 		enum { value = sizeof test(make_from()) == sizeof(yes) ? 1 : 0 };
 	};
 
+	template<typename T>
+	struct is_class_type
+	{
+		typedef char (&yes)[1];
+		typedef char (&no)[2];
+		template<typename C>
+		static no test(...);
+		template<typename C>
+		static yes test(char C::*); // NOLINT
+	public:
+		enum { value = sizeof test<typename raw_type<T>::type >(0) == sizeof(yes) ? 1 : 0 };
+	};
 
 } // namespace LVD // NOLINT
 

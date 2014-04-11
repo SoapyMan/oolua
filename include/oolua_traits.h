@@ -327,6 +327,24 @@ The general naming convention for traits is:\n
 					&& LVD::is_const<typename is_shared::underlying_type>::value };
 		};
 
+		template<typename EnumType>
+		struct is_scoped_enum
+		{
+			typedef typename LVD::raw_type<EnumType>::type raw;
+			enum {value = LVD::is_class_type<raw>::value == 0
+						&& LVD::can_convert_to_int<raw>::value == 0
+						&& LVD::is_integral_type<raw>::value == 0
+						&& LVD::is_same<int(lua_State*), raw>::value == 0 //NOLINT(readability/casting)
+						? 1 : 0
+				};
+		};
+
+		template<>
+		struct is_scoped_enum<void>
+		{
+			enum {value = 0};
+		};
+
 		template<typename T>
 		struct is_false_integral
 		{
@@ -335,6 +353,7 @@ The general naming convention for traits is:\n
 						|| INTERNAL::is_lua_ref<raw>::value
 						|| LVD::is_same<OOLUA::Table, raw>::value
 						|| INTERNAL::is_shared_type<raw>::value
+						|| INTERNAL::is_scoped_enum<raw>::value
 					};
 		};
 	} // namespace INTERNAL // NOLINT

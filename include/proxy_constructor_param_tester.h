@@ -78,7 +78,8 @@ namespace OOLUA
 		template<typename Cpp_type>
 		struct lua_type_is_cpp_type<Cpp_type, LUA_TNUMBER>
 		{
-			enum {value = Type_enum_defaults<Cpp_type>::is_integral
+			enum {value = (Type_enum_defaults<Cpp_type>::is_integral
+							|| is_scoped_enum<Cpp_type>::value)
 					&& !LVD::is_same<bool, Cpp_type>::value };
 		};
 
