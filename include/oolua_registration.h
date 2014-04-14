@@ -239,7 +239,7 @@ namespace OOLUA
 #if OOLUA_USE_SHARED_PTR == 1
 					//let's not depend on how shared_ptr is implemented
 					void* void_class_ptr = ud->flags & SHARED_FLAG ?
-								reinterpret_cast<OOLUA_SHARED_TYPE<T>* >(ud->shared_object)->get()
+								static_cast<OOLUA_SHARED_TYPE<T>* >(ud->void_class_ptr)->get()
 								: ud->void_class_ptr;
 #else
 					void* void_class_ptr = ud->void_class_ptr;
