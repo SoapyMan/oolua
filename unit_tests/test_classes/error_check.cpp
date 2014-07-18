@@ -75,7 +75,7 @@ OOLUA_PROXY(ExceptionMock)
 OOLUA_PROXY_END
 
 OOLUA_EXPORT_FUNCTIONS(ExceptionMock, throwsStdRuntimeError)
-OOLUA_EXPORT_FUNCTIONS_CONST(ExceptionMock ,constFuncThrowsStdRuntimeError)
+OOLUA_EXPORT_FUNCTIONS_CONST(ExceptionMock, constFuncThrowsStdRuntimeError)
 #endif
 
 
