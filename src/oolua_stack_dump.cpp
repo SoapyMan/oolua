@@ -29,7 +29,7 @@ THE SOFTWARE.
 
 namespace OOLUA
 {
-
+// LCOV_EXCL_START
 void lua_stack_dump(lua_State * const vm)
 {
 	int i;
@@ -67,5 +67,6 @@ void lua_stack_dump(lua_State * const vm)
 	}
 	std::cout <<std::endl;
 }
+// LCOV_EXCL_STOP
 } // namespace OOLUA
 

@@ -40,14 +40,14 @@ namespace OOLUA
 				luaL_error(vm, "%s %s %s", "tried to pull type"
 							, expected_type
 							, "which is not the type or a base of the type on the stack");
-			}
+			} // LCOV_EXCL_LINE
 
 			void get_error(lua_State* vm, int idx, char const* expected_type)
 			{
 				luaL_error(vm, "trying to pull %s when %s is on stack"
 							, expected_type
 							, lua_typename(vm, lua_type(vm, idx)) );
-			}
+			} // LCOV_EXCL_LINE
 
 			void get(lua_State* const vm, int idx, void*& value)
 			{
@@ -71,14 +71,6 @@ namespace OOLUA
 				if( lua_type(vm, idx) != LUA_TSTRING ) get_error(vm, idx, "char const*");
 #endif
 				value = lua_tolstring(vm, idx, 0);
-			}
-
-			void get(lua_State* const vm, int idx, char *& value)
-			{
-#if OOLUA_RUNTIME_CHECKS_ENABLED  == 1
-				if( !lua_isstring(vm, idx) ) get_error(vm, idx, "char*");
-#endif
-				value = const_cast<char*>(lua_tolstring(vm, idx, 0));
 			}
 
 			void get(lua_State* const vm, int idx, double& value)

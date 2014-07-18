@@ -109,7 +109,7 @@ namespace OOLUA
 		{
 			static bool pull(lua_State* const vm, T &  value)
 			{
-				if( !cpp_runtime_type_check_of_top(vm, lua_isnumber, "integer compatabile type") )
+				if( !cpp_runtime_type_check_of_top(vm, lua_isnumber, "integer compatible type") )
 					return false;
 				value = static_cast<T>(lua_tointeger(vm, -1));
 				lua_pop(vm, 1);
@@ -249,7 +249,7 @@ MSC_POP_COMPILER_WARNING_OOLUA
 			assert(value.m_ptr);
 #endif
 #	if OOLUA_USE_EXCEPTIONS == 0//prevent vs warnings
-			return false;
+			return false; // LCOV_EXCL_LINE
 #	endif
 		}
 		INTERNAL::PULL::set_index_gc_value_to_false(vm, -1);

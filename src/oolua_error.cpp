@@ -70,6 +70,7 @@ struct lua_State;
 
 namespace OOLUA
 {
+	// LCOV_EXCL_START
 	void reset_error_value(lua_State* /*vm*/) // NOLINT
 	{}
 
@@ -82,6 +83,7 @@ namespace OOLUA
 		void set_error_from_top_of_stack_and_pop_the_error(lua_State* /*vm*/) // NOLINT
 		{}
 	} // namespace INTERNAL
+	// LCOV_EXCL_STOP
 } // namespace OOLUA
 
 #endif

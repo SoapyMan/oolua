@@ -37,7 +37,7 @@ class Ownership : public CPPUNIT_NS::TestFixture
 
 		CPPUNIT_TEST(callFunction_passingPointerUsingLuaAcquirePtr_topOfStackGcIsTrue);
 		CPPUNIT_TEST(callFunction_passingPointerUsingLuaAcquirePtr_topOfComparesEqualToStackPointer);
-
+		CPPUNIT_TEST(luaAcquire_passPointerThenSamePointerAsLuaAcquire_gcFlagIsSetForUserdata);
 	/*
 	 OOLUA::cpp_in_p<Stub1*======
 	 OOLUA::cpp_in_p<Stub1*&======
@@ -287,6 +287,15 @@ public:
 		CPPUNIT_ASSERT_EQUAL(true, gc_value);
 	}
 	/**[ExampleLuaAcquirePtr]*/
+
+	void luaAcquire_passPointerThenSamePointerAsLuaAcquire_gcFlagIsSetForUserdata()
+	{
+		Stub1* stub = new Stub1;
+		m_lua->push(stub);
+		m_lua->push(OOLUA::lua_acquire_ptr<Stub1*>(stub));
+		OOLUA::INTERNAL::Lua_ud * ud = get_ud_helper();
+		CPPUNIT_ASSERT_EQUAL(true, OOLUA::INTERNAL::userdata_is_to_be_gced(ud));
+	}
 
 	void callFunction_passingPointerUsingLuaAcquirePtr_topOfComparesEqualToStackPointer()
 	{

@@ -23,10 +23,10 @@ THE SOFTWARE.
 */
 /**
 	@file proxy_base_checker.h
-	\brief Checks the heirachcal bases to ensure a cast is defined
+	\brief Checks the hierarchical bases to ensure a cast is defined
 	\details Walks a list of bases class defined in a OOLUA::Proxy_class
 	to find if a type can be converted to the requested type, if it is valid
-	then the procdcures will preform the cast.
+	then the procedures will preform the cast.
 */
 #ifndef OOLUA_PROXY_BASE_CHECKER_H_
 #	define OOLUA_PROXY_BASE_CHECKER_H_
@@ -54,16 +54,16 @@ namespace OOLUA
 		/**\addtogroup OOLuaClassTypeChecking
 		@{*/
 		/**
-			\brief Start function which sets up the recurrsive base checking
+			\brief Start function which sets up the recursive base checking
 			\tparam T The type whose bases will be checked
 			\param[in,out] requested_ud The OOLua userdata type wanted
 			\param[in] stack_ud The stack userdata type
 			\pre requested_ud->void_class_pointer is NULL
 			\post If the request type was a base then requested_ud->void_class_pointer is none NULL
 			\details
-			Starts the recurrsive iteration checks over the bases of T
+			Starts the recursive iteration checks over the bases of T
 			\note
-			Neither this function or the recurrsive functions it calls set
+			Neither this function or the recursive functions it calls set
 			requested_ud->void_class_pointer to NULL, this happens in in
 			OOLUA::INTERNAL::valid_base_ptr_or_null
 		*/
@@ -85,7 +85,7 @@ namespace OOLUA
 			\tparam ProxyStackType Correct type of the stack userdata before it was cast to void pointer
 			\tparam BaseType The requested base type of the stack userdata
 			\details Correctly casts the stack type to the requested type, taking into
-			considersation class offsets.
+			consideration class offsets.
 		*/
 		template<typename ProxyStackType, typename BaseType, int DoWork>
 		struct CastToRequestedProxyType;
@@ -97,8 +97,8 @@ namespace OOLUA
 			\tparam Bases Type list of base clases
 			\tparam BaseIndex Index into the base class type list
 			\tparam BaseType Current index type for the type list
-			\details Iteratorates over the base classes and exits when it has either found the correct
-			base type or has exausted the base class types.
+			\details Iterates over the base classes and exits when it has either found the correct
+			base type or has exhausted the base class types.
 
 		*/
 		template<typename ProxyStackType, typename Bases, int BaseIndex, typename BaseType>
@@ -113,7 +113,7 @@ namespace OOLUA
 				or a normal pointer from it which will be stored in requested_ud.
 
 				If the type in the stack_ud is not a shared pointer it is undefined to
-				reqest a shared pointer from it.
+				request a shared pointer from it.
 			*/
 			static void cast(INTERNAL::Lua_ud * requested_ud, INTERNAL::Lua_ud const* stack_ud)
 			{

@@ -47,14 +47,14 @@ namespace
 namespace OOLUA
 {
 	Exception::Exception(lua_State* vm)
-		: m_len(0)
+		: m_len(0) // LCOV_EXCL_LINE
 	{
 		char const* str = lua_tolstring(vm, -1, &m_len);
 		copy_buffer(m_buffer, str, m_len);
 	}
 
 	Exception::Exception(lua_State* vm, ERROR::PopTheStack*)
-		: m_len(0)
+		: m_len(0) // LCOV_EXCL_LINE
 	{
 		char const* str = lua_tolstring(vm, -1, &m_len);
 		copy_buffer(m_buffer, str, m_len);
@@ -62,7 +62,7 @@ namespace OOLUA
 	}
 
 	Exception::Exception(char const* msg)
-		: m_len(0)
+		: m_len(0) // LCOV_EXCL_LINE
 	{
 		m_len = copy_buffer(m_buffer, msg);
 	}
@@ -87,16 +87,10 @@ namespace OOLUA
 	}
 
 
-	Syntax_error::Syntax_error(lua_State* vm)
-		: Exception(vm)
-	{}
 	Syntax_error::Syntax_error(lua_State* vm, ERROR::PopTheStack* specialisation)
 		: Exception(vm, specialisation)
 	{}
 
-	Runtime_error::Runtime_error(lua_State* vm)
-		: Exception(vm)
-	{}
 	Runtime_error::Runtime_error(lua_State* vm, ERROR::PopTheStack* specialisation)
 		: Exception(vm, specialisation)
 	{}
@@ -104,16 +98,12 @@ namespace OOLUA
 		: Exception(msg)
 	{}
 
-	Memory_error::Memory_error(lua_State* vm)
-		: Exception(vm)
-	{}
+	// LCOV_EXCL_START
 	Memory_error::Memory_error(lua_State* vm, ERROR::PopTheStack* specialisation)
 		: Exception(vm, specialisation)
 	{}
+	// LCOV_EXCL_STOP
 
-	File_error::File_error(lua_State* vm)
-		: Exception(vm)
-	{}
 	File_error::File_error(lua_State* vm, ERROR::PopTheStack* specialisation)
 		: Exception(vm, specialisation)
 	{}

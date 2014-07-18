@@ -239,7 +239,7 @@ namespace OOLUA
 #if OOLUA_USE_SHARED_PTR == 1
 					//let's not depend on how shared_ptr is implemented
 					void* void_class_ptr = ud->flags & SHARED_FLAG ?
-								reinterpret_cast<OOLUA_SHARED_TYPE<T>* >(ud->shared_object)->get()
+								static_cast<OOLUA_SHARED_TYPE<T>* >(ud->void_class_ptr)->get()
 								: ud->void_class_ptr;
 #else
 					void* void_class_ptr = ud->void_class_ptr;
@@ -272,6 +272,7 @@ namespace OOLUA
 		template<typename TL, int Index, typename T>
 		struct info_getter;
 
+		// LCOV_EXCL_START
 		template<typename T>
 		inline int top(lua_State* vm)
 		{
@@ -279,6 +280,7 @@ namespace OOLUA
 			lua_pushstring(vm, Proxy_class<T>::class_name);
 			return 1;
 		}
+		// LCOV_EXCL_STOP
 
 		template<typename T, int HasNoPublicDestructor>
 		struct set_delete_function
@@ -322,6 +324,7 @@ namespace OOLUA
 			}
 		};
 
+		// LCOV_EXCL_START
 		template<typename T>
 		inline int middle(lua_State* vm)
 		{
@@ -332,6 +335,7 @@ namespace OOLUA
 						>::add(vm);
 				return TYPELIST::Length<typename Proxy_class<T>::Bases>::value + 1;
 		}
+		// LCOV_EXCL_STOP
 
 		template<typename T, typename Bases, int Index>
 		struct R_Base_looker<T, Bases, Index, TYPE::Null_type>
@@ -351,6 +355,7 @@ namespace OOLUA
 									, TYPE::Null_type>::Result >::findInBase(vm);
 		}
 
+		// LCOV_EXCL_START
 		template<typename T>
 		static int bottom(lua_State* vm)
 		{
@@ -361,6 +366,7 @@ namespace OOLUA
 						>::add(vm);
 			return TYPELIST::Length<typename Proxy_class<T>::AllBases>::value + 1;
 		}
+		// LCOV_EXCL_STOP
 
 		template<typename T>
 		int search_in_base_classes_yet_prevent_new(lua_State* vm)
@@ -496,6 +502,7 @@ namespace OOLUA
 			enum { value = ctor_block_is_same<T, class_or_base_has_ctor_block<T>::value >::value  };
 		};
 
+		// LCOV_EXCL_START
 		template<typename TL, int Index, typename T>
 		struct info_getter
 		{
@@ -515,6 +522,7 @@ namespace OOLUA
 			static void add(lua_State* /*vm*/) //NOLINT(readability/casting)
 			{}
 		};
+		// LCOV_EXCL_STOP
 
 		template<typename T, bool IsAbstractOrNoConstructors>
 		struct set_create_function

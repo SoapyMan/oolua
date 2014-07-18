@@ -93,7 +93,7 @@ namespace
 		if( lua_type(vm, -1) != LUA_TTABLE )
 			luaL_error(vm, "Lua %d get_preload_table failed to retrieve the preload table. Stack top is %s\n"
 					   , LUA_VERSION_NUM
-					   , lua_typename(vm, -1));
+					   , lua_typename(vm, -1)); // LCOV_EXCL_LINE
 	}
 
 	void register_oolua_module(lua_State *vm)

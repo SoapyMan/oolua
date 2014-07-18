@@ -315,7 +315,7 @@ namespace OOLUA
 		template<typename T>
 		struct SharedHelper
 		{
-			static void release_pointer(Lua_ud* /*ud*/){}//nop
+			static void release_pointer(Lua_ud* /*ud*/){}//nop // LCOV_EXCL_LINE
 		};
 
 		/*
@@ -415,7 +415,7 @@ namespace OOLUA
 			lua_getfield(vm, LUA_REGISTRYINDEX, OOLUA::Proxy_class<T>::class_name);
 
 #if	OOLUA_DEBUG_CHECKS == 1
-			assert(lua_isnoneornil(vm, -1) == 0 && "no metatable of this name found in registry");
+			assert(lua_isnoneornil(vm, -1) == 0 && "no metatable of this name found in registry"); // LCOV_EXCL_LINE
 #endif
 			////Pops a table from the stack and sets it as the new metatable for the value at the given acceptable index
 			lua_setmetatable(vm, -2);

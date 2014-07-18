@@ -203,7 +203,7 @@ namespace OOLUA
 	}
 
 	template<typename T>
-	inline bool push(lua_State* const vm, OOLUA::lua_acquire_ptr<T>&  value)
+	inline bool push(lua_State* const vm, OOLUA::lua_acquire_ptr<T> const&  value)
 	{
 		assert(vm && value.m_ptr);
 		INTERNAL::push_pointer_which_has_a_proxy_class<typename OOLUA::lua_acquire_ptr<T>::raw>(vm, value.m_ptr, Lua);

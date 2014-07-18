@@ -26,6 +26,9 @@ typedef MockFunctionParamType<oolua_test_int_in_traits, float> FloatFunctionInTr
 typedef FunctionParamType<oolua_test_int_in_traits, double> DoubleFunctionInTraits;
 typedef MockFunctionParamType<oolua_test_int_in_traits, double> DoubleFunctionInTraitsMock;
 
+typedef FunctionParamType<oolua_test_int_in_traits, bool> BoolInTraits;
+typedef MockFunctionParamType<oolua_test_int_in_traits, bool> BoolInTraitsMock;
+
 struct lua_State;
 typedef FunctionParamType<oolua_test_int_in_traits, int(*)(lua_State*)> CFunctionInTraits; // NOLINT
 typedef MockFunctionParamType<oolua_test_int_in_traits, int(*)(lua_State*)> CFunctionInTraitsMock; //NOLINT

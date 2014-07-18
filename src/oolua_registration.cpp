@@ -106,6 +106,7 @@ namespace OOLUA
 			return false;
 		}
 
+		// LCOV_EXCL_START
 		int info(lua_State* vm, int const index, int const id)
 		{
 			if(lua_getmetatable(vm, index))
@@ -118,6 +119,7 @@ namespace OOLUA
 			}
 			return 0;
 		}
+		// LCOV_EXCL_STOP
 	} // namespace INTERNAL // NOLINT
 	/**\endcond*/
 } // namespace OOLUA

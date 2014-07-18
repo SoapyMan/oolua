@@ -116,7 +116,7 @@ namespace OOLUA
 				static void get(lua_State* const vm, int idx, T &  value)
 				{
 #if OOLUA_RUNTIME_CHECKS_ENABLED  == 1
-					if( !lua_isnumber(vm, idx) ) get_error(vm, idx, "integer compatabile type");
+					if( !lua_isnumber(vm, idx) ) get_error(vm, idx, "integer compatible type");
 #endif
 					value = static_cast<T>(lua_tointeger(vm, idx));
 				}
@@ -193,7 +193,7 @@ namespace OOLUA
 #if OOLUA_DEBUG_CHECKS == 1
 					if(!value)
 					{
-						get_error(vm, idx, "pulling pointer to integral type and was passed NULL. OOLua can not dereference it");
+						get_error(vm, idx, "pulling pointer to integral type and was passed NULL. OOLua can not dereference it"); // LCOV_EXCL_LINE
 					}
 #endif
 					LUA_CALLED::get(vm, idx, *value);

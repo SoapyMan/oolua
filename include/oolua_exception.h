@@ -112,26 +112,22 @@ THE SOFTWARE.
 
 		struct Syntax_error : Exception
 		{
-			Syntax_error(lua_State* vm);
 			Syntax_error(lua_State* vm, ERROR::PopTheStack* specialisation);
 		};
 
 		struct Runtime_error : Exception
 		{
-			Runtime_error(lua_State* vm);
 			Runtime_error(lua_State* vm, ERROR::PopTheStack* specialisation);
 			Runtime_error(char const* msg);
 		};
 
-		struct Memory_error : Exception
+		struct Memory_error : Exception // LCOV_EXCL_LINE
 		{
-			Memory_error(lua_State* vm);
 			Memory_error(lua_State* vm, ERROR::PopTheStack* specialisation);
 		};
 
 		struct File_error : Exception
 		{
-			File_error(lua_State* vm);
 			File_error(lua_State* vm, ERROR::PopTheStack* specialisation);
 		};
 

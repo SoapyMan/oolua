@@ -57,4 +57,8 @@ OOLUA_PROXY(CFunctionInTraits)
 	OOLUA_MFUNC(value)
 OOLUA_PROXY_END
 
+OOLUA_PROXY(BoolInTraits)
+	OOLUA_TAGS(Abstract)
+	OOLUA_MFUNC(value)
+OOLUA_PROXY_END
 #endif

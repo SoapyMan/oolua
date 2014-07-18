@@ -180,10 +180,12 @@ OOLUA_EXPORT_NO_FUNCTIONS(NonePod)
 			CPPUNIT_TEST(push_pushTheSharedPtrTwice_sharedUseCountEqualsTwo);
 			CPPUNIT_TEST(push_pushTheSharedPtrTwice_userdatasCompareEqual);
 			CPPUNIT_TEST(gc_pushTheSharedPtrPopItAndThenCallGc_userCountEqualsOne);
-#		if OOLUA_STORE_LAST_ERROR == 1
-			CPPUNIT_TEST(pull_returnEqualsTrue);
+
+			CPPUNIT_TEST(pull_pushThenPull_pullReturnsTrue);
 			CPPUNIT_TEST(pull_pushDerivedThenPullBase_pullReturnsTrue);
-#		endif
+			CPPUNIT_TEST(pull_pushDerivedAndPullConstantBase_pullReturnsTrue);
+			CPPUNIT_TEST(pull_pushDerivedPullConstantBaseThenCallGc_useCountEqualsTwo);
+
 			CPPUNIT_TEST(gc_pushSharedThenPullAndGc_useCountEqualsTwo);
 			CPPUNIT_TEST(pull_pushSharedThenPull_resultEqualsInput);
 
@@ -196,6 +198,7 @@ OOLUA_EXPORT_NO_FUNCTIONS(NonePod)
 			CPPUNIT_TEST(call_pushSharedObjectAndCallConstantFunction_globalCalledCountEqualsOne);
 
 			CPPUNIT_TEST(pull_pushSharedPointerPullNormalPointer_pointerEqualsInputsGet);
+			CPPUNIT_TEST(pull_pushSharedPtrToDerivedPullRawBasePointer_rawPointerComparesEqualToDerivedCastToBase);
 
 			CPPUNIT_TEST(test_inTraits_pullTypeIsSharedPointerStub1);
 			CPPUNIT_TEST(ref_is_not_shared_type);
@@ -234,6 +237,13 @@ OOLUA_EXPORT_NO_FUNCTIONS(NonePod)
 			CPPUNIT_TEST(pull_pushNoneConstThenPullConst_useCountEqualsTwo);
 			CPPUNIT_TEST(pull_pushConstThenPullNoneConst_callsPanic);
 
+#if OOLUA_USE_EXCEPTIONS == 1
+			CPPUNIT_TEST(pull_pushSharedThenPullNoneRelatedSharedConst_throwsOoluaTypeError);
+#elif OOLUA_STORE_LAST_ERROR == 1
+			CPPUNIT_TEST(pull_pushSharedThenPullNoneRelatedSharedConst_pullReturnsFalse);
+			CPPUNIT_TEST(pull_pushSharedThenPullNoneRelatedSharedConst_lastErrorIsNotEmpty);
+#endif
+
 			CPPUNIT_TEST(call_memberFunctionTakingConstSharedParam_paramUseCountEqualsTwo);
 			CPPUNIT_TEST(call_memberFunctionTakingConstSharedParam_paramAndMemberAreEqual);
 			CPPUNIT_TEST(call_memberFunctionReturnsSharedConst_resultEqualsMember);
@@ -245,6 +255,7 @@ OOLUA_EXPORT_NO_FUNCTIONS(NonePod)
 			CPPUNIT_TEST(maybeNull_instanceReturnsValidSharedPtr_topOfStackIsUserData);
 			CPPUNIT_TEST(maybeNull_instanceReturnsValidSharedPtr_useCountEqualsTwo);
 			CPPUNIT_TEST(maybeNull_instanceReturnsNullSharedPtr_topOfStackIsNil);
+
 
 			CPPUNIT_TEST(classHasSharedReturn_functionReturnsOnTheStack_topOfStackSharedFlagIsSet);
 			CPPUNIT_TEST(defaultNoSharedReturn_functionReturnsOnTheStack_topOfStackSharedFlagIsNotSet);
@@ -346,8 +357,7 @@ OOLUA_EXPORT_NO_FUNCTIONS(NonePod)
 			CPPUNIT_ASSERT_EQUAL(long(1), sp.use_count());
 		}
 
-#	if OOLUA_STORE_LAST_ERROR == 1
-		void pull_returnEqualsTrue()
+		void pull_pushThenPull_pullReturnsTrue()
 		{
 			m_lua->register_class<Stub1>();
 			OOLUA_SHARED_TYPE<Stub1> sp(new Stub1);
@@ -355,7 +365,7 @@ OOLUA_EXPORT_NO_FUNCTIONS(NonePod)
 			OOLUA_SHARED_TYPE<Stub1> result;
 			CPPUNIT_ASSERT_EQUAL(true, m_lua->pull(result));
 		}
-#	endif
+
 		void gc_pushSharedThenPullAndGc_useCountEqualsTwo()
 		{
 			m_lua->register_class<Stub1>();
@@ -386,7 +396,7 @@ OOLUA_EXPORT_NO_FUNCTIONS(NonePod)
 			m_lua->push(derived);
 			CPPUNIT_ASSERT_EQUAL(true, OOLUA::idxs_equal(m_lua->state(), -1, -2));
 		}
-#	if OOLUA_STORE_LAST_ERROR == 1
+
 		void pull_pushDerivedThenPullBase_pullReturnsTrue()
 		{
 			m_lua->register_class<Derived1Abstract1>();
@@ -396,7 +406,27 @@ OOLUA_EXPORT_NO_FUNCTIONS(NonePod)
 			m_lua->push(derived);
 			CPPUNIT_ASSERT_EQUAL(true, m_lua->pull(base));
 		}
-#	endif
+		void pull_pushDerivedAndPullConstantBase_pullReturnsTrue()
+		{
+			m_lua->register_class<Derived1Abstract1>();
+			OOLUA_SHARED_TYPE<Derived1Abstract1> derived(new Derived1Abstract1);
+			OOLUA_SHARED_TYPE<Abstract1 const> base;
+
+			m_lua->push(derived);
+			CPPUNIT_ASSERT_EQUAL(true, m_lua->pull(base));
+		}
+		void pull_pushDerivedPullConstantBaseThenCallGc_useCountEqualsTwo()
+		{
+			m_lua->register_class<Derived1Abstract1>();
+			OOLUA_SHARED_TYPE<Derived1Abstract1> derived(new Derived1Abstract1);
+			OOLUA_SHARED_TYPE<Abstract1 const> base;
+
+			m_lua->push(derived);
+			m_lua->pull(base);
+			m_lua->gc();
+
+			CPPUNIT_ASSERT_EQUAL(long(2), derived.use_count());
+		}
 
 		void pull_pushDerivedPullBaseThenCallGc_useCountEqualsTwo()
 		{
@@ -462,6 +492,16 @@ OOLUA_EXPORT_NO_FUNCTIONS(NonePod)
 			m_lua->push(input);
 			m_lua->pull(result);
 			CPPUNIT_ASSERT_EQUAL(input.get(), result);
+		}
+
+		void pull_pushSharedPtrToDerivedPullRawBasePointer_rawPointerComparesEqualToDerivedCastToBase()
+		{
+			m_lua->register_class<TwoAbstractBases>();
+			OOLUA_SHARED_TYPE<TwoAbstractBases> input(new TwoAbstractBases);
+			m_lua->push(input);
+			Abstract2* result;
+			m_lua->pull(result);
+			CPPUNIT_ASSERT_EQUAL(result, static_cast<Abstract2*>(input.get()));
 		}
 
 		void test_inTraits_compiles()
@@ -743,6 +783,41 @@ OOLUA_EXPORT_NO_FUNCTIONS(NonePod)
 		}
 		/* ====================== LuaJIT2 protected test ===========================*/
 
+#	if OOLUA_USE_EXCEPTIONS == 1
+		void pull_pushSharedThenPullNoneRelatedSharedConst_throwsOoluaTypeError()
+		{
+			m_lua->register_class<SharedFoo>();
+			m_lua->register_class<SharedConstructor>();
+			OOLUA_SHARED_TYPE<SharedFoo> shared(new SharedFoo);
+			m_lua->push(shared);
+			OOLUA_SHARED_TYPE<SharedConstructor const> unrelated_shared;;
+			CPPUNIT_ASSERT_THROW(m_lua->pull(unrelated_shared), OOLUA::Type_error);
+		}
+#endif
+
+#if OOLUA_STORE_LAST_ERROR == 1
+		void pull_pushSharedThenPullNoneRelatedSharedConst_pullReturnsFalse()
+		{
+			m_lua->register_class<SharedFoo>();
+			m_lua->register_class<SharedConstructor>();
+			OOLUA_SHARED_TYPE<SharedFoo> shared(new SharedFoo);
+			m_lua->push(shared);
+			OOLUA_SHARED_TYPE<SharedConstructor const> unrelated_shared;;
+			CPPUNIT_ASSERT_EQUAL(false, m_lua->pull(unrelated_shared));
+		}
+		void pull_pushSharedThenPullNoneRelatedSharedConst_lastErrorIsNotEmpty()
+		{
+			m_lua->register_class<SharedFoo>();
+			m_lua->register_class<SharedConstructor>();
+			OOLUA_SHARED_TYPE<SharedFoo> shared(new SharedFoo);
+			m_lua->push(shared);
+			OOLUA_SHARED_TYPE<SharedConstructor const> unrelated_shared;;
+			m_lua->pull(unrelated_shared);
+			CPPUNIT_ASSERT_EQUAL(false, OOLUA::get_last_error(*m_lua).empty());
+		}
+#endif
+
+
 		void call_memberFunctionTakingConstSharedParam_paramUseCountEqualsTwo()
 		{
 			m_lua->register_class<SharedFoo>();
@@ -919,7 +994,7 @@ OOLUA_EXPORT_NO_FUNCTIONS(NonePod)
 		void collisionIncludingNonePodSharedPtr_popInstancesThenCallGc_ThereIsNotEntryInTheWeakTableForThePointer()
 		{
 			//userdata gc methods are called in reverse order of construction
-			//therefore makesure the shared pointer gc is called second
+			//therefore make sure the shared pointer gc is called second
 			m_lua->register_class<Pod>();
 			m_lua->register_class<NonePod>();
 			OOLUA_SHARED_TYPE<NonePod> instance(new NonePod);

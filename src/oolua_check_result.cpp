@@ -40,8 +40,8 @@ namespace OOLUA
 #elif OOLUA_USE_EXCEPTIONS == 1
 			if (pcall_result == LUA_ERRRUN)
 				throw OOLUA::Runtime_error(vm, (OOLUA::ERROR::PopTheStack*)0);
-			else if (pcall_result == LUA_ERRMEM)
-				throw OOLUA::Memory_error(vm, (OOLUA::ERROR::PopTheStack*)0);
+			else if (pcall_result == LUA_ERRMEM) // LCOV_EXCL_LINE
+				throw OOLUA::Memory_error(vm, (OOLUA::ERROR::PopTheStack*)0); //LCOV_EXCL_LINE
 			else if (pcall_result == LUA_ERRERR)
 				throw OOLUA::Runtime_error(vm, (OOLUA::ERROR::PopTheStack*)0);
 #elif OOLUA_DEBUG_CHECKS == 1
@@ -69,8 +69,8 @@ namespace OOLUA
 				throw OOLUA::File_error(vm, (OOLUA::ERROR::PopTheStack*)0);
 			else if (result == LUA_ERRSYNTAX)
 				throw OOLUA::Syntax_error(vm, (OOLUA::ERROR::PopTheStack*)0);
-			else if (result == LUA_ERRMEM )
-				throw OOLUA::Memory_error(vm, (OOLUA::ERROR::PopTheStack*)0);
+			else if (result == LUA_ERRMEM ) // LCOV_EXCL_LINE
+				throw OOLUA::Memory_error(vm, (OOLUA::ERROR::PopTheStack*)0); // LCOV_EXCL_LINE
 #elif OOLUA_DEBUG_CHECKS == 1
 			(void)vm;
 			if (result == LUA_ERRSYNTAX)

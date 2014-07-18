@@ -54,6 +54,7 @@ THE SOFTWARE.
 
 namespace
 {
+	// LCOV_EXCL_START
 	const int LEVELS1 = 10;
 	const int LEVELS2 = 20;
 
@@ -127,6 +128,7 @@ namespace
 		lua_concat(vm, lua_gettop(vm) - arg);
 		return 1;
 	}
+	// LCOV_EXCL_STOP
 
 	int set_error_callback(lua_State* vm, lua_CFunction func)
 	{
@@ -147,7 +149,7 @@ namespace OOLUA
 	void Lua_function::bind_script(lua_State* const vm)
 	{
 #if OOLUA_DEBUG_CHECKS == 1
-		assert(vm);
+		assert(vm); // LCOV_EXCL_LINE
 #endif
 		m_lua = vm;
 	}
@@ -206,14 +208,14 @@ namespace OOLUA
 
 	bool Lua_function::prep_function(Lua_func_ref const& func, int const nparams, int& error_index)
 	{
-		OOLUA_CHECK_STACK_IF_ENABLED(m_lua, nparams+2);
+		OOLUA_CHECK_STACK_IF_ENABLED(m_lua, nparams+2); // LCOV_EXCL_LINE
 		error_index = set_error_callback(m_lua, stack_trace);
 		return func.push(m_lua);
 	}
 
 	bool Lua_function::prep_function(std::string const& func, int const nparams, int& error_index)
 	{
-		OOLUA_CHECK_STACK_IF_ENABLED(m_lua, nparams+2);
+		OOLUA_CHECK_STACK_IF_ENABLED(m_lua, nparams+2); // LCOV_EXCL_LINE
 		error_index = set_error_callback(m_lua, stack_trace);
 		lua_getglobal(m_lua, func.c_str());
 		return true;
@@ -223,9 +225,9 @@ namespace OOLUA
 	{
 		int const top = lua_gettop(m_lua);
 #if OOLUA_DEBUG_CHECKS == 1
-		assert(!(top == 0 || func_index == 0|| func_index > top || -func_index > top) && "Out of bounds index");
+		assert(!(top == 0 || func_index == 0|| func_index > top || -func_index > top) && "Out of bounds index"); // LCOV_EXCL_LINE
 #endif
-		OOLUA_CHECK_STACK_IF_ENABLED(m_lua, nparams+2);
+		OOLUA_CHECK_STACK_IF_ENABLED(m_lua, nparams+2); // LCOV_EXCL_LINE
 		error_index = set_error_callback(m_lua, stack_trace);
 		lua_pushvalue(m_lua, func_index > 0 ? func_index : top + 1 + func_index);
 
@@ -237,7 +239,7 @@ namespace OOLUA
 	int Lua_function::get_top()
 	{
 #if OOLUA_DEBUG_CHECKS == 1
-		assert(m_lua && "No valid script is bound for the Lua_function caller");
+		assert(m_lua && "No valid script is bound for the Lua_function caller"); // LCOV_EXCL_LINE
 #endif
 		return lua_gettop(m_lua);
 	}

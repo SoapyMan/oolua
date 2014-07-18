@@ -73,7 +73,7 @@ namespace OOLUA
 	template<typename T>
 	bool push(lua_State* const vm, T * const &  value);
 	template<typename T>
-	bool push(lua_State* const vm, lua_acquire_ptr<T>&  value);
+	bool push(lua_State* const vm, lua_acquire_ptr<T> const&  value);
 	template<typename T>
 	bool push(lua_State* const vm, T const &  value);
 	/**@}*/
@@ -106,7 +106,7 @@ namespace OOLUA
 	template<typename T>
 	bool pull(lua_State* const vm, T&  value);
 	template<typename T>
-	bool pull(lua_State* const vm, cpp_acquire_ptr<T>&  value);
+	bool pull(lua_State* const vm, cpp_acquire_ptr<T> const&  value);
 	/**	@}*/
 
 	/** \cond INTERNAL */
@@ -127,7 +127,6 @@ namespace OOLUA
 			void get(lua_State* const vm, int idx, void*& value);
 			void get(lua_State* const vm, int idx, bool& value);
 			void get(lua_State* const vm, int idx, char const*& value);
-			void get(lua_State* const vm, int idx, char *& value);
 			void get(lua_State* const vm, int idx, double& value);
 			void get(lua_State* const vm, int idx, float& value);
 			void get(lua_State* const vm, int idx, oolua_CFunction& value);

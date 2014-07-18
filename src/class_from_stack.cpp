@@ -73,7 +73,7 @@ namespace OOLUA
 			luaL_error(vm, "%s \"%s\" %s", "Tried to pull a none constant"
 						, pulling_class_type
 						, "pointer from a const pointer");
-		}
+		} // LCOV_EXCL_LINE
 
 	} // namespace INTERNAL //NOLINT
 } // namespace OOLUA
