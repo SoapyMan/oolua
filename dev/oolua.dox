@@ -31,9 +31,17 @@
 /**
 	\addtogroup OOLuaConfig Library Configuration
 	@{
-		\details OOLua is easily configurable in two areas errors( \ref OOLuaErrorReporting , \ref OOLuaErrorChecking )
-		and limits ( \ref OOLuaFileGeneration ).
+		\details OOLua is configurable in a number of ways. You may change library limits
+		 using the \ref OOLuaFileGeneration "file generation module" and then regenerate
+		 core library files. Edit the oolua_config.h file to adjust \ref OOLuaErrorChecking,
+		 \ref OOLuaErrorReporting and enabling support for \ref OOLuaSharedPtrSupport.
+		 Additionally, you may adjust which, if any, type is treated as a string integral
+		 via \ref OOLuaStringConfig.
+
 	 	\addtogroup OOLuaFileGeneration File Generation
+		@{
+		@}
+		\addtogroup OOLuaStringConfig String Configuration
 		@{
 		@}
 	@}
@@ -91,7 +99,7 @@
 
 	\section OOLuaConventions Conventions
 		\li \ref OOLuaDSL macros are upper case and prefixed with OOLUA_
-		\li \ref OOLuaMinimalist DSL macro names are smaller than \ref OOLuaExpressive
+		\li \ref OOLuaMinimalist DSL macro names are shorter in length than \ref OOLuaExpressive names
 		\li Public API functions and types are directly in the OOLUA namespace
 		\li Public API function names are lower case with words separated by underscores
  		<p>
@@ -100,27 +108,27 @@
  		\copydetails OOLUA::Script
 
 	\section OOLuaAndTheStack OOLua and the Lua stack
-		The Lua C API does not force you to treat the stack as such a data structure,
+		Lua's C API does not force you to treat the stack as such a data structure,
 		with operations on just one end, instead for convenience it uses indices to
-		identify stack slots for a procedure. Given that Lua is a C library without C++'s
+		identify stack slots for a procedure. Given that Lua is a C library, without C++'s
 		name mangling and overloading, it also provides a function per type for pushing to
-		the stack.
-		<p>
-		OOLua is a C++ library which tries to enforce a clean stack after operations, it
-		therefore provides a simpler interface to the Lua stack which consists of two
-		functions :
+		the stack. Contrary to this, OOLua is a C++ library and it tries to enforce a clean
+		stack after operations. The library therefore provides a simpler interface to the
+		Lua stack which consists of two functions :
 			\arg \ref OOLUA::push "push" \copybrief OOLUA::push
 			\arg \ref OOLUA::pull "pull" \copybrief OOLUA::pull
  		<p>
- 		Most usage of OOLua will only require these functions to interact with the stack,
- 		although you are free to mix Lua C API calls if you take into account \ref OOLUA::pull
- 		"pull" removes the top of the stack when it is valid.
+ 		Most usage of OOLua will only require these two functions to interact with the stack.
+ 		However, you are free to use Lua C API calls if you take into account that \ref OOLUA::pull
+ 		"pull" removes the top element from the stack when it is valid.
 
+ 	\section OOLuaHeaders Library header files
+ 	OOLua provides a kitchen sink header file called oolua.h. This is a header which pulls in all the required files for using any part of the library. The file has the benefit that it maybe a good candidate for a pre compiled header, depending on the project in which it is to be used. However, a consequence of its functionality means that files which may not be required will always be pulled into files which include the header. If this is not the behaviour your project requires then there are two further headers for the proxying and exporting of classes. These files being oolua_dsl.h and oolua_dsl_export.h which are used extensively in the libraries unit tests.
  */
 
  /**
  \page LuaTypesInOOLua Lua Types in OOLua
- 	\brief OOLua has three types to help interact with Lua types
+ 	\brief OOLua provides three types to help store and interact with Lua types, these are Lua_ref, Lua_function and Table.
  	\section OOLuaTypesRef Lua_ref
  		\copydetails OOLUA::Lua_ref
 		<p>For your convenience there are two predefined typedefs:
@@ -133,17 +141,13 @@
  	\section OOLuaTypesFunction Lua_function
  		\copydetails OOLUA::Lua_function
  			\subsection CallingALuaFunction Calling a Lua function
-			A Lua function can be called using the function object
-			\ref OOLUA::Lua_function of which there is an instance bound in the
-			constructor for Script \ref OOLUA::Script::call. \ref OOLUA::Lua_function
-			has overloaded function call operators which take upto the maximum
-			defined by \ref OOLuaConfigLuaParams "\"lua_params\"".\n
+			When using the \ref OOLUA::Script "Script" class, a Lua_function instance is initialised in the Script's constructor and is made available as a public member using the name \ref OOLUA::Script::call "call". A Lua_function can also be used directly either by constructing it specifically for the call or reusing a previous instance.
 
-			Name:
+			Global function identified by a string name:
 			\snippet lua_caller.cpp CallingFunctionByGlobalName
-			Lua_func_ref:
+			Lua_func_ref from a child state that is called using the Script's public member:
 			\snippet lua_caller.cpp CallingFunctionByFuncRef
-			Valid stack index
+			Valid stack index that is a function:
 			\snippet lua_caller.cpp CallingFunctionByValidStackIndex
 
  	 \section OOLuaTypesTable Table
@@ -155,27 +159,36 @@
 
 /**
 \page OOLuaProxying Proxy
+	\brief OOLua uses a proxy, for class types,  as an intermediate between the two languages
+	of Lua and C++. These proxies contain information such as any hierarchical structure and
+	proxy function definitions. To help with the definition of a proxy, OOLua provides a domain
+	specific language.
+
 	\section OOLuaProxyDSL DSL
 			\copybrief OOLuaDSL
-			\copydetails OOLuaDSL
-			<p>\ref OOLuaMinimalist
+			<p>\copydetails OOLuaDSL
+			<p>\ref OOLuaMinimalist \n
 			\copydetails OOLuaMinimalist
-			<p>\ref OOLuaExpressive
+			<p>\ref OOLuaExpressive \n
 			\copydetails OOLuaExpressive
 
 	\section ClassProxy Class Proxy
-		Generating a proxy for a class normally takes place between two DSL procedures
-		\ref OOLUA_PROXY and \ref OOLUA_PROXY_END although alone these do not supply
-		enough information for a proxy to be generated, the following shows the usage
-		of the DSL to proxy and use a C++ class in Lua.
+		Generating a proxy for a class normally takes place between the two DSL procedures
+		\ref OOLUA_PROXY and \ref OOLUA_PROXY_END. However, alone these do not supply
+		enough information for a proxy to be generated. For a proxy class to be generated
+		and for this proxy to be used in a Lua state requires a three part process. The
+		process is consummated by generating a \ref ProxyBlock, \ref ClassExporting the
+		proxy and then by \ref ClassRegistering the class with the Lua state.
 
 		\subsection MinimalClassProxy Minimal Class Proxy
+			The following shows the usage of the DSL to proxy a very simple class, Stub1, and to
+			use this proxy in Lua.
+
 			\snippet cpp_stub_classes.h UsedAsMinimalClass
-			To proxy a class and be able to use it in Lua requires a three part process.
 			<p>
 				\subsubsection ProxyBlock Proxy Block
-				Firstly you create a proxy block which starts with a OOLUA_PROXY call to which
-				you pass the name of the C++ class to be proxied, this block ends at the next
+				Firstly you create a proxy block. The block starts with a OOLUA_PROXY call to which
+				you pass the name of the C++ class to be proxied and the block ends at the next
 				OOLUA_PROXY_END. Soon we will see how to proxy other aspects of a class in this
 				block.
 				\snippet expose_stub_classes.h MinimalProxyClass
@@ -185,11 +198,12 @@
 				type in Lua.
 				\copydetails OOLuaExporting
 				<p>
+				As the simple class that is being proxied does not have any member functions, the
+				code here uses the specific DSL procedure for this.
 				\snippet expose_stub_classes.cpp MinimalProxyExport
 			<p>
 				\subsubsection ClassRegistering Registering
-				Lastly we register the type with a lua_State after which the type can be \ref DefaultConstructor "created"
-				and used in Lua.
+				Lastly we register the type with a lua_State after which the type can be \ref DefaultConstructor "created" and used in the virtual machine.
 				\snippet construct.cpp MinimalProxyClassRegister
 				<p>
 				\snippet construct.cpp MinimalProxyClassUsage
@@ -199,9 +213,8 @@
 			\copydetails OOLUA_TAGS <p>
 
 		\subsection DefaultConstructor Default Constructor
-			The default class constructor is a special member function like C++ and it will
-			be implicitly defined for a type unless \ref OOLuaTags "otherwise specified". When
-			available for a type "foo" in can be called in Lua using the following syntax.
+			The default constructor of a proxy type is a special member function, much like
+			C++, and it will be implicitly defined for the type unless \ref OOLuaTags "otherwise specified". When available for a type "foo" it can be called in Lua using the following syntax.
 			\code{.lua}
 				foo.new()
 			\endcode
@@ -223,7 +236,7 @@
 
 		\subsection AbstractClass Abstract Class
 			Generating an abstract proxy requires that you specify the \ref OOLUA::Abstract
-			"Abstract" tag in the \ref OOLUA_TAGS block
+			"Abstract" tag in the \ref OOLUA_TAGS block.
 			\copydetails OOLUA::Abstract
 			<p>
 			\snippet cpp_hierarchy.h CppAbstract1
@@ -231,11 +244,14 @@
 			\snippet expose_hierarchy.cpp ExportAbstract1
 
 		\subsection BaseClass Base Classes
-			Using \ref OOLUA_PROXY "OOLUA_PROXY's" optional parameter(s) specifies base
-			class(es) for the proxy
+			Using \ref OOLUA_PROXY "OOLUA_PROXY's" optional parameter(s) enables the
+			specifying of base class(es) for a proxy.
 			\copydetails OOLUA_PROXY
 			<p>
 			\snippet cpp_hierarchy.h CppDerived1Abstract1
+			The following snippets do not proxy or expose any of the functions from the
+			base class as they are automatically made available for the derived class.
+			This is true for all derived proxies which have a base proxy.
 			\snippet expose_hierarchy.h ExposeDerived1Abstract1
 			\snippet expose_hierarchy.cpp ExportDerived1Abstract1
 
@@ -247,6 +263,9 @@
 			\snippet expose_class_ops.cpp ClassOpsExport
 
 		\subsection ClassPublicMembers Public Members
+			Getting or setting a public member is achieved by a function
+			which completes the operation. These functions must be exported like all
+			other proxy functions, so that they are available to a Lua script.
 			\copydetails OOLUA_MGET
 			<p>
 			\copydetails OOLUA_MSET
@@ -261,14 +280,28 @@
 			\snippet public_variables.cpp PublicMemberUsage
 
 
-		\subsection ClassEnumerations Enumerations
+		\subsection ProxyEnumerations Enumerations
+			Class enumerations, whether weak or scoped, are specified inside the
+			OOLUA_ENUMS block. To register the enumeration values when the class
+			type is, the \ref Register_class_enums tag should be present in the
+			\ref OOLUA_TAGS "tags block".<p>
 			\copydetails OOLUA_ENUMS <p>
-			\copydetails OOLUA_ENUM
-			<p>
-			\snippet cpp_enum.h CppClassEnum
-			\snippet expose_enum.h ClassEnumExpose
-			\snippet expose_enum.cpp ClassEnumExport
-			\snippet enum_tests.cpp ClassEnumUsage
+
+			\subsubsection ClassEnumerations Weak Enumerations
+				\copydetails OOLUA_ENUM
+				<p>
+				\snippet cpp_enum.h CppClassEnum
+				\snippet expose_enum.h ClassEnumExpose
+				\snippet expose_enum.cpp ClassEnumExport
+				\snippet enum_tests.cpp ClassEnumUsage
+
+			\subsubsection ClassScopedEnumerations Scoped Enumerations
+				\copydetails OOLUA_SCOPED_ENUM
+				<p>
+				\snippet scoped_enum_c++11.cpp CppClassScopedEnum
+				\snippet scoped_enum_c++11.cpp ClassScopedEnumExpose
+				\snippet scoped_enum_c++11.cpp ClassScopedEnumExport
+				\snippet scoped_enum_c++11.cpp ClassScopedEnumUsage
 
 		\subsection ClassStaticFunctions Static Functions
 			\copydetails OOLUA_SFUNC
@@ -410,8 +443,9 @@
 				\snippet expose_userdata_function_returns.h UserDataProxyMaybeNullTrait
 				Usage:
 				\snippet userdata_function_returns.cpp 	MaybeNullTraitConstPtrUsage
-			\subsubsection OOLuaLuaMaybeNullTrait lua_maybe_null
-				\copydetails OOLUA::lua_maybe_null <p>
+			\subsubsection OOLuaLuaMaybeNullTrait maybe_null and lua_return
+				The maybe_null and lua_return traits can be combined for a function return type. If the instance is non NULL then this combination provides the behaviour of the \ref lua_return trait. On the other hand, when the instance is NULL it will provide the behaviour of the \ref maybe_null trait.
+
 				Member Function:
 				\snippet cpp_function_returns.h PtrReturn
 				Proxy Function:
@@ -422,7 +456,7 @@
 				\copydetails OOLUA::light_return <p>
 				Void pointer:
 				\snippet expose_userdata_function_returns.h lightReturnVoidProxy
-				None void pointer:
+				Non void pointer:
 				\snippet expose_userdata_function_returns.h lightReturnNoneVoidProxy
 
 		\subsection OOLuaStackTraitsDoc Stack Traits

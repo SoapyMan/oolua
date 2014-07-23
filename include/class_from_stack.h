@@ -25,8 +25,8 @@ THE SOFTWARE.
 /** \cond INTERNAL*/
 /**
 	@file class_from_stack.h
-	\brief Retrieves a typed pointer from a potential userdata on the stack
-	\details Preforms error config dependant checks in a attempt to return a
+	\brief Retrieves a typed pointer from a potential userdata on the stack.
+	\details Preforms configuration dependent checks in a attempt to return a
 	typed pointer from a userdata which resides on the stack.
 */
 /** \endcond */
@@ -57,7 +57,7 @@ namespace OOLUA
 	namespace INTERNAL
 	{
 		/**
-			\brief Uses a config dependant check to verify "index" is a library created userdata
+			\brief Uses a config dependent check to verify "index" is a library created userdata
 			\tparam T Requested type wanted from the stack
 			\param[in] vm Lua virtual machine on which to operate
 			\param[in] index Stack index at which the potential userdata is located
@@ -67,7 +67,7 @@ namespace OOLUA
 		T* check_index(lua_State * vm, int index);
 
 		/**
-			\brief Uses config dependant checks to verify "index" is a library created userdata
+			\brief Uses config dependent checks to verify "index" is a library created userdata
 			\details Preforms an extra check that the stack type is not constant, throws a Lua
 			error if the type is.
 			\tparam T Requested type wanted from the stack
@@ -79,7 +79,7 @@ namespace OOLUA
 		T* check_index_no_const(lua_State * vm, int index);
 
 		/**
-			\brief Uses config dependant checks to verify "index" is a library created userdata
+			\brief Uses config dependent checks to verify "index" is a library created userdata
 			\param[in] vm Lua virtual machine on which to operate
 			\param[in] index Stack index to check
 			\param[out] ud If verification is successful then it points to the userdata on the stack

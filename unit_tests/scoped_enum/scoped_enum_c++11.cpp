@@ -4,6 +4,7 @@
 
 enum class scoped_enum{ ENUM = 1 };
 
+/*[CppClassScopedEnum]*/
 struct Has_scoped_enum
 {
 	enum class scoped_enum{INVALID, VALID};
@@ -17,7 +18,9 @@ struct Has_scoped_enum
 	void param(scoped_enum /*e*/){}
 	scoped_enum return_enum(){return scoped_enum::VALID;}
 };
+/*[CppClassScopedEnum]*/
 
+/*[ClassScopedEnumExpose]*/
 OOLUA_PROXY(Has_scoped_enum)
 	OOLUA_TAGS(Register_class_enums)
 	OOLUA_CTORS(
@@ -31,14 +34,16 @@ OOLUA_PROXY(Has_scoped_enum)
 	OOLUA_MFUNC(param)
 	OOLUA_MFUNC(return_enum)
 OOLUA_PROXY_END
+/*[ClassScopedEnumExpose]*/
 
+/*[ClassScopedEnumExport]*/
 OOLUA_EXPORT_FUNCTIONS(Has_scoped_enum
 						, param
 						, return_enum
 						, set_e)
 OOLUA_EXPORT_FUNCTIONS_CONST(Has_scoped_enum
 							, get_e)
-
+/*[ClassScopedEnumExport]*/
 
 
 
@@ -201,6 +206,7 @@ public:
 		CPPUNIT_ASSERT_EQUAL(static_cast<int>(Has_scoped_enum::scoped_enum::VALID), static_cast<int>(result));
 	}
 
+	/*[ClassScopedEnumUsage]*/
 	void publicMember_inCppSetMemberToInvalidInLuaSetToValid_resultEqualsValid()
 	{
 		Has_scoped_enum instance;
@@ -210,6 +216,7 @@ public:
 		m_lua->call(-1, &instance);
 		CPPUNIT_ASSERT_EQUAL(static_cast<int>(Has_scoped_enum::scoped_enum::VALID), static_cast<int>(instance.e));
 	}
+	/*[ClassScopedEnumUsage]*/
 
 	void constructor_passedInvalid_enumEqualsInvalid()
 	{

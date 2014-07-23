@@ -37,10 +37,10 @@ THE SOFTWARE.
 		\brief
 		Defines how any errors are reported
 		\details Errors can be reported either by using exceptions or storing
-		a retrievable error string, only one of these methods is allowed
+		a retrievable error string. Only one of these methods is allowed
 		and this condition is enforced, yet also neither are required. If both
-		are disabled then it depends on \ref OOLUA_DEBUG_CHECKS as to whether
-		any error will be reported
+		options are disabled then it depends on \ref OOLUA_DEBUG_CHECKS as to
+		whether any error will be reported.
 	*/
 
 	/**	\def OOLUA_USE_EXCEPTIONS
@@ -50,7 +50,7 @@ THE SOFTWARE.
 		Throws exceptions from C++ code.
 		This could be the return of a pcall, or from pulling an incorrect type
 		off the stack when \ref OOLUA_RUNTIME_CHECKS_ENABLED is enabled. It also
-		prevents exceptions escaping from function proxied by the library, enabling
+		prevents exceptions escaping from functions proxied by the library, enabling
 		calls to such functions to be caught with pcall in Lua code.
 		\param 0 Disabled
 		\param 1 Enabled
@@ -64,8 +64,8 @@ THE SOFTWARE.
 		\hideinitializer
 		\brief \b Default: Enabled
 		\details
-		Stores an error message in the registry overwriting any previous error,
-		the last error to have occurred is retrievable via \ref OOLUA::get_last_error
+		Stores an error message in the registry which overwrites any previously stored error.
+		The last error to have occurred is retrievable via \ref OOLUA::get_last_error.
 		\see OOLUA::get_last_error
 		\see OOLUA::reset_error_value
 		\param 0 Disabled
@@ -147,10 +147,12 @@ THE SOFTWARE.
 		\hideinitializer
 		\brief \b Default: Enabled when DEBUG or _DEBUG is defined
 		\details
-			\li Adds Checks for NULL pointers
-			\li Adds a stack trace to errors reported by pcall
-			\li Calls assert on errors if both \ref OOLUA_USE_EXCEPTIONS and
+		Provides the following
+			\li asserts on NULL pointers
+			\li adds a stack trace to errors reported by pcall
+			\li asserts on errors if both \ref OOLUA_USE_EXCEPTIONS and
 				\ref OOLUA_STORE_LAST_ERROR are both disabled
+
 		\param 0 Disabled
 		\param 1 Enabled
 	*/
@@ -194,6 +196,8 @@ THE SOFTWARE.
 	/**@}*/
 
 
+	/** \addtogroup OOLuaStringConfig
+	@{*/
 	/** \def OOLUA_STD_STRING_IS_INTEGRAL
 		\hideinitializer
 		\brief \b Default: Enabled
@@ -206,6 +210,7 @@ THE SOFTWARE.
 #	ifndef OOLUA_STD_STRING_IS_INTEGRAL
 #		define OOLUA_STD_STRING_IS_INTEGRAL 1
 #	endif
+	/**@}*/
 
 
 	/** \addtogroup OOLuaSharedPtrSupport Shared Pointer
@@ -228,19 +233,21 @@ THE SOFTWARE.
 		\hideinitializer
 		\brief \b Default: Disabled
 		\details
-		Configuration option to enable or disable the support of a shared pointer type.
+		Configuration option to enable or disable the support of a shared pointer type for
+		OOLua proxies.
+
 		When enabled the library supports:
-		\li Pushing a shared pointer to the stack.
-		\li Pulling a shared pointer from the stack, this is only defined if it is a shared pointer.
-		\li Pulling a raw pointer from the stack when the stack contains a shared pointer. It is
-			up to the user of the library to ensure the type will not be garbage collected.
-		\li Functions which return a shared pointer.
-		\li Shared pointer function returns which have the \ref OOLUA::maybe_null trait.
-		\li Functions which take a shared pointer as a parameter.
-		\li Decaying of a shared pointer to a raw pointer for functions parameters. The raw
-			pointer is defined to be valid for the duration of the call.
+		\li pushing a shared pointer to the stack
+		\li pulling a shared pointer from the stack(only defined when it is a shared pointer)
+		\li pulling a raw pointer from a stack that contains a shared pointer(It is
+			up to the user of the library to ensure the type will not be garbage collected)
+		\li functions that return a shared pointer
+		\li functions that return a shared pointer and have the \ref OOLUA::maybe_null trait
+		\li functions that take a shared pointer as a parameter
+		\li decaying of a shared pointer to a raw pointer for functions parameters(The raw
+			pointer is defined to be valid for the duration of the call)
 		\note The \ref OOLUA::Shared and \ref OOLUA::No_shared tags maybe ignored, as they are
-			dependant on the value of \ref OOLUA_NEW_POINTER_DEFAULT_IS_SHARED_TYPE
+			dependent on the value of \ref OOLUA_NEW_POINTER_DEFAULT_IS_SHARED_TYPE
 		\param 0 Disabled
 		\param 1 Enabled
 */
@@ -278,12 +285,14 @@ THE SOFTWARE.
 		\hideinitializer
 		\brief \b Default: Disabled
 		\details
-		When OOLua is compiled with support for a shared pointer type (\ref OOLUA_USE_SHARED_PTR)
-		and it encounters a situation in which it needs to create a new pointer for
-		a proxy type then it will depend upon a combination of this configuration
-		option and if there are \ref SharedTags for the type as to how the situation
-		is handled. The aforementioned situations involve constructors, operators
-		which return a proxy instance and functions which return a proxy by value.
+		When compiled with support for a shared pointer type (\ref OOLUA_USE_SHARED_PTR)
+		and in a situation that requires the allocation of a proxy type, then how the
+		situation is handled depends upon this configuration value and possibly
+		\ref SharedTags defined for the proxy. The resulting pointer can either be a
+		'Raw' pointer or a 'Shared' pointer that retains shared ownership . Allocation
+		of a proxy occurs for functions and operators that return a non-integral on the
+		C stack and constructors.
+
 		| Configuration value | Has Shared tag | Has No_shared tag | Pointer type |
 		| :-----------------: | :------------: | :---------------: | :----------: |
 		|      Disabled       |       No       |         X         |      Raw     |

@@ -78,7 +78,7 @@ namespace LVD
 #		ifdef __CYGWIN__
 			//gcc does define these types yet you need to use the
 			// the extension keyword to prevent warnings when using a high warning level
-			//The -Wno-long-long flag could supress this but lets not interfere
+			//The -Wno-long-long flag could suppress this but lets not interfere
 			//with what settings a user wants.
 			__extension__ typedef	long long			int64;
 			__extension__ typedef unsigned long long	uint64;

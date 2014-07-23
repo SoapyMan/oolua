@@ -44,9 +44,9 @@ THE SOFTWARE.
 	@{
 		\brief Lua module for generating configurable OOLua boilerplate code.
 		\details The \ref OOLuaFileGeneration "\"oolua_generate\"" Lua module provides
-		information about the default limits and allows generation of boilerplate code
-		using user defined limits or regeneration with default values, the details of
-		these being :
+		information about the default limits for the library. It enables the generation
+		of boilerplate code using user defined limits or regeneration of files with the
+		default values. The details of these configurable values being :
 		\anchor OOLuaConfigLuaParams
 		\anchor OOLuaConfigCppParams
 		\anchor OOLuaConfigConstructorParams
@@ -104,7 +104,8 @@ local _default_details= function()
 	return
 	{
 		lua_params =
-		{	desc ='Maximum amount of parameters for a call to a Lua function'
+		{
+			desc ='Maximum amount of parameters for a call to a Lua function'
 			,value=10
 		}
 		,cpp_params =

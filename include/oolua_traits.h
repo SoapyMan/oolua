@@ -55,7 +55,7 @@ namespace OOLUA
 @{
 \brief Provides direction and/or ownership information.
 \details
-The general naming convention for traits is:\n
+The general naming conventions for traits are :\n
 \li \ref OOLuaFunctionParamTraits : end in "_p"
 \li \ref OOLuaFunctionReturnTraits : end in "_return" or "_null"
 \li \ref OOLuaStackTraits : end in "_ptr".

@@ -4,7 +4,7 @@ premake4 gmake linux >/dev/null 2>&1
 
 
 #param 1: test_name
-#only outputs a message when compiliation passes
+#only outputs a message when compilation passes
 function run_test()
 {
 if make $1 >/dev/null 2>&1; then

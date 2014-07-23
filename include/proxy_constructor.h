@@ -257,18 +257,19 @@ static int oolua_factory_function(lua_State* vm) \
 @{
 	\def OOLUA_CTORS
 	\hideinitializer
-	\brief Creates a block into which none default constructors can be defined with \ref OOLUA_CTOR
+	\brief Creates a block into which none default constructors can be defined using \ref OOLUA_CTOR
 	\details OOLUA_CTORS(ConstructorEntriesList)
 	\param ConstructorEntriesList List of \ref OOLUA_CTOR
 	<p>
-	To enable the construction of an instance which is a specific type, there must be
-	constructor(s) for that type registered with OOLua. \ref OOLUA_CTORS is the block into
-	which you can define none default constructor entries using \ref OOLUA_CTOR.
+	To enable the construction of an instance without using the default constructor, there must be
+	a constructor block specified for the proxy type. The constructor block, \ref OOLUA_CTORS,
+	is where non-default constructor entries can be specified using a \ref OOLUA_CTOR per entry.
 	<p>
 	Constructors are the only real type of overloading which is permitted by OOLua
-	and there is an important point which should be noted. OOLua will try and match
-	the number of parameters on the stack with the amount required by each OOLUA_CTOR
-	entry and will look in the order they were defined. When interacting with the Lua
+	and there is an important point which should be noted. This being that OOLua will
+	attempt to match the number and type of parameters on the stack with the amount
+	and types specified for each OOLUA_CTOR entry. The order in which it will attempt
+	the matching is the same order in which they were defined. When interacting with the Lua
 	stack certain types can not be differentiated between, these include some integral
 	types such as float, int, double etc and types which are of a proxy class type or
 	derived from that type. OOLua implicitly converts between classes in a hierarchy

@@ -337,9 +337,10 @@ static void oolua_enums(lua_State * vm) \
 	/** \def OOLUA_SCOPED_ENUM
 		\hideinitializer
 		\brief Creates a entry into a \ref OOLUA_ENUMS block for a C++11 scoped enum
-		\details OOLUA_ENUM(EnumName)
+		\details OOLUA_SCOPED_ENUM(EnumName, Entry)
 		\param Name The class enumeration name which will be used to access it from Lua
 		\param Entry The class enumeration scoped qualified name (minus the class type)
+		\see \ref OOLUA_ENUM
 	*/
 #	define OOLUA_SCOPED_ENUM(Name, Entry) \
 		lua_pushliteral(vm, #Name); \
@@ -350,11 +351,12 @@ static void oolua_enums(lua_State * vm) \
 	/**	\def OOLUA_ENUMS
 		\hideinitializer
 		\brief Creates a block into which enumerators can be defined with \ref OOLUA_ENUM
+		or \ref OOLUA_SCOPED_ENUM
 		\details OOLUA_ENUMS(EnumEntriesList)
-		\param EnumEntriesList List of \ref OOLUA_ENUM
+		\param EnumEntriesList List which contains \ref OOLUA_ENUM and/or \ref OOLUA_SCOPED_ENUM entries.
 		<p>
 		\note
-		An OOLUA_ENUMS block without any \ref OOLUA_ENUM entries is invalid.
+		An OOLUA_ENUMS block without any \ref OOLUA_ENUM or \ref OOLUA_SCOPED_ENUM entries is invalid.
 	*/
 #	define OOLUA_ENUMS(EnumEntriesList) OOLUA_ENUMS_START EnumEntriesList OOLUA_ENUMS_END
 

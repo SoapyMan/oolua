@@ -304,10 +304,8 @@ public:
 	/**[CallingFunctionByFuncRef]*/
 	void functionRef_functionRefIsFromAChildState_returnsTrue()
 	{
-		using namespace OOLUA; //NOLINT(build/namespaces)
-		Lua_func_ref func_from_child = create_func_ref_with_child_state();
-		Lua_function caller(*m_lua);
-		CPPUNIT_ASSERT_EQUAL(true, caller(func_from_child) );
+		OOLUA::Lua_func_ref func_from_child = create_func_ref_with_child_state();
+		CPPUNIT_ASSERT_EQUAL(true, m_lua->call(func_from_child) );
 	}
 	/**[CallingFunctionByFuncRef]*/
 

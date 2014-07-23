@@ -200,10 +200,10 @@ namespace OOLUA
 	/*
 	 prep_function
 	 If the given function is not actually a function (and the following exception does not apply)
-	 then pcall will tell us this and it will be handled as specified by the configration in use.
-	 Exception : If it is a function reference it can fail when the states are not related and this
-	 error is given not the pcall error, otherwise it would be confusing as to why there was
-	 an error.
+	 then pcall will tell us this and it will be handled as specified by the configuration in use.
+	 Exception : If it is a function reference then it can fail when the states are not related.
+	 If this happens then this error is given not a pcall error, otherwise it would be confusing
+	 as to why there was an error.
 	 */
 
 	bool Lua_function::prep_function(Lua_func_ref const& func, int const nparams, int& error_index)

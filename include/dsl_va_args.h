@@ -30,12 +30,12 @@ THE SOFTWARE.
 #	endif
 
 /** \file dsl_va_args.h
-	\brief Provides alot of the DSL procedures which make use of  \_\_VA_ARGS\_\_
+	\brief Provides a lot of the DSL procedures which make use of  \_\_VA_ARGS\_\_
 */
 
 /** \cond INTERNAL
-	The only difference between the code at the following URL and used below, is
-	that macro names got an OOLUA prefix as per all macros in the library
+	The only difference between the code at the following URL from what is used below, is
+	that the macro names got an OOLUA prefix as per all macros in the library.
 	http://groups.google.com/group/comp.std.c/browse_thread/thread/77ee8c8f92e4a3fb/346fc464319b1ee5
 */
 
@@ -144,9 +144,9 @@ THE SOFTWARE.
 		URL yet the page is no longer reachable.
 		https://connect.microsoft.com/VisualStudio/feedback/details/521844/variadic-macro-treating-va-args-as-a-single-parameter-for-other-macros#details
 
-		Taken from the above bug report url and the proposed workaround
+		Taken from the above bug report URL and the proposed workaround
 
-		For inline documentation see none MSC version below
+		For inline documentation see the none MSC version below
 	*/
 
 #		define OOLUA_LEFT_PAREN (
@@ -227,8 +227,8 @@ THE SOFTWARE.
 
 	/** \cond INTERNAL
 		Assume the compiler supports __VA_ARGS__ and uses the standard implementation.
-		The only difference between the code at the following URL and used below, is
-		that macro names got an OOLUA prefix as per all macros in the library
+		The only difference between the code at the following URL from what is used below, is
+		that the macro names got an OOLUA prefix as per all macros in the library.
 		http://groups.google.com/group/comp.std.c/browse_thread/thread/77ee8c8f92e4a3fb/346fc464319b1ee5
 	*/
 #		define OOLUA_NARG_DO(...) \
@@ -248,10 +248,13 @@ THE SOFTWARE.
 
 /** \addtogroup OOLuaDSL DSL
 @{
-\brief The Domain specific language used for generating C++ bindings for Lua
+\brief The domain specific language(DSL) used for generating C++ bindings to Lua.
 \details OOLua provides a DSL for defining C++ types which are to be made available to a
-	Lua script. The intention of this DSL is to hide the details whilst providing a
-	simple and rememberable interface for performing the actions required.
+	Lua script. The intention of this DSL is to hide the implementation details whilst
+	providing a simple and rememberable interface to perform the required actions. For
+	generating function proxies, the DSL has two sub categories named
+	\ref OOLuaMinimalist and \ref OOLuaExpressive.
+
 \note
 	"Optional" here means that extra macro parameters are optional, up to the
 	configuration \ref OOLuaConfigCppParams "max" for a specific operation.
@@ -271,7 +274,7 @@ THE SOFTWARE.
 		/**@{*/
 	/** \def OOLUA_MGET
 		\hideinitializer
-		\brief Generates a getter, which is a constant function, to retreive a public instance.
+		\brief Generates a getter, which is a constant function, to retrieve a public instance.
 		\details
 		OOLUA_MGET(PublicName, Optional)
 		\param PublicName Name of the public variable to be proxied.
@@ -282,7 +285,7 @@ THE SOFTWARE.
 
 	/** \def OOLUA_MSET
 		\hideinitializer
-		\brief Generates a setter, which is a none constant function, to set the public instance.
+		\brief Generates a setter, which is a none constant function, to set a public instance.
 		\details
 		OOLUA_MSET(PublicName, Optional)
 		\param PublicName Name of the public variable to be proxied.
@@ -293,7 +296,7 @@ THE SOFTWARE.
 
 	/** \def OOLUA_MGET_MSET
 		\hideinitializer
-		\brief Generates a getter and setter for a public instance.
+		\brief Generates both a getter and a setter for a public instance.
 		\details
 		OOLUA_MGET_MSET(PublicName, Optional1, Optional2)
 		\param PublicName Name of the public variable to be proxied.
@@ -307,10 +310,11 @@ THE SOFTWARE.
 		/**@}*/
 	/** \addtogroup OOLuaExpressive Expressive
 	@{
-	\brief Generates code where all details are expressed
+	\brief Generates a proxy function where a user has expressed all the details.
 	\details
-	Generates a function for which the user has expressed all the parameters for a function
-	these may additionally have \ref OOLuaTraits.
+	Generates a function for which the user has expressed all the parameters and the return type
+	for a function. These types may also have \ref OOLuaTraits applied to them which the
+	\ref OOLuaMinimalist section of the DSL does not allow.
 	*/
 		/**@{*/
 	/**	\def OOLUA_MEM_FUNC
@@ -320,7 +324,7 @@ THE SOFTWARE.
 		OOLUA_MEM_FUNC( FunctionReturnType, FunctionName, Optional)
 		\param FunctionReturnType
 		\param FunctionName
-		\param Optional : Comma seperated list of function parameter types
+		\param Optional : Comma separated list of function parameter types
 		\see \ref OOLuaConfigCppParams "cpp_params"
 	*/
 #		define OOLUA_MEM_FUNC(...) \
@@ -334,7 +338,7 @@ THE SOFTWARE.
 		\param ProxyFunctionName
 		\param FunctionReturnType
 		\param FunctionName
-		\param Optional : Comma seperated list of function parameter types
+		\param Optional : Comma separated list of function parameter types
 		\see \ref OOLuaConfigCppParams "cpp_params"
 	*/
 #		define OOLUA_MEM_FUNC_RENAME(...) \
@@ -347,7 +351,7 @@ THE SOFTWARE.
 		OOLUA_MEM_FUNC_CONST( FunctionReturnType,FunctionName,Optional)
 		\param FunctionReturnType
 		\param FunctionName
-		\param Optional Comma seperated list of function parameter types
+		\param Optional Comma separated list of function parameter types
 		\see \ref OOLuaConfigCppParams "cpp_params"
 	*/
 #		define OOLUA_MEM_FUNC_CONST(...) \
@@ -361,7 +365,7 @@ THE SOFTWARE.
 		\param ProxyFunctionName
 		\param FunctionReturnType
 		\param FunctionName
-		\param Optional Comma seperated list of function parameter types
+		\param Optional Comma separated list of function parameter types
 		\see \ref OOLuaConfigCppParams "cpp_params"
 	*/
 #		define OOLUA_MEM_FUNC_CONST_RENAME(...) \
@@ -375,7 +379,7 @@ THE SOFTWARE.
 		OOLUA_C_FUNCTION(FunctionReturnType,FunctionName, Optional)
 		\param FunctionReturnType
 		\param FunctionName
-		\param Optional Comma seperated list of function parameter types
+		\param Optional Comma separated list of function parameter types
 		\see \ref OOLuaConfigCppParams "cpp_params"
 		\pre The function in which this macro is contained must declare a lua_State pointer
 		which can be identified by the name "vm"
@@ -398,13 +402,18 @@ THE SOFTWARE.
 
 	/** \addtogroup OOLuaMinimalist Minimalist
  	@{
-	\brief Generates code using the minimal information
+	\brief Generates code using only the minimal amount of information.
 	\details
-	Generates a proxy function using the only the minimal of information which is generally
-	the name of the thing being proxied and possibly a new name for the proxy.
-	As with taking the address of any C++ function, if there is any ambiguity it will fail
-	to compile, in which case a user should help the compiler by specifying more information
-	using the matching, yet longer named \ref OOLuaExpressive DSL entry.\n
+	Generates a proxy function using the only the minimal amount of information which is generally
+	the name of the thing being proxied and possibly a new name for the proxy. If a new name is supplied
+	then the function will be made available to Lua using it and this name must be used when
+	\ref OOLuaExporting the function.
+
+	This part of the DSL attempts to automatically determine the parameter types and return type for
+	the function in question. However, if the function is overloaded then the compiler will be unable to
+	resolve the function, due to the ambiguity, and will produce a compile time error. To help the
+	compiler resolve this ambiguity, the user should specify more information using the corresponding,
+	yet longer named, \ref OOLuaExpressive DSL entry.\n
 	The longer DSL name requires more information. \n
 	\note No \ref OOLuaTraits can be expressed with this DSL group.
 	*/
@@ -486,7 +495,7 @@ THE SOFTWARE.
 		\details
 		OOLUA_EXPORT_FUNCTIONS(ClassName,Optional)
 		\param ClassName Name of class to which the function belong to
-		\param Optional Comma seperated list of member function names
+		\param Optional Comma separated list of member function names
 		\see \ref OOLuaConfigClassFunctions "class_functions"
 	*/
 #		define OOLUA_EXPORT_FUNCTIONS(...)		OOLUA_VA_CONCAT(EXPORT_OOLUA_FUNCTIONS_, OOLUA_NARG_GREATER_THAN_ONE(__VA_ARGS__))(OOLUA_NON_CONST, __VA_ARGS__)
@@ -497,7 +506,7 @@ THE SOFTWARE.
 		\details
 		OOLUA_EXPORT_FUNCTIONS_CONST(ClassName,Optional)
 		\param ClassName Name of class to which the function belong to
-		\param Optional Comma seperated list of constant member function names
+		\param Optional Comma separated list of constant member function names
 		\see \ref OOLuaConfigClassFunctions "class_functions"
 	*/
 #		define OOLUA_EXPORT_FUNCTIONS_CONST(...)OOLUA_VA_CONCAT(EXPORT_OOLUA_FUNCTIONS_, OOLUA_NARG_GREATER_THAN_ONE(__VA_ARGS__))(OOLUA_CONST, __VA_ARGS__)
@@ -532,15 +541,16 @@ THE SOFTWARE.
 @{
 		\def OOLUA_TAGS
 		\hideinitializer
-		\brief Allows more information to be specified about the proxy class
-		\details Tags specifiy more information about the class which should be exposed,
-		such as:
+		\brief Allows more information to be specified about the proxy class.
+		\details Tags specify more information about a class that is being exposed.
+		Some of the information which can be expressed with these are:
 		\li Does the class support any operators?
 		\li Is it abstract ?
 		\li Does the class have enumerations?
+		<p>For an exhaustive list of the possible tags see \ref OOLuaTags.
 		<p>
 		OOLUA_TAGS(TagList)
-		\param TagList Comma seperated list of \ref OOLuaTags
+		\param TagList Comma separated list of \ref OOLuaTags
 
 		\note An OOLUA_TAGS list without any \ref OOLuaTags entries is invalid.
 	 */

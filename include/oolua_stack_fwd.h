@@ -53,10 +53,10 @@ namespace OOLUA
 		\return
 		If \ref OOLUA_STORE_LAST_ERROR is set to one then the the return value will
 		indicate success or failure, if \ref OOLUA_USE_EXCEPTIONS is set to one then
-		failure will always be reported by throwing an exception.
+		failure will always be reported by the throwing of an exception.
 		\note Although all push methods return a boolean, most simply return true.
-		The only versions which can return false are full userdata aswell as values
-		which are associated with a Lua universe.
+		The only versions which can return false are functions which operate on
+		full userdata and values which are associated with a Lua universe.
 		\see \ref OOLUA::can_xmove
 		\see OOLuaErrorReporting
 		\see OOLuaExceptionClasses

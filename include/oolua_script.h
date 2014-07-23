@@ -42,18 +42,18 @@ namespace OOLUA
 		\brief OOLua helper class
 		\details
 		OOLua is purposely designed not to be dependent on the \ref OOLUA::Script "Script" class
-		and therefore passes around it's dependency of a lua_State instance.
+		and therefore passes around its dependency of a lua_State instance.
 		The Script class is only a helper and anything you can do with it
-		can be accomplished either via using a \ref OOLUA::Lua_function "Lua_function" struct,
+		can be accomplished by using a \ref OOLUA::Lua_function "Lua_function" struct,
 		calling OOLUA namespaced functions or using the Lua C API.
 
-		Script provides the following :
-		\li Scopes a lua_State pointer
-		\li Provides access to the lua_State pointer via a \ref OOLUA::Script::operator  "cast operator" and \ref OOLUA::Script::state "function"
-		\li Provides methods to \ref OOLUA::Script::register_class "register" types
-		\li Binds a \ref OOLUA::Lua_function "Lua_function" instance to \ref OOLUA::Script::call "call" functions
-		\li Has member functions for a little state management
-		\li \ref OOLUA::setup_user_lua_state "Sets up" the state to work with OOLua
+		Script provides :
+		\li scoping of a lua_State pointer
+		\li access to the lua_State pointer via a \ref OOLUA::Script::operator  "cast operator" and \ref OOLUA::Script::state "function"
+		\li methods to \ref OOLUA::Script::register_class "register" types
+		\li binding a \ref OOLUA::Lua_function "Lua_function" instance to \ref OOLUA::Script::call "call" functions
+		\li member functions for a little state management
+		\li \ref OOLUA::setup_user_lua_state "setting up" the state to work with OOLua
 
 		\note
 		This class is not copy constructible or assignable.

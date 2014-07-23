@@ -9,7 +9,7 @@
 	\section OOLuaIntroduction Introduction
 	OOLua is cross platform, test driven, dependency free and Open Source library. It uses C++03
 	template meta-programming and pre-processor magic internally, which can be used to generate
-	none intrusive proxies that provide a fast bridge for the interaction of C++ classes and functions
+	non intrusive proxies that provide a fast bridge for the interaction of C++ classes and functions
 	with Lua.
 	<p>
 	The library provides multiple inheritance C++ classes without using C++'s RTTI,

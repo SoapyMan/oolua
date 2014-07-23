@@ -24,7 +24,7 @@ THE SOFTWARE.
 
 /**
 	\file class_from_stack.cpp
-	\brief Implement none inline index_is_userdata functions and error generator
+	\brief Implement the non inline index_is_userdata functions and error generator
 */
 #include "class_from_stack.h"
 #include "lua_includes.h"
