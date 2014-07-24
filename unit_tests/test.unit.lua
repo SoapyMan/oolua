@@ -6,8 +6,8 @@ create_package(name,root,"ConsoleApp")
 
 configuration {}
 
-files 
-{ 
+files
+{
     	root .. "unit_tests/main.cpp",
     	root .. "unit_tests/bind_classes/*.h",
     	root .. "unit_tests/bind_classes/*.cpp",
@@ -16,7 +16,7 @@ files
 		root .. "unit_tests/test_classes/*h",
 		root .. "unit_tests/test_classes/*.cpp"
 }
-includedirs 
+includedirs
 {
 	"include/cppunit",
 	"include/gmock",
@@ -29,9 +29,9 @@ includedirs
 	root .. "unit_tests/cpp_classes",
 	root .. "unit_tests/test_classes",
 	--"/usr/local/include/lua52"
-} 
---flags{ "NoExceptions"}		
-defines 
+}
+--flags{ "NoExceptions"}
+defines
 {
 	"OOLUA_USE_PRECOMPILED_HEADER"
 }
@@ -42,7 +42,7 @@ links
 }
 
 configuration{"gmake"}
-	if tonumber((_PREMAKE_VERSION):match("(%d%.%d)")) < 4.4 then
+	if tonumber((_PREMAKE_VERSION):match("(%d%.%d)") or "0") < 4.4 then
 		pchheader("unit_tests/test_classes/oolua_tests_pch.h")
 	else
 		pchheader("test_classes/oolua_tests_pch.h")

@@ -1,3 +1,4 @@
+#!/bin/bash
 cd ..
 premake4 clean >/dev/null 2>&1
 premake4 gmake linux >/dev/null 2>&1

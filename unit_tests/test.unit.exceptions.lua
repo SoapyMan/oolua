@@ -47,7 +47,7 @@ defines
 
 
 configuration{"gmake"}
-	if tonumber((_PREMAKE_VERSION):match("(%d%.%d)")) < 4.4 then
+	if tonumber((_PREMAKE_VERSION):match("(%d%.%d)") or '0') < 4.4 then
 		pchheader("unit_tests/test_classes/oolua_tests_pch.h")
 	else
 		pchheader("test_classes/oolua_tests_pch.h")
