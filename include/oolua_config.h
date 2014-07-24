@@ -255,7 +255,7 @@ THE SOFTWARE.
 /**
 	\def OOLUA_SHARED_HEADER
 		\hideinitializer
-		\brief \b Default: <tr1/memory>
+		\brief \b Default: MSC: <mempory> other compilers: <tr1/memory>
 		\details <p>
 		Header file for the shared pointer type, library code will include
 		the header using :
@@ -312,7 +312,11 @@ THE SOFTWARE.
 #		define OOLUA_USE_SHARED_PTR 0
 #	else
 #		if OOLUA_USE_SHARED_PTR == 1
+#ifdef _MSC_VER
+#			define OOLUA_SHARED_HEADER <memory>
+#else
 #			define OOLUA_SHARED_HEADER <tr1/memory>
+#endif
 #			define OOLUA_SHARED_TYPE std::tr1::shared_ptr
 #			define OOLUA_SHARED_CONST_CAST std::tr1::const_pointer_cast
 #			ifndef OOLUA_NEW_POINTER_DEFAULT_IS_SHARED_TYPE

@@ -73,6 +73,10 @@ namespace OOLUA
 #endif
 		}
 
+#ifdef _MSC_VER
+#	pragma warning(push)
+#	pragma warning(disable: 4702) //warning C4702: unreachable code
+#endif
 		bool push_reference_if_possible(int const ref, lua_State* const from, lua_State* const to)
 		{
 			if (from == to || OOLUA::can_xmove(from, to) )
@@ -82,5 +86,6 @@ namespace OOLUA
 			}
 			return handle_unrelated_states(from, to);
 		}
+MSC_POP_COMPILER_WARNING_OOLUA
 	} // namespace INTERNAL //NOLINT
 } // namespace OOLUA
