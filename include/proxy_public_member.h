@@ -73,6 +73,18 @@ namespace OOLUA
 			}
 		};
 
+#if OOLUA_USE_SHARED_PTR == 1
+		template<typename T>
+		struct shouldPushValueByReference<OOLUA_SHARED_TYPE<T>, 1, 0>
+		{
+			enum {value = 0};
+			static void push(lua_State* vm, OOLUA_SHARED_TYPE<T>* input)
+			{
+				if(*input) OOLUA::push(vm, *input); else lua_pushnil(vm);
+			}
+		};
+#endif
+
 		struct PushPublicMember
 		{
 			template<typename T>

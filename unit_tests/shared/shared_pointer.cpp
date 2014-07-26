@@ -83,6 +83,7 @@ OOLUA_PROXY(SharedFoo)
 	OOLUA_MEM_FUNC_RENAME(returns_maybe_null_shared
 						, maybe_null<OOLUA_SHARED_TYPE<SharedFoo> >
 						, returnsSharedPtr)
+	OOLUA_MGET(m_shared)
 OOLUA_PROXY_END
 
 OOLUA_EXPORT_FUNCTIONS(SharedFoo
@@ -94,7 +95,7 @@ OOLUA_EXPORT_FUNCTIONS(SharedFoo
 						, shared_param_type_is_const
 						, returnsSharedConstPtr
 						, returns_maybe_null_shared)
-OOLUA_EXPORT_FUNCTIONS_CONST(SharedFoo, no_param_function_const)
+OOLUA_EXPORT_FUNCTIONS_CONST(SharedFoo, no_param_function_const, get_m_shared)
 
 struct SharedConstructor{};
 
@@ -255,7 +256,7 @@ OOLUA_EXPORT_NO_FUNCTIONS(NonePod)
 			CPPUNIT_TEST(maybeNull_instanceReturnsValidSharedPtr_topOfStackIsUserData);
 			CPPUNIT_TEST(maybeNull_instanceReturnsValidSharedPtr_useCountEqualsTwo);
 			CPPUNIT_TEST(maybeNull_instanceReturnsNullSharedPtr_topOfStackIsNil);
-
+			CPPUNIT_TEST(publicMember_instanceIsNullSharedPointer_topOfStackIsNil);
 
 			CPPUNIT_TEST(classHasSharedReturn_functionReturnsOnTheStack_topOfStackSharedFlagIsSet);
 			CPPUNIT_TEST(defaultNoSharedReturn_functionReturnsOnTheStack_topOfStackSharedFlagIsNotSet);
@@ -915,6 +916,15 @@ OOLUA_EXPORT_NO_FUNCTIONS(NonePod)
 			SharedFoo instance;
 
 			m_lua->run_chunk("return function(instance) return instance:returns_maybe_null_shared() end");
+			m_lua->call(1, &instance);
+			CPPUNIT_ASSERT_EQUAL(LUA_TNIL, lua_type(m_lua->state(), -1));
+		}
+		void publicMember_instanceIsNullSharedPointer_topOfStackIsNil()
+		{
+			m_lua->register_class<SharedFoo>();
+			SharedFoo instance;
+
+			m_lua->run_chunk("return function(instance) return instance:get_m_shared() end");
 			m_lua->call(1, &instance);
 			CPPUNIT_ASSERT_EQUAL(LUA_TNIL, lua_type(m_lua->state(), -1));
 		}

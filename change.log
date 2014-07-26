@@ -49,6 +49,7 @@ compatible with Lua 5.1 and 5.2
 - Added \ref OOLUA::shared_return trait which creates a shared pointer from raw
 - Bug fix. Every OuterClass<InnerClass> is treated as shared pointer (Renan Inácio) Bitbucket issue #1.
 - Added support for C++11 scoped enums \ref OOLUA_SCOPED_ENUM
+- Added ability for public members, which are proxies or shared_ptrs, to push nil when the value is NULL.
 
 \section OOLuaChanges1-4-0 1.4.0
 - Added OOLUA_DEDUCE_FUNC(_CONST) for when there is no ambiguity for a function
