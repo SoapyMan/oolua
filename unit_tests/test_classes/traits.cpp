@@ -67,7 +67,7 @@ public:
 	{
 		int value = OOLUA::INTERNAL::shouldPushValueByReference< Stub1,
 									!LVD::by_reference<Stub1>::value
-										&& OOLUA::INTERNAL::has_a_proxy_type<Stub1>::value >::value;
+										, OOLUA::INTERNAL::has_a_proxy_type<Stub1>::value >::value;
 		CPPUNIT_ASSERT_EQUAL(int(1), value); //NOLINT(readability/casting)
 	}
 
@@ -75,7 +75,7 @@ public:
 	{
 		int value = OOLUA::INTERNAL::shouldPushValueByReference< StubNoneProxy,
 										LVD::by_value<StubNoneProxy>::value
-											&& OOLUA::INTERNAL::has_a_proxy_type<StubNoneProxy>::value >::value;
+											, OOLUA::INTERNAL::has_a_proxy_type<StubNoneProxy>::value >::value;
 		CPPUNIT_ASSERT_EQUAL(int(0), value); //NOLINT(readability/casting)
 	}
 
@@ -83,7 +83,7 @@ public:
 	{
 		int value = OOLUA::INTERNAL::shouldPushValueByReference< Stub1*,
 									LVD::by_value<Stub1*>::value
-										&& OOLUA::INTERNAL::has_a_proxy_type<LVD::raw_type<Stub1*>::type >::value >::value;
+										, OOLUA::INTERNAL::has_a_proxy_type<LVD::raw_type<Stub1*>::type >::value >::value;
 		CPPUNIT_ASSERT_EQUAL(int(0), value); //NOLINT(readability/casting)
 	}
 

@@ -41,7 +41,7 @@ namespace OOLUA
 {
 	namespace INTERNAL
 	{
-		template<typename T, int shouldBeByRef>
+		template<typename T, int byValue, int hasProxyType>
 		struct shouldPushValueByReference
 		{
 			enum {value = 0};
@@ -51,8 +51,20 @@ namespace OOLUA
 			}
 		};
 
+		/*Not by value and has a proxy type*/
 		template<typename T>
-		struct shouldPushValueByReference<T, 1>
+		struct shouldPushValueByReference<T, 0, 1>
+		{
+			enum {value = 0};
+			static void push(lua_State* vm, T* input)
+			{
+				if(*input) OOLUA::push(vm, *input); else lua_pushnil(vm);
+			}
+		};
+
+		/*by value and has a proxy type*/
+		template<typename T>
+		struct shouldPushValueByReference<T, 1, 1>
 		{
 			enum {value = 1};
 			static void push(lua_State* vm, T* input)
@@ -71,7 +83,7 @@ namespace OOLUA
 					//T will either be a pointer to type
 					//or type
 					LVD::by_value<T>::value
-					&& has_a_proxy_type<typename LVD::raw_type<T>::type >::value >
+					, has_a_proxy_type<typename LVD::raw_type<T>::type >::value >
 						::push(vm, input);
 			}
 		};

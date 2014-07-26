@@ -16,6 +16,7 @@ class PublicVariablesTest : public CPPUNIT_NS::TestFixture
 	CPPUNIT_TEST(getClassInstance_passedPublicVariablesInstance_callReturnsTrue);
 	CPPUNIT_TEST(getClassInstance_getDummyInstanceNonePtr_topOfStackGarbageCollectIsFalse);
 	CPPUNIT_TEST(getClassInstance_getDummyInstanceNonePtr_topOfStackPointerEqualsMemberAddress);
+CPPUNIT_TEST(getClassInstance_nullRawPointer_returnsNil);
 
 	CPPUNIT_TEST(getAnIntProxyNameSupplied_publicVariablesClassPassedToLua_returnsSetValue);
 	CPPUNIT_TEST(getAnIntNoProxyNameSupplied_publicVariablesClassPassedToLua_returnsSetValue);
@@ -87,6 +88,20 @@ public:
 		Stub1* result;
 		OOLUA::pull(*m_lua, result);
 		CPPUNIT_ASSERT_EQUAL(m_class_with_public_vars->dummy_instance, result);
+	}
+
+	void getClassInstance_nullRawPointer_returnsNil()
+	{
+		m_lua->register_class<Stub1>();
+		Stub1* previous = m_class_with_public_vars->dummy_instance;
+		m_class_with_public_vars->dummy_instance = NULL;
+		m_lua->run_chunk("func = function(obj) return obj:get_dummy_instance() == nil end");
+		m_lua->call("func", m_class_with_public_vars);
+		m_class_with_public_vars->dummy_instance = previous;
+
+		bool isNil;
+		m_lua->pull(isNil);
+		CPPUNIT_ASSERT_EQUAL(true, isNil);
 	}
 
 	void setClassInstance_passedPublicVariablesInstanceAndDummyInstance_publicDummyInstancePtrCompareEqualsToInput()
