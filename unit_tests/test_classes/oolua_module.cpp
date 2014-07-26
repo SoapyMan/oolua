@@ -16,6 +16,10 @@ class Module : public CppUnit::TestFixture
 	CPPUNIT_TEST(require_returnsResultOfRequire_comparesEqualToTableInRegistry);
 	CPPUNIT_TEST(registersStub1_luaCodeReturnsTheQueryForStub1_returnsTypeTable);
 	CPPUNIT_TEST(register_registersTypeAndBases_returnsTableOfBaseClass);
+	CPPUNIT_TEST(module_keyLuaOwns_valueTypeIsNumber);
+	CPPUNIT_TEST(module_keyLuaOwns_valueEqualsLuaEnumValue);
+	CPPUNIT_TEST(module_keyCppOwns_valueTypeIsNumber);
+	CPPUNIT_TEST(module_keyCppOwns_valueEqualsCppEnumValue);
 	CPPUNIT_TEST_SUITE_END();
 
 	OOLUA::Script * m_lua;
@@ -70,6 +74,30 @@ public:
 		m_lua->register_class<DerivedFromTwoAbstractBasesAndAbstract3>();
 		m_lua->run_chunk("return require('OOLua').TwoAbstractBases");
 		CPPUNIT_ASSERT_EQUAL(LUA_TTABLE, lua_type(*m_lua, -1));
+	}
+	void module_keyLuaOwns_valueTypeIsNumber()
+	{
+		m_lua->run_chunk("return require('OOLua').Lua_owns");
+		CPPUNIT_ASSERT_EQUAL(LUA_TNUMBER, lua_type(*m_lua, -1));
+	}
+	void module_keyLuaOwns_valueEqualsLuaEnumValue()
+	{
+		m_lua->run_chunk("return require('OOLua').Lua_owns");
+		int result;
+		m_lua->pull(result);
+		CPPUNIT_ASSERT_EQUAL((int)OOLUA::Lua, result);
+	}
+	void module_keyCppOwns_valueTypeIsNumber()
+	{
+		m_lua->run_chunk("return require('OOLua').Cpp_owns");
+		CPPUNIT_ASSERT_EQUAL(LUA_TNUMBER, lua_type(*m_lua, -1));
+	}
+	void module_keyCppOwns_valueEqualsCppEnumValue()
+	{
+		m_lua->run_chunk("return require('OOLua').Cpp_owns");
+		int result;
+		m_lua->pull(result);
+		CPPUNIT_ASSERT_EQUAL((int)OOLUA::Cpp, result);
 	}
 };
 CPPUNIT_TEST_SUITE_REGISTRATION(Module);

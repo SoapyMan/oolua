@@ -71,12 +71,13 @@ namespace
 		lua_setglobal(vm, OOLUA::INTERNAL::lua_owns_str);//globals[string]=int
 
 		OOLUA::INTERNAL::get_oolua_module(vm);
-		lua_pushinteger(vm, OOLUA::Cpp);//int
+
 		OOLUA_PUSH_CARRAY(vm, OOLUA::INTERNAL::cpp_owns_str);
+		lua_pushinteger(vm, OOLUA::Cpp);//int
 		lua_rawset(vm, -3);
 
-		lua_pushinteger(vm, OOLUA::Lua);//int
 		OOLUA_PUSH_CARRAY(vm, OOLUA::INTERNAL::lua_owns_str);
+		lua_pushinteger(vm, OOLUA::Lua);//int
 		lua_rawset(vm, -3);
 
 		lua_pop(vm, 1);
