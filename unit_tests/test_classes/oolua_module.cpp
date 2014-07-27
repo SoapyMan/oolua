@@ -86,7 +86,7 @@ public:
 		m_lua->run_chunk("return require('OOLua').Lua_owns");
 		int result;
 		m_lua->pull(result);
-		CPPUNIT_ASSERT_EQUAL((int)OOLUA::Lua, result);
+		CPPUNIT_ASSERT_EQUAL(static_cast<int>(OOLUA::Lua), result);
 	}
 	void module_keyCppOwns_valueTypeIsNumber()
 	{
@@ -98,7 +98,7 @@ public:
 		m_lua->run_chunk("return require('OOLua').Cpp_owns");
 		int result;
 		m_lua->pull(result);
-		CPPUNIT_ASSERT_EQUAL((int)OOLUA::Cpp, result);
+		CPPUNIT_ASSERT_EQUAL(static_cast<int>(OOLUA::Cpp), result);
 	}
 	void module_keyNewTable_valueIsFunction()
 	{
