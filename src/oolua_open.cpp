@@ -28,6 +28,7 @@ THE SOFTWARE.
 #include "char_arrays.h"
 #include "oolua_traits.h"
 #include "oolua_registration.h" //get_oolua_module
+#include "oolua_table.h"
 namespace
 {
 	void add_weaklookup_table(lua_State* vm)
@@ -70,6 +71,9 @@ namespace
 		lua_pushinteger(vm, OOLUA::Lua);//int
 		lua_setglobal(vm, OOLUA::INTERNAL::lua_owns_str);//globals[string]=int
 
+		lua_pushcclosure(vm, OOLUA::INTERNAL::l_new_table, 0);
+		lua_setglobal(vm, OOLUA::INTERNAL::lua_new_table);
+
 		OOLUA::INTERNAL::get_oolua_module(vm);
 
 		OOLUA_PUSH_CARRAY(vm, OOLUA::INTERNAL::cpp_owns_str);
@@ -78,6 +82,10 @@ namespace
 
 		OOLUA_PUSH_CARRAY(vm, OOLUA::INTERNAL::lua_owns_str);
 		lua_pushinteger(vm, OOLUA::Lua);//int
+		lua_rawset(vm, -3);
+
+		OOLUA_PUSH_CARRAY(vm, OOLUA::INTERNAL::lua_new_table);
+		lua_pushcclosure(vm, OOLUA::INTERNAL::l_new_table, 0);
 		lua_rawset(vm, -3);
 
 		lua_pop(vm, 1);
@@ -107,7 +115,7 @@ namespace
 		lua_settable(vm, -3);
 
 		OOLUA_PUSH_CARRAY(vm, OOLUA::INTERNAL::oolua_str);
-		lua_createtable(vm, 0, 2);//starts with two entries cpp_own and lua_owns
+		lua_createtable(vm, 0, 3);//starts with three entries cpp_own, lua_owns and new_table
 		lua_rawset(vm, LUA_REGISTRYINDEX);
 
 		lua_settop(vm, top);

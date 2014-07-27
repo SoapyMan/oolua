@@ -44,6 +44,7 @@ namespace OOLUA
 		static const char collision_mt_lookup_name [] = "__weak_collision_mt_lookup";
 		static const char new_str [] = "new";
 		static const char oolua_str [] = "OOLua";
+		static const char lua_new_table [] = "new_table";
 	} // namespace INTERNAL // NOLINT
 } // namespace OOLUA // NOLINT
 

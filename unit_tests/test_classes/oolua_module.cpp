@@ -20,6 +20,7 @@ class Module : public CppUnit::TestFixture
 	CPPUNIT_TEST(module_keyLuaOwns_valueEqualsLuaEnumValue);
 	CPPUNIT_TEST(module_keyCppOwns_valueTypeIsNumber);
 	CPPUNIT_TEST(module_keyCppOwns_valueEqualsCppEnumValue);
+	CPPUNIT_TEST(module_keyNewTable_valueIsFunction);
 	CPPUNIT_TEST_SUITE_END();
 
 	OOLUA::Script * m_lua;
@@ -98,6 +99,11 @@ public:
 		int result;
 		m_lua->pull(result);
 		CPPUNIT_ASSERT_EQUAL((int)OOLUA::Cpp, result);
+	}
+	void module_keyNewTable_valueIsFunction()
+	{
+		m_lua->run_chunk("return require('OOLua').new_table");
+		CPPUNIT_ASSERT_EQUAL(LUA_TFUNCTION, lua_type(*m_lua, -1));
 	}
 };
 CPPUNIT_TEST_SUITE_REGISTRATION(Module);

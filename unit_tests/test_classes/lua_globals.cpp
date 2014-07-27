@@ -26,7 +26,7 @@ class Lua_globals : public CppUnit::TestFixture
 		CPPUNIT_TEST(globalData_setThenClearThenGetGlobalInt_getReturnsFalse);
 		CPPUNIT_TEST(setGlobal_luaRefFromADifferentState_returnsFalse);
 #endif
-
+		CPPUNIT_TEST(getGlobal_newTable_typeIsFunction);
 	CPPUNIT_TEST_SUITE_END();
 	OOLUA::Script* m_lua;
 public:
@@ -116,6 +116,11 @@ public:
 		CPPUNIT_ASSERT_EQUAL(false, OOLUA::set_global(*m_lua, "dontCare", ref));
 	}
 #endif
+	void getGlobal_newTable_typeIsFunction()
+	{
+		m_lua->run_chunk("return new_table");
+		CPPUNIT_ASSERT_EQUAL(LUA_TFUNCTION, lua_type(*m_lua, -1));
+	}
 };
 
 CPPUNIT_TEST_SUITE_REGISTRATION(Lua_globals);

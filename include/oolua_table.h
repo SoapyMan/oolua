@@ -366,6 +366,13 @@ namespace OOLUA
 	*/
 	OOLUA::Table new_table(lua_State* vm);
 
+	/** \cond INTERNAL*/
+	namespace INTERNAL
+	{
+		int l_new_table(lua_State* vm);
+	} //namespace INTERNAL
+	/** \endcond */
+
 	/**	\def oolua_ipairs (table)
 		\hideinitializer
 		\brief Helper for iterating over the sequence part of a table.
