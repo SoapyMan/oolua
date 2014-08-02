@@ -279,6 +279,9 @@ THE SOFTWARE.
 		OOLUA_MGET(PublicName, Optional)
 		\param PublicName Name of the public variable to be proxied.
 		\param Optional GetterName. Defaults to get_PublicName
+		\note
+		A generated getter for a pointer, or shared pointer, with a proxied pointee type,
+		has an implicit /ref OOLUA::maybe_null trait applied.
 	*/
 #		define OOLUA_MGET(...) \
 			OOLUA_VA_CONCAT(OOLUA_MGET_INTERNAL_, OOLUA_NARG(__VA_ARGS__)) (__VA_ARGS__)
