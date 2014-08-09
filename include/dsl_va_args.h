@@ -252,7 +252,7 @@ THE SOFTWARE.
 \details OOLua provides a DSL for defining C++ types which are to be made available to a
 	Lua script. The intention of this DSL is to hide the implementation details whilst
 	providing a simple and rememberable interface to perform the required actions. For
-	generating function proxies, the DSL has two sub categories named
+	the generation of function proxies, the DSL contains two sub categories named
 	\ref OOLuaMinimalist and \ref OOLuaExpressive.
 
 \note
@@ -281,7 +281,7 @@ THE SOFTWARE.
 		\param Optional GetterName. Defaults to get_PublicName
 		\note
 		A generated getter for a pointer, or shared pointer, with a proxied pointee type,
-		has an implicit /ref OOLUA::maybe_null trait applied.
+		has an implicit \ref OOLUA::maybe_null trait applied.
 	*/
 #		define OOLUA_MGET(...) \
 			OOLUA_VA_CONCAT(OOLUA_MGET_INTERNAL_, OOLUA_NARG(__VA_ARGS__)) (__VA_ARGS__)
@@ -539,17 +539,25 @@ THE SOFTWARE.
 /** \endcond*/
 
 #	endif
-
+/*
+		\details Tags specify more information about a class that is being exposed.
+		An example of the details that are expressed with them is:
+		\li \ref OperatorTags "Operators" to expose
+		\li Overriding default \ref SharedTags "shared" settings
+		\li Marking a class as \ref OOLUA::Abstract "abstract"
+		\li Registering class \ref OOLUA::Register_class_enums "enumerations"
+*/
 /** \addtogroup OOLuaDSL DSL
 @{
 		\def OOLUA_TAGS
 		\hideinitializer
 		\brief Allows more information to be specified about the proxy class.
-		\details Tags specify more information about a class that is being exposed.
-		Some of the information which can be expressed with these are:
-		\li Does the class support any operators?
-		\li Is it abstract ?
-		\li Does the class have enumerations?
+		\details Tags provide a method to inform the library that the type :
+		\li has relationship and/or mathematical operators
+		\li is an abstract class
+		\li doesn't have a default constructor or any public constructors
+		\li has enumerations
+
 		<p>For an exhaustive list of the possible tags see \ref OOLuaTags.
 		<p>
 		OOLUA_TAGS(TagList)

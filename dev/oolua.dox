@@ -159,26 +159,23 @@
 
 /**
 \page OOLuaProxying Proxy
-	\brief OOLua uses a proxy, for class types,  as an intermediate between the two languages
-	of Lua and C++. These proxies contain information such as any hierarchical structure and
-	proxy function definitions. To help with the definition of a proxy, OOLua provides a domain
-	specific language.
 
 	\section OOLuaProxyDSL DSL
 			\copybrief OOLuaDSL
 			<p>\copydetails OOLuaDSL
-			<p>\ref OOLuaMinimalist \n
-			\copydetails OOLuaMinimalist
-			<p>\ref OOLuaExpressive \n
-			\copydetails OOLuaExpressive
 
 	\section ClassProxy Class Proxy
-		Generating a proxy for a class normally takes place between the two DSL procedures
-		\ref OOLUA_PROXY and \ref OOLUA_PROXY_END. However, alone these do not supply
-		enough information for a proxy to be generated. For a proxy class to be generated
-		and for this proxy to be used in a Lua state requires a three part process. The
-		process is consummated by generating a \ref ProxyBlock, \ref ClassExporting the
-		proxy and then by \ref ClassRegistering the class with the Lua state.
+		For a class type, the library uses a proxy as an intermediary between the two languages
+		of Lua and C++. A proxy contains information about an exposed type, for example its
+		hierarchical structure and functions of interest.
+		<p>
+		Generating a proxy, using the DSL, takes place between the two DSL procedures
+		\ref OOLUA_PROXY and \ref OOLUA_PROXY_END. However, alone this does not enable
+		the generation and usage of the type within a Lua state, to do this requires a three
+		part process. The tasks of the process are:
+			\li Completing a \ref ProxyBlock
+			\li \ref ClassExporting the proxy
+			\li \ref ClassRegistering the class with the Lua state.
 
 		\subsection MinimalClassProxy Minimal Class Proxy
 			The following shows the usage of the DSL to proxy a very simple class, Stub1, and to
@@ -212,21 +209,49 @@
 		\subsection ProxyTags Tags
 			\copydetails OOLUA_TAGS <p>
 
-		\subsection DefaultConstructor Default Constructor
-			The default constructor of a proxy type is a special member function, much like
-			C++, and it will be implicitly defined for the type unless \ref OOLuaTags "otherwise specified". When available for a type "foo" it can be called in Lua using the following syntax.
-			\code{.lua}
-				foo.new()
-			\endcode
-			\see OOLUA::Abstract OOLUA::No_default_constructor OOLUA::No_public_constructors
+		\subsection ProxyConstructors Constructors
+			\subsubsection DefaultConstructor Default Constructor
+				The default constructor of a proxy type is a special member function, much like C++, and it will be implicitly defined for the type unless \ref OOLuaTags "otherwise specified". When available for a type "foo" it can be called in Lua using the following syntax.
+				\code{.lua}
+					foo.new()
+				\endcode
+				\see \ref OOLUA::Abstract "Abstract", \ref OOLUA::No_default_constructor "No_default_constructor" and \ref OOLUA::No_public_constructors "No_public_constructors"
 
-		\subsection ClassConstructors Constructors
-			<p>
-			\copydetails OOLUA_CTORS
-			<p>
-			\snippet expose_class_constructors.h ExposeConstructors
+			\subsubsection ClassConstructors Non-default Constructors
+				<p>
+				\copydetails OOLUA_CTORS
+				<p>
+				\snippet expose_class_constructors.h ExposeConstructors
+
+		\subsection ProxyEnumerations Enumerations
+			Class enumerations, whether weak or scoped, are specified inside the
+			OOLUA_ENUMS block. To register the enumeration values when the class
+			type is, the \ref OOLUA::Register_class_enums "Register_class_enums"
+			tag must be present in the \ref OOLUA_TAGS "tags block".<p>
+			\copydetails OOLUA_ENUMS <p>
+
+			\subsubsection ClassEnumerations Weak Enumerations
+				\copydetails OOLUA_ENUM
+				<p>
+				\snippet cpp_enum.h CppClassEnum
+				\snippet expose_enum.h ClassEnumExpose
+				\snippet expose_enum.cpp ClassEnumExport
+				\snippet enum_tests.cpp ClassEnumUsage
+
+			\subsubsection ClassScopedEnumerations Scoped Enumerations
+				\copydetails OOLUA_SCOPED_ENUM
+				<p>
+				\snippet scoped_enum_c++11.cpp CppClassScopedEnum
+				\snippet scoped_enum_c++11.cpp ClassScopedEnumExpose
+				\snippet scoped_enum_c++11.cpp ClassScopedEnumExport
+				\snippet scoped_enum_c++11.cpp ClassScopedEnumUsage
 
 		\subsection ExposingMemberFunctions Exposing Member Functions
+			<p>\ref OOLuaMinimalist \n
+			\copydetails OOLuaMinimalist
+			<p>\ref OOLuaExpressive \n
+			\copydetails OOLuaExpressive
+
 			\copydetails OOLUA_MFUNC
 			<p>
 			\copydetails OOLUA_MFUNC_CONST
@@ -279,37 +304,14 @@
 			<b>Public member access in Lua is via a member function</b>
 			\snippet public_variables.cpp PublicMemberUsage
 
-
-		\subsection ProxyEnumerations Enumerations
-			Class enumerations, whether weak or scoped, are specified inside the
-			OOLUA_ENUMS block. To register the enumeration values when the class
-			type is, the \ref Register_class_enums tag should be present in the
-			\ref OOLUA_TAGS "tags block".<p>
-			\copydetails OOLUA_ENUMS <p>
-
-			\subsubsection ClassEnumerations Weak Enumerations
-				\copydetails OOLUA_ENUM
-				<p>
-				\snippet cpp_enum.h CppClassEnum
-				\snippet expose_enum.h ClassEnumExpose
-				\snippet expose_enum.cpp ClassEnumExport
-				\snippet enum_tests.cpp ClassEnumUsage
-
-			\subsubsection ClassScopedEnumerations Scoped Enumerations
-				\copydetails OOLUA_SCOPED_ENUM
-				<p>
-				\snippet scoped_enum_c++11.cpp CppClassScopedEnum
-				\snippet scoped_enum_c++11.cpp ClassScopedEnumExpose
-				\snippet scoped_enum_c++11.cpp ClassScopedEnumExport
-				\snippet scoped_enum_c++11.cpp ClassScopedEnumUsage
-
 		\subsection ClassStaticFunctions Static Functions
 			\copydetails OOLUA_SFUNC
 			<p>
 			\snippet cpp_static_and_c_functions.h CppClassStaticFunctions
 			\snippet expose_static_and_c_functions.h ClassStaticFunctionExpose
 			\snippet expose_static_and_c_functions.cpp ClassStaticFunctionExport
-
+			When registering a static function that was exposed with OOLUA_SFUNC, the second parameter to the \ref OOLUA::register_class_static function is the address of the proxy function. The parameter therefore needs to be a fully qualified static function for the specialised Proxy_class.
+			\snippet static_function.cpp ClassStaticFunctionUsage
 
 	\section CFunctions C Functions
 		\subsection CFunctionMinimalist Minimalist

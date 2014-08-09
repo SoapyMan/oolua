@@ -263,7 +263,7 @@ static int oolua_factory_function(lua_State* vm) \
 	<p>
 	To enable the construction of an instance without using the default constructor, there must be
 	a constructor block specified for the proxy type. The constructor block, \ref OOLUA_CTORS,
-	is where non-default constructor entries can be specified using a \ref OOLUA_CTOR per entry.
+	is where non-default constructor entries can be specified using an \ref OOLUA_CTOR per entry.
 	<p>
 	Constructors are the only real type of overloading which is permitted by OOLua
 	and there is an important point which should be noted. This being that OOLua will

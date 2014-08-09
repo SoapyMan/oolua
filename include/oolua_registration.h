@@ -92,7 +92,7 @@ namespace OOLUA
 		\tparam V Value
 		\param[in] vm lua_State
 		\param[in] key Key to register in type T,
-		\param[in] value The data to assocaite with key in the class type T.
+		\param[in] value The data to associate with key in the class type T.
 	*/
 	template<typename T, typename K, typename V>
 	void register_class_static(lua_State * const vm, K const& key, V const& value);

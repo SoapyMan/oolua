@@ -255,7 +255,7 @@ THE SOFTWARE.
 /**
 	\def OOLUA_SHARED_HEADER
 		\hideinitializer
-		\brief \b Default: MSC: <mempory> other compilers: <tr1/memory>
+		\brief \b Default: MSC: \<memory\> other compilers: \<tr1/memory\>
 		\details <p>
 		Header file for the shared pointer type, library code will include
 		the header using :

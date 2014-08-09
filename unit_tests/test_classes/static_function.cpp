@@ -210,12 +210,14 @@ public:
 
 	void cFunctionAddedToClassTable_calledProxyStaticWithObjectInstaceAndInputInt_returnEqualsInput()
 	{
-		m_lua->register_class_static<ClassHasStaticFunction>("returns_input"
-															, &OOLUA::Proxy_class<ClassHasStaticFunction>::returns_input);
+/*[ClassStaticFunctionUsage]*/
+m_lua->register_class_static<ClassHasStaticFunction>("returns_input",
+													&OOLUA::Proxy_class<ClassHasStaticFunction>::returns_input);
 
-		m_lua->run_chunk("foo = function(obj, input) "
-						 "return obj.returns_input(input) "
-						 "end ");
+m_lua->run_chunk("foo = function(obj, input) "
+					"return obj.returns_input(input) "
+				"end ");
+/*[ClassStaticFunctionUsage]*/
 		ClassHasStaticFunction stack;
 		ClassHasStaticFunction* obj = &stack;
 		int input = 1;
