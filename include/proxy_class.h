@@ -345,11 +345,7 @@ static void oolua_enums(lua_State * vm) \
 	*/
 #	define OOLUA_ENUM(EnumName) \
 		OOLUA_SCOPED_ENUM(EnumName, EnumName)
-/*
-		lua_pushliteral(vm, #EnumName);
-		lua_pushinteger(vm, (lua_Integer)class_::EnumName);
-		lua_settable(vm, top);
-*/
+
 	/**	\def OOLUA_ENUMS
 		\hideinitializer
 		\brief Creates a block into which enumerators can be defined with \ref OOLUA_ENUM
