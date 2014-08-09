@@ -323,18 +323,7 @@ static void oolua_enums(lua_State * vm) \
 
 /** \addtogroup OOLuaDSL
 @{
-		\def OOLUA_ENUM
-		\hideinitializer
-		\brief Creates a entry into a \ref OOLUA_ENUMS block
-		\details OOLUA_ENUM(EnumName)
-		\param EnumName The class enumeration name
-	*/
-#	define OOLUA_ENUM(EnumName) \
-		lua_pushliteral(vm, #EnumName); \
-		lua_pushinteger(vm, (lua_Integer)class_::EnumName); \
-		lua_settable(vm, top);
-
-	/** \def OOLUA_SCOPED_ENUM
+		\def OOLUA_SCOPED_ENUM
 		\hideinitializer
 		\brief Creates a entry into a \ref OOLUA_ENUMS block for a C++11 scoped enum
 		\details OOLUA_SCOPED_ENUM(EnumName, Entry)
@@ -347,7 +336,20 @@ static void oolua_enums(lua_State * vm) \
 		lua_pushinteger(vm, (lua_Integer)class_::Entry); \
 		lua_settable(vm, top);
 
-
+	/**
+		\def OOLUA_ENUM
+		\hideinitializer
+		\brief Creates a entry into a \ref OOLUA_ENUMS block
+		\details OOLUA_ENUM(EnumName)
+		\param EnumName The class enumeration name
+	*/
+#	define OOLUA_ENUM(EnumName) \
+		OOLUA_SCOPED_ENUM(EnumName, EnumName)
+/*
+		lua_pushliteral(vm, #EnumName);
+		lua_pushinteger(vm, (lua_Integer)class_::EnumName);
+		lua_settable(vm, top);
+*/
 	/**	\def OOLUA_ENUMS
 		\hideinitializer
 		\brief Creates a block into which enumerators can be defined with \ref OOLUA_ENUM
