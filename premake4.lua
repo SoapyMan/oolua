@@ -80,3 +80,12 @@ newaction
    	end
 }
 
+newaction
+{
+	trigger     = 'oolua-amalgam',
+	description = 'Amalgamate OOLua',
+	execute = function ()
+		os.mkdir("./amal")
+		require('build_scripts.oolua_amalgamation').amalgamate('./include/', './src/', './amal/')
+	end
+}

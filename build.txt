@@ -3,7 +3,8 @@
 \brief
 
 	OOLua's source code can either be dropped into the path for a project
-	or compiled as a static library.\n
+	, \ref OOLuaAmalagate "amalgamated" to a single header and source file or compiled as a
+	static library.\n
 
 	\section OOLuaPremake Makefiles and IDE projects
 	OOLua does not provide solution files instead it provides Premake4

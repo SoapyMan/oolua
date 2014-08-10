@@ -51,6 +51,7 @@ compatible with Lua 5.1 and 5.2
 - Added support for C++11 scoped enums \ref OOLUA_SCOPED_ENUM
 - Added ability for public members, which are proxies or shared_ptrs, to push nil when the value is NULL.
 - Added Lua function new_table which takes array and hash size hints.
+- Added a Lua module that \ref OOLuaAmalagate "amalgamates" the library files.
 
 \section OOLuaChanges1-4-0 1.4.0
 - Added OOLUA_DEDUCE_FUNC(_CONST) for when there is no ambiguity for a function

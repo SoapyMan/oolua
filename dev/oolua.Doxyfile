@@ -663,6 +663,7 @@ WARN_LOGFILE           =
 # with spaces.
 
 INPUT                  = build_scripts/oolua_generate.lua \
+                         build_scripts/oolua_amalgamation.lua \
                          build.txt \
                          dev/oolua.dox \
                          dev/unit_test.dox \
