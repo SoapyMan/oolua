@@ -1,4 +1,4 @@
---/*
+--/**
 --[[
 	\file oolua_generate.lua
 	\brief Lua module for generating required OOLua configurable boilerplate code.
@@ -97,6 +97,11 @@ THE SOFTWARE.
 @}
 --]]
 --*/
+
+--function default_details();
+--function defaults();
+--function gen(options,path);
+
 
 --[[This allows doxygen to document the functions as you may expect--]]
 local _default_details= function()
