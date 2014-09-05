@@ -34,12 +34,13 @@ fi
 ./unit_tests/scoped_enum/* \
 ./unit_tests/shared/* \
 ./unit_tests/shared_by_default/* \
- 2> ./build_logs/cpplint.out
+ 2> ./build_logs/cpplint.tmpout
 
 # ./unit_tests/cpp_classes/* ./unit_tests/test_classes/* ./unit_tests/bind_classes/* 2> ./build_logs/cpplint.out
 # --root=./include ./include/* ./src/* ./unit_tests/* 2> ./build_logs/cpplint.out
 #,-legal/copyright
 
+grep -v ^Skipping ./build_logs/cpplint.tmpout > ./build_logs/cpplint.out
 grep -v ^Ignoring ./build_logs/cpplint.out > ./build_logs/cpplint.tmpout
 grep -v ^Done ./build_logs/cpplint.tmpout > ./build_logs/cpplint.out
 rm ./build_logs/cpplint.tmpout

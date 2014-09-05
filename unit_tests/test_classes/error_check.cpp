@@ -457,7 +457,6 @@ public:
 		m_lua->push(input);
 		OOLUA::INTERNAL::set_error_from_top_of_stack_and_pop_the_error(*m_lua);
 		std::string result = OOLUA::get_last_error(*m_lua);
-		std::cout <<input.size() <<" " <<result.size();
 		CPPUNIT_ASSERT_EQUAL(input.size(), result.size());
 	}
 	void call_callUnknownFunction_callReturnsFalse()
