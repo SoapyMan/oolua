@@ -47,8 +47,12 @@ namespace OOLUA
 		push_error_id_str(vm);
 		lua_gettable(vm, LUA_REGISTRYINDEX);
 		std::string error;
-		if ( (!lua_isnil(vm, -1)) && (lua_type(vm, -1) == LUA_TSTRING) )
-			error = lua_tolstring(vm, -1, 0);
+		if ( lua_type(vm, -1) == LUA_TSTRING )
+		{
+			size_t len(0);
+			char const* str = lua_tolstring(vm, -1, &len);
+			error = std::string(str, len);
+		}
 		lua_pop(vm, 1);
 		return error;
 	}

@@ -155,6 +155,8 @@ class Error_test : public CPPUNIT_NS::TestFixture
 		CPPUNIT_TEST(lastError_callUnknownFunction_stackIsEmpty);
 		CPPUNIT_TEST(errorReset_callUnknownFunctionThenReset_lastErrorStringIsEmpty);
 
+		CPPUNIT_TEST(lastError_setErrorToContainAnEmbeddedNullThenGetTheLastError_resultEqualsInput);
+
 		CPPUNIT_TEST(runChunk_chunkHasSyntaxError_runChunkReturnsFalse);
 
 		CPPUNIT_TEST(pull_UnrelatedClassType_pullReturnsFalse);
@@ -449,6 +451,15 @@ public:
 		CPPUNIT_ASSERT_EQUAL(false, OOLUA::get_last_error(*m_lua).empty() );
 	}
 
+	void lastError_setErrorToContainAnEmbeddedNullThenGetTheLastError_resultEqualsInput()
+	{
+		std::string input("Hello\0World", 11);
+		m_lua->push(input);
+		OOLUA::INTERNAL::set_error_from_top_of_stack_and_pop_the_error(*m_lua);
+		std::string result = OOLUA::get_last_error(*m_lua);
+		std::cout <<input.size() <<" " <<result.size();
+		CPPUNIT_ASSERT_EQUAL(input.size(), result.size());
+	}
 	void call_callUnknownFunction_callReturnsFalse()
 	{
 		m_lua->run_chunk("foo = function() "
