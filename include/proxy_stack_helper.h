@@ -214,13 +214,13 @@ namespace OOLUA
 
 			static void get(lua_State* const vm, int /*idx*/, lua_State*& vm1)
 			{
-				typedef char type_has_to_be_calling_lua_state[LVD::is_same<in_p<calling_lua_state>, TypeWithTraits>::value ? 1 : -1];
+				typedef char type_has_to_be_calling_lua_state[LVD::is_same<in_p<calling_lua_state>, TypeWithTraits>::value ? 1 : -1] OOLUA_UNUSED;
 				vm1 = vm;
 			}
 
 			static void get(int& /*idx*/, lua_State* const vm, lua_State*& vm1)
 			{
-				typedef char type_has_to_be_calling_lua_state[LVD::is_same<in_p<calling_lua_state>, TypeWithTraits>::value ? 1 : -1];
+				typedef char type_has_to_be_calling_lua_state[LVD::is_same<in_p<calling_lua_state>, TypeWithTraits>::value ? 1 : -1] OOLUA_UNUSED;
 				vm1 = vm;
 			}
 

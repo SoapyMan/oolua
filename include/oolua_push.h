@@ -32,6 +32,7 @@ THE SOFTWARE.
 #include "oolua_stack_fwd.h"
 #include "oolua_traits_fwd.h"
 #include "oolua_string.h"
+#include "oolua_config.h"
 #include "lvd_types.h"
 #include "lvd_type_traits.h"
 
@@ -63,7 +64,7 @@ namespace OOLUA
 			{
 				//enumeration type so a static cast must be allowed.
 				//enums will be stronger in C++0x so this will need revisiting then
-				typedef char dummy_can_convert [ LVD::can_convert_to_int<T>::value ? 1 : -1];
+				typedef char dummy_can_convert [ LVD::can_convert_to_int<T>::value ? 1 : -1] OOLUA_UNUSED;
 				lua_pushinteger(vm, static_cast<lua_Integer>(value) );
 				return true;
 			}

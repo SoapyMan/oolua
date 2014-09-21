@@ -401,6 +401,12 @@ However using a 4.6 version of GCC and the above code does not prevent the warni
 #	define GCC_POP_VA_WARNINGS_OOLUA
 #endif
 
+//prevents g++ warning about locally defined yet unused typedefs i.e. static asserts
+#if GCC_VERSION_OOLUA >= 40800
+#	define OOLUA_UNUSED __attribute__((unused))
+#else
+#	define OOLUA_UNUSED
+#endif
 
 #if OOLUA_USE_EXCEPTIONS == 1
 #	if defined __GNUC__ && ( ( !defined __EXCEPTIONS) || (defined __EXCEPTIONS && __EXCEPTIONS != 1) )

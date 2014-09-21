@@ -53,6 +53,7 @@ compatible with Lua 5.1 and 5.2
 - Added Lua function new_table which takes array and hash size hints.
 - Added a Lua module that \ref OOLuaAmalagate "amalgamates" the library files.
 - Bug fix. Incorrect handling of an error string which contained an embedded NULL. (Mauricio)
+- Silenced g++ warnings about local typedefs which are unused i.e. static asserts
 
 \section OOLuaChanges1-4-0 1.4.0
 - Added OOLUA_DEDUCE_FUNC(_CONST) for when there is no ambiguity for a function

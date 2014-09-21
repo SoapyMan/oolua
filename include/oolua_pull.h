@@ -85,7 +85,7 @@ namespace OOLUA
 			{
 				//enumeration type so a static cast should be allowed else this
 				//is being called with the wrong type
-				typedef char dummy_can_convert [ LVD::can_convert_to_int<T>::value ? 1 : -1];
+				typedef char dummy_can_convert [ LVD::can_convert_to_int<T>::value ? 1 : -1] OOLUA_UNUSED;
 				//value = static_cast<T>( lua_tonumber( vm, -1) );
 				if( !cpp_runtime_type_check_of_top(vm, lua_isnumber, "enum type") )
 					return false;
