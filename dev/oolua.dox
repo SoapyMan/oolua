@@ -294,6 +294,7 @@
 			Getting or setting a public member is achieved by a function
 			which completes the operation. These functions must be exported like all
 			other proxy functions, so that they are available to a Lua script.
+
 			\copydetails OOLUA_MGET
 			<p>
 			\copydetails OOLUA_MSET

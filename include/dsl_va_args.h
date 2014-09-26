@@ -306,7 +306,8 @@ THE SOFTWARE.
 		\param Optional1 GetterName. Defaults to get_PublicName
 		\param Optional2 SetterName. Defaults to set_PublicName
 		\see OOLUA_MGET and OOLUA_MSET
-		\note If one optional parameter is supplied then both must be given.
+		\note If one optional parameter is supplied then both must be given and they must
+		use different names.
 	*/
 #		define OOLUA_MGET_MSET(...) \
 			OOLUA_VA_CONCAT(OOLUA_MGET_MSET_INTERNAL_, OOLUA_NARG(__VA_ARGS__)) (__VA_ARGS__)
