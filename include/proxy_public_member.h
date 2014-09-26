@@ -142,7 +142,6 @@ namespace OOLUA
 #define OOLUA_MSET_INTERNAL_2(PublicInstance, SetterName) \
 	int SetterName(lua_State* vm) \
 	{ \
-		/*OOLUA::INTERNAL::LUA_CALLED::get(vm, 2, m_this->PublicInstance);*/ \
 		OOLUA::INTERNAL::GetPublicMember::get(vm, &m_this->PublicInstance); \
 		return 0; \
 	}
