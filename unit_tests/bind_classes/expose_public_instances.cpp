@@ -7,8 +7,10 @@ OOLUA_EXPORT_FUNCTIONS(Public_variables
 								, set_an_int
 								, set_int_ptr
 								, set_dummy_instance
+								, set_dummy_ref
 								, set_m_int
-								, set_int)
+								, set_int
+								, set_dummy_instance_none_ptr)
 
 OOLUA_EXPORT_FUNCTIONS_CONST(Public_variables
 							, get_an_int

@@ -100,6 +100,30 @@ namespace OOLUA
 			}
 		};
 
+		struct GetPublicMember
+		{
+			template<typename T>
+			static void get(lua_State* vm, T* output)
+			{
+				get_imp(vm, output
+					, LVD::Int2type<
+						LVD::by_value<T>::value
+						&& has_a_proxy_type<typename LVD::raw_type<T>::type>::value
+					>()
+				);
+			}
+			template<typename T>
+			static void get_imp(lua_State* vm, T* output, LVD::Int2type<0>)
+			{
+				OOLUA::INTERNAL::LUA_CALLED::get(vm, 2, *output);
+			}
+			template<typename T>
+			static void get_imp(lua_State* vm, T* output, LVD::Int2type<1>)
+			{
+				OOLUA::INTERNAL::LUA_CALLED::get(vm, 2, output);
+			}
+		};
+
 	} // namespace INTERNAL // NOLINT
 } // namespace OOLUA
 
@@ -118,7 +142,8 @@ namespace OOLUA
 #define OOLUA_MSET_INTERNAL_2(PublicInstance, SetterName) \
 	int SetterName(lua_State* vm) \
 	{ \
-		OOLUA::INTERNAL::LUA_CALLED::get(vm, 2, m_this->PublicInstance); \
+		/*OOLUA::INTERNAL::LUA_CALLED::get(vm, 2, m_this->PublicInstance);*/ \
+		OOLUA::INTERNAL::GetPublicMember::get(vm, &m_this->PublicInstance); \
 		return 0; \
 	}
 
