@@ -3,6 +3,7 @@
 #	include "common_cppunit_headers.h"
 #	include "expose_public_instances.h"
 #	include "expose_stub_classes.h"
+#	include "expose_enum.h"
 
 class PublicVariablesTest : public CPPUNIT_NS::TestFixture
 {
@@ -16,7 +17,8 @@ class PublicVariablesTest : public CPPUNIT_NS::TestFixture
 	CPPUNIT_TEST(getClassInstance_passedPublicVariablesInstance_callReturnsTrue);
 	CPPUNIT_TEST(getClassInstance_getDummyInstanceNonePtr_topOfStackGarbageCollectIsFalse);
 	CPPUNIT_TEST(getClassInstance_getDummyInstanceNonePtr_topOfStackPointerEqualsMemberAddress);
-CPPUNIT_TEST(getClassInstance_nullRawPointer_returnsNil);
+	CPPUNIT_TEST(setClassInstance_setEnumInstanceNonePtrWithEnumGreenValue_memberInstanceValueIsSetToGreen);
+	CPPUNIT_TEST(getClassInstance_nullRawPointer_returnsNil);
 
 	CPPUNIT_TEST(getAnIntProxyNameSupplied_publicVariablesClassPassedToLua_returnsSetValue);
 	CPPUNIT_TEST(getAnIntNoProxyNameSupplied_publicVariablesClassPassedToLua_returnsSetValue);
@@ -140,6 +142,15 @@ public:
 		Stub1* result(0);
 		OOLUA::pull(*m_lua, result);
 		CPPUNIT_ASSERT_EQUAL(result, &m_class_with_public_vars->dummy_instance_none_ptr);
+	}
+
+	void setClassInstance_setEnumInstanceNonePtrWithEnumGreenValue_memberInstanceValueIsSetToGreen()
+	{
+		m_lua->register_class<Stub1>();
+		m_lua->register_class<Enums>();
+		m_lua->run_chunk("func = function(obj) obj:set_enum_instance_none_ptr(Enums.new(Enums.GREEN)) end");
+		m_lua->call("func", m_class_with_public_vars);
+		CPPUNIT_ASSERT_EQUAL(Enums::GREEN, m_class_with_public_vars->enum_instance_none_ptr.m_enum);
 	}
 
 	void getAnIntProxyNameSupplied_publicVariablesClassPassedToLua_returnsSetValue()

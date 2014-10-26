@@ -2,6 +2,7 @@
 #	define CPP_PUBLIC_INSTANCES_OOLUA_H_
 
 #include "cpp_stub_classes.h"
+#include "cpp_enum.h"
 
 /*[CppPublicMembers]*/
 class Public_variables
@@ -15,7 +16,7 @@ public:
 	Stub1* dummy_instance;
 	Stub1 dummy_instance_none_ptr;
 	Stub1& dummy_ref;
-
+	Enums enum_instance_none_ptr;
 
 	static const int set_value = 1;
 	static const int initial_value = 0;

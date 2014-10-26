@@ -12,6 +12,7 @@ public:
 	Enums(COLOUR e)
 		:m_enum(e)
 	{}
+
 	COLOUR m_enum;
 	void set_enum(COLOUR e)
 	{

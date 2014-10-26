@@ -4,6 +4,7 @@
 #include "oolua_dsl.h"
 #include "cpp_public_instances.h"
 #include "cpp_stub_classes.h"
+#include "cpp_enum.h"
 
 /*[PublicMembersExpose]*/
 OOLUA_PROXY(Public_variables)
@@ -16,8 +17,7 @@ OOLUA_PROXY(Public_variables)
 	OOLUA_MGET(m_int)
 	OOLUA_MSET(m_int, set_int)
 	OOLUA_MSET(m_int)
-
-
+	OOLUA_MSET(enum_instance_none_ptr)
 OOLUA_PROXY_END
 /*[PublicMembersExpose]*/
 

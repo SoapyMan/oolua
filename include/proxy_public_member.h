@@ -120,7 +120,9 @@ namespace OOLUA
 			template<typename T>
 			static void get_imp(lua_State* vm, T* output, LVD::Int2type<1>)
 			{
-				OOLUA::INTERNAL::LUA_CALLED::get(vm, 2, output);
+				T* temp(0);
+				OOLUA::INTERNAL::LUA_CALLED::get(vm, 2, temp);
+				*output = *temp;
 			}
 		};
 

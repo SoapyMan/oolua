@@ -17,6 +17,7 @@ Public_variables::Public_variables()
 	, int_ptr(new int(initial_value))
 	, dummy_instance(new Stub1)
 	, dummy_ref(bad_namespaced_instance)
+	, enum_instance_none_ptr(Enums::INVALID)
 {}
 
 Public_variables::~Public_variables()
