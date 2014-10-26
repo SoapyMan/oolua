@@ -28,25 +28,36 @@ function setup_headers_and_library()
 	sudo ln -s /usr/local/lib/${2} /usr/local/lib/liblua.a
 }
 
+#$1 Name of the binary which will be ran to query the point version
+#$2 The variable to write the resulting point version to
+function lua_point_version()
+{
+	local _result=$2
+	local _local_result="$(($1 -v) 2>&1 | cut -d 'C' -f 1 | tr -d '-')"
+	eval $_result="'$_local_result'"
+}
+
 time_start=$(date +%s)
 cd ../build_scripts
 
-setup_headers_and_library lua51 liblua-5.1.5.a
-echo "Running Lua 5.1.5 tests"
+setup_headers_and_library lua51 liblua-5.1.a
+point_version=1
+lua_point_version "lua-5.1" point_version
+echo "Running ${point_version} tests"
 ./${test_script}_tests.sh
 
-setup_headers_and_library lua52 liblua-5.2.2.a
-echo "Running Lua 5.2.2 tests"
+setup_headers_and_library lua52 liblua-5.2.a
+lua_point_version "lua-5.2" point_version
+echo "Running ${point_version} tests"
 ./${test_script}_tests.sh
 
-#setup_headers_and_library luajit-2.0 libluajit-5.1.2.0.0.a
-setup_headers_and_library luajit-2.0 libluajit-5.1.2.0.2.a
+setup_headers_and_library luajit-2.0 libluajit-5.1.2.a
 #OSX x86_64 executables which use LuaJIT require rebasing so that the JIT allocator can use the lowest 2GB
 export LUAJIT_REBASE=1
-echo "Running LuaJIT 2.0.2 tests"
+lua_point_version "luajit-2" point_version
+echo "Running ${point_version} tests"
 ./${test_script}_tests.sh
 unset LUAJIT_REBASE
-
 
 <<ThisRequiresCppUnitAndGoogleMockToBeBuiltForx86
 setup_headers_and_library lua51 libluajit-5.1.1.1.8.a

@@ -13,8 +13,8 @@ function failing_may_not_be_an_error()
 }
 
 cd ..
-premake4 clean
-premake4 gmake linux
+premake4 clean > /dev/null
+premake4 gmake linux > /dev/null
 
 function_to_call_on_error=failed
 

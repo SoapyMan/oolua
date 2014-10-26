@@ -36,15 +36,15 @@ newoption
 }
 
 local jit_rebase = function(config)
-	configuration{config}
+	configuration{config ..' and macosx'}
 	linkoptions{'-pagezero_size 10000 -image_base 100000000'}
-	configuration{'*'}	
+	configuration{'*'}
 end
 
 local compare_SLB3 = function(config)
 	configuration{config}
 	defines { 'OOLUA_SLB_COMPARE','SLB3_CACHE_BASE_CLASS_METHODS=1' }
-	files 
+	files
 	{ 	'SLB3/**.h',
 		'src/**.cc'
 	}
@@ -53,13 +53,13 @@ end
 
 local compare_Luabind = function(config)
 	configuration{config}
-	defines 
-	{ 
+	defines
+	{
 		'OOLUA_LUABIND_COMPARE'
 		,'LUABIND_NO_ERROR_CHECKING'
 		,'LUABIND_DONT_COPY_STRINGS'
 	}
-	files 
+	files
 	{ 	'luabind/**.hpp',
 		'src/**.cpp',
 	}
@@ -75,8 +75,8 @@ end
 local compare_Luabridge = function(config)
 	configuration{config}
 	defines{'OOLUA_LUABRIDGE_COMPARE'}
-	files 
-	{ 	
+	files
+	{
 		'LuaBridge.h'
 		,'RefCountedObject.h'
 		,'RefCounterPtr.h'
@@ -87,24 +87,22 @@ local compare_Luabridge = function(config)
 end
 
 
-files 
-{ 
+files
+{
 	'*.h',
 	'*.cpp',
 }
 
-includedirs 
+includedirs
 {
 	root .. 'profile/'
 	,root .. 'include/'
 	,'./'
 	,'include/lua'
-} 
+}
 
-defines 
-{	
---	'OOLUA_UD_SAVE_BYTES=1',
---	'OOLUA_WORK_DSL',
+defines
+{
 --tests
 	'MFUNC_TEST',
 	'VFUNC_TEST',
@@ -121,6 +119,8 @@ links
 
 	configuration { "gmake or linux or macosx or xcode3 or codeblocks"}
 		links{"lua"}
+	configuration { "linux"}
+		links{ "dl" }
 
 	jit_rebase( os.getenv('LUAJIT_REBASE') and '*' or 'JIT_REBASE')
 	compare_SLB3( os.getenv('OOLUA_SLB3') and '*' or 'SLB3_COMPARE')
