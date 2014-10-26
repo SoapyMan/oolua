@@ -21,7 +21,7 @@ OOLUA_PROXY(ProfileMultiBases,ProfileDerived,ProfileAnotherBase)
 OOLUA_PROXY_END
 
 
-#if defined OOLUA_SLB_COMPARE && LUA_VERSION_NUM == 502
+#if defined OOLUA_SLB_COMPARE && LUA_VERSION_NUM >= 502
 #	include <SLB3/declaration.h>
 	SLB3_DECLARATION(ProfileBase, "ProfileBase", policy::Default)
 	SLB3_DECLARATION(ProfileAnotherBase, "ProfileAnotherBase", policy::Default)

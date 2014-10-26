@@ -78,24 +78,24 @@ void open_LuaBridge_hierarchy(lua_State* l)
 }
 
 
-#if defined OOLUA_SLB_COMPARE && LUA_VERSION_NUM == 502
+#if defined OOLUA_SLB_COMPARE && LUA_VERSION_NUM >= 502
 #	include <SLB3/implementation.h>
-SLB3_IMPLEMENTATION(ProfileBase, C) 
+SLB3_IMPLEMENTATION(ProfileBase, C)
 {
 	C.set("increment_a_base",&ProfileBase::increment_a_base);
 	C.set("virtual_func", &ProfileBase::virtual_func);
 	C.set("pure_virtual_func", &ProfileBase::pure_virtual_func);
 }
-SLB3_IMPLEMENTATION(ProfileAnotherBase, C) 
+SLB3_IMPLEMENTATION(ProfileAnotherBase, C)
 {
 	C.constructor();
 }
-SLB3_IMPLEMENTATION(ProfileDerived, C) 
+SLB3_IMPLEMENTATION(ProfileDerived, C)
 {
 	C.constructor();
 	C.inherits<ProfileBase>();
 }
-SLB3_IMPLEMENTATION(ProfileMultiBases, C) 
+SLB3_IMPLEMENTATION(ProfileMultiBases, C)
 {
 	C.constructor();
 	C.inherits<ProfileBase>();

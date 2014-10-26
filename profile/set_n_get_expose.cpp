@@ -47,9 +47,9 @@ void open_LuaBridge_set_n_get(lua_State* l)
 }
 
 
-#if defined OOLUA_SLB_COMPARE && LUA_VERSION_NUM == 502
+#if defined OOLUA_SLB_COMPARE && LUA_VERSION_NUM >= 502
 #	include <SLB3/implementation.h>
-	SLB3_IMPLEMENTATION(Set_get, C) 
+	SLB3_IMPLEMENTATION(Set_get, C)
 	{
 		C.constructor();
 		C.set("set",&Set_get::set);

@@ -141,6 +141,32 @@ function run_lua52()
 	unset NO_USERDATA_CHECKS
 }
 
+function run_lua53()
+{
+	#setup Lua 5.3
+	lua_version="5.3"
+	local point_version=1
+	lua_point_version "lua-5.3" point_version
+
+	setup_headers_and_library lua53 liblua-${lua_version}.a
+
+#	compile_profile_binary "--LUABIND_COMPARE --LUABRIDGE_COMPARE"
+	compile_profile_binary "--LUABRIDGE_COMPARE"
+
+	prep_table "lua53Checks" "${point_version}" "Userdata checks"
+
+	run_comparison
+
+	export NO_USERDATA_CHECKS=1
+#	compile_profile_binary "--LUABIND_COMPARE --SWIG_COMPARE --SLB3_COMPARE"
+	compile_profile_binary "--SWIG_COMPARE --SLB3_COMPARE"
+
+	prep_table "lua53NoChecks" "${point_version}" "No userdata checks"
+
+	run_comparison
+	unset NO_USERDATA_CHECKS
+}
+
 function run_luajit1()
 {
 	#setup LuaJIT 1
@@ -190,6 +216,7 @@ test_info
 
 run_lua51
 run_lua52
+run_lua53
 
 #run_luajit1
 run_luajit2

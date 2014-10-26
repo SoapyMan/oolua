@@ -22,7 +22,7 @@
 #	include "LuaBridge.h"
 #endif
 
-#if defined OOLUA_SLB_COMPARE && LUA_VERSION_NUM == 502
+#if defined OOLUA_SLB_COMPARE && LUA_VERSION_NUM >= 502
 #	include "SLB3/slb.h"
 #	include "SLB3/extra/script.h"
 #endif
@@ -116,7 +116,7 @@ int main()
 
 
 
-#if defined OOLUA_SLB_COMPARE && LUA_VERSION_NUM == 502
+#if defined OOLUA_SLB_COMPARE && LUA_VERSION_NUM >= 502
 #	ifdef MFUNC_TEST
 	{
 		SLB3::extra::Script L;

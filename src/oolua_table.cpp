@@ -172,7 +172,7 @@ namespace OOLUA
 	{
 		int l_new_table(lua_State* vm)
 		{
-			lua_createtable(vm, luaL_optint(vm, 1, 0), luaL_optint(vm, 2, 0));
+			lua_createtable(vm, luaL_optinteger(vm, 1, 0), luaL_optinteger(vm, 2, 0));
 			return 1;
 		}
 	} //namespace INTERNAL

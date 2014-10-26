@@ -13,7 +13,7 @@ void open_Luabind_set_n_get(lua_State* l);
 
 void open_LuaBridge_set_n_get(lua_State* l);
 
-#if defined OOLUA_SLB_COMPARE && LUA_VERSION_NUM == 502
+#if defined OOLUA_SLB_COMPARE && LUA_VERSION_NUM >= 502
 #	include <SLB3/declaration.h>
 	SLB3_DECLARATION(Set_get, "Set_get", policy::Default)
 #endif

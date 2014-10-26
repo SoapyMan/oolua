@@ -51,6 +51,11 @@ lua_point_version "lua-5.2" point_version
 echo "Running ${point_version} tests"
 ./${test_script}_tests.sh
 
+setup_headers_and_library lua53 liblua-5.3.a
+lua_point_version "lua-5.3" point_version
+echo "Running ${point_version} tests"
+./${test_script}_tests.sh
+
 setup_headers_and_library luajit-2.0 libluajit-5.1.2.a
 #OSX x86_64 executables which use LuaJIT require rebasing so that the JIT allocator can use the lowest 2GB
 export LUAJIT_REBASE=1
