@@ -110,7 +110,7 @@ namespace OOLUA
 						LVD::by_value<T>::value
 						&& has_a_proxy_type<typename LVD::raw_type<T>::type>::value
 					>()
-				);
+				); // NOLINT
 			}
 			template<typename T>
 			static void get_imp(lua_State* vm, T* output, LVD::Int2type<0>)
