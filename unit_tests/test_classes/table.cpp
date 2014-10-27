@@ -112,6 +112,7 @@ class Table : public CPPUNIT_NS::TestFixture
 		CPPUNIT_TEST(ipairs_stackHasOneEntryTableHasFiveEntry_afterIterationsStackCountIsOne);
 
 		CPPUNIT_TEST(assignment_selfAssignmentOnValidTable_refIsRegistryCopyOfOriginalValue);
+		CPPUNIT_TEST(newTable_callingTheModuleFunctionNewTable_returnTypeIsATable);
 	CPPUNIT_TEST_SUITE_END();
 
 	OOLUA::Script * m_lua;
@@ -482,6 +483,12 @@ public:
 		t = t;
 		m_lua->push(t);
 		CPPUNIT_ASSERT_EQUAL(1, lua_rawequal(*m_lua, -1, -2));
+	}
+	void newTable_callingTheModuleFunctionNewTable_returnTypeIsATable()
+	{
+		m_lua->run_chunk("local OOLua = require('OOLua') "
+						"return OOLua.new_table()");
+		CPPUNIT_ASSERT_EQUAL(LUA_TTABLE, lua_type(*m_lua, -1));
 	}
 };
 
