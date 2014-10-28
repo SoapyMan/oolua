@@ -173,6 +173,7 @@ class Error_test : public CPPUNIT_NS::TestFixture
 		CPPUNIT_TEST(pull_memberFunctionPullsClassWhenintIsOnStack_callReturnsFalse);
 		CPPUNIT_TEST(pull_CFunctionFromStackTopIsNotFunc_callReturnsFalse);
 		CPPUNIT_TEST(pull_CFunctionFromStackTopIsNotFunc_errorStringIsNotEmpty);
+		CPPUNIT_TEST(pull_functionFromStackWhichContainsNumber_pullReturnsFalse);
 		CPPUNIT_TEST(loadFile_fileDoesNotExist_returnsFalse);
 		CPPUNIT_TEST(runFile_fileDoesNotExist_returnsFalse);
 		CPPUNIT_TEST(new_onAbstractClass_runChunkReturnsFalse);
@@ -220,6 +221,7 @@ class Error_test : public CPPUNIT_NS::TestFixture
 		CPPUNIT_TEST(pull_FunctionTriesToAcquirePtrWhenWrongClassTypeIsOnTheStack_throwsRuntimeError);
 
 		CPPUNIT_TEST(pull_CFunctionFromStackTopIsNotFunc_throwsRunTimeError);
+		CPPUNIT_TEST(pull_functionFromStackWhichContainsNumber_throwsRunTimeError);
 
 		CPPUNIT_TEST(exceptionSafe_memberFunctionThrowsStdRuntimeError_callThrowsOoluaRuntimeError);
 		CPPUNIT_TEST(call_afterAnExceptionTheStackIsEmpty_stackCountEqualsZero);
@@ -238,6 +240,7 @@ class Error_test : public CPPUNIT_NS::TestFixture
 		CPPUNIT_TEST(memberFunctionCall_memberFunctionWhichTakesDoubleYetPassedTable_throwsRuntimeError);
 		CPPUNIT_TEST(memberFunctionCall_memberFunctionWhichTakesLuaCFunctionYetPassedTable_throwsRuntimeError);
 		CPPUNIT_TEST(memberFunctionCall_memberFunctionWhichTakesLightUdYetPassedTable_throwsRuntimeError);
+		CPPUNIT_TEST(memberFunctionCall_memberFunctionWhichTakesTableRefYetPassedNumber_throwsRuntimeError);
 
 		CPPUNIT_TEST(cFunctionNoReturn_throwsStdRuntimeError_exceptionDoesNotEscapePcall);
 		CPPUNIT_TEST(cFunctionWithReturn_throwsStdRuntimeError_exceptionDoesNotEscapePcall);
@@ -593,6 +596,13 @@ public:
 		CPPUNIT_ASSERT_EQUAL(false, error_str.empty());
 	}
 
+	void pull_functionFromStackWhichContainsNumber_pullReturnsFalse()
+	{
+		OOLUA::Lua_func_ref func;
+		m_lua->push(1);
+		CPPUNIT_ASSERT_EQUAL(false, OOLUA::pull(*m_lua, func));
+	}
+
 	void loadFile_fileDoesNotExist_returnsFalse()
 	{
 		CPPUNIT_ASSERT_EQUAL(false, m_lua->load_file("does_not_exist"));
@@ -658,7 +668,7 @@ public:
 
 		m_lua->register_class<TableObjectParam>();
 		m_lua->run_chunk("func = function(obj) "
-							"return obj:value(1) "
+							"return obj:inTrait(1) "
 						 "end");
 
 		CPPUNIT_ASSERT_EQUAL(false, m_lua->call("func", object));
@@ -785,6 +795,13 @@ public:
 	{
 		OOLUA::Lua_func_ref func;
 		CPPUNIT_ASSERT_THROW(OOLUA::pull(*m_lua, func), OOLUA::Runtime_error);
+	}
+
+	void pull_functionFromStackWhichContainsNumber_throwsRunTimeError()
+	{
+		OOLUA::Lua_func_ref func;
+		m_lua->push(1);
+		CPPUNIT_ASSERT_THROW(m_lua->pull(func), OOLUA::Runtime_error);
 	}
 
 	void callUnknownFunction_fromCpp_throwsOoluaRuntimeError()
@@ -917,7 +934,7 @@ public:
 
 		m_lua->register_class<TableObjectParam>();
 		m_lua->run_chunk("func = function(obj) "
-							"return obj:value(1) "
+							"return obj:inTrait(1) "
 						 "end");
 
 		CPPUNIT_ASSERT_THROW(m_lua->call("func", object), OOLUA::Runtime_error);
@@ -965,6 +982,14 @@ public:
 		LightParamUserData* object = &stub;
 		m_lua->register_class<LightParamUserData>();
 		m_lua->run_chunk("return function(object) object:value{} end");
+		CPPUNIT_ASSERT_THROW(m_lua->call(1, object), OOLUA::Runtime_error);
+	}
+	void memberFunctionCall_memberFunctionWhichTakesTableRefYetPassedNumber_throwsRuntimeError()
+	{
+		::testing::NiceMock<TableRefParamMock> stub;
+		TableRefParam* object = &stub;
+		m_lua->register_class<TableRefParam>();
+		m_lua->run_chunk("return function(object) object:inTrait(1) end");
 		CPPUNIT_ASSERT_THROW(m_lua->call(1, object), OOLUA::Runtime_error);
 	}
 
