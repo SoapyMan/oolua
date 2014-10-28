@@ -90,6 +90,9 @@ class Pointer_cache : public CppUnit::TestFixture
 	CPPUNIT_TEST(addPtr_samePointerAsThreeDifferentTypes_findUdFindsSecondEntry);
 	CPPUNIT_TEST(addPtr_samePointerAsThreeDifferentTypes_findUdFindsThirdEntry);
 	CPPUNIT_TEST(addPtr_samePointerAsThreeDifferentTypes_thirdUdHasCollisionFlagSet);
+
+	CPPUNIT_TEST(findUd_pushBaseFirstMemberWhichHasTheSameAddressAsBaseThenPushDerived_stackContainsTwoUdsWhichAreNotEqual);
+	CPPUNIT_TEST(findUd_causeCacheCollisionThenRemoveDerivedCallGcAndThenReaddIt_stackContainsTwoUdsWhichAreDifferent);
 	CPPUNIT_TEST_SUITE_END();
 	OOLUA::Script* m_lua;
 public:
@@ -190,6 +193,36 @@ public:
 		CPPUNIT_ASSERT_EQUAL(LUA_TNIL, lua_type(*m_lua, -1));
 	}
 
+	void findUd_pushBaseFirstMemberWhichHasTheSameAddressAsBaseThenPushDerived_stackContainsTwoUdsWhichAreNotEqual()
+	{
+		m_lua->register_class<PodBar>();
+		m_lua->register_class<Pod>();
+
+		PodBar podbar;
+		PodBar* pod_ptr = &podbar;
+		Pod* pod = &podbar.first_member;
+		m_lua->push(pod);
+		m_lua->push(pod_ptr);
+		CPPUNIT_ASSERT(lua_touserdata(*m_lua, 1) != lua_touserdata(*m_lua, 2));
+	}
+
+	void findUd_causeCacheCollisionThenRemoveDerivedCallGcAndThenReaddIt_stackContainsTwoUdsWhichAreDifferent()
+	{
+		m_lua->register_class<PodBar>();
+		m_lua->register_class<Pod>();
+
+		PodBar podbar;
+		PodBar* pod_ptr = &podbar;
+		Pod* pod = &podbar.first_member;
+		m_lua->push(pod);
+		m_lua->push(pod_ptr);
+		lua_pop(*m_lua, 1);
+		m_lua->gc();
+		m_lua->push(pod_ptr);
+
+		CPPUNIT_ASSERT(lua_touserdata(*m_lua, 1) != lua_touserdata(*m_lua, 2));
+
+	}
 	void offset_tests_expectedBehaviour()
 	{
 		m_lua->register_class<Container>();
@@ -245,6 +278,7 @@ public:
 		lua_rawget(*m_lua, weakIndex);
 		CPPUNIT_ASSERT_EQUAL(LUA_TNIL, lua_type(*m_lua, -1));
 	}
+
 	void addPtr_classItsFirstMemberAndItFirstMember_allTheSamePointer()
 	{
 		m_lua->register_class<PodWithMemberWhichItselfHasAMember>();
