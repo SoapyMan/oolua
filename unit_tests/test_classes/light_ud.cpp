@@ -18,15 +18,15 @@ class Light_ud_beta : public CppUnit::TestFixture
 
 #if OOLUA_STORE_LAST_ERROR == 1
 		CPPUNIT_TEST(pull_voidPointerPulledFromAnEmptyStack_pullReturnsFalse);
-#elif OOLUA_USING_EXCEPTIONS == 1
-		CPPUNIT_TEST(pull_voidPointerPulledFromAnEmptyStack_throwsOoluaRuntimeError);
+#elif OOLUA_USE_EXCEPTIONS == 1
+		CPPUNIT_TEST(pull_voidPointerPulledFromAnEmptyStack_throwsOoluaTypeError);
 #endif
 		CPPUNIT_TEST(pull_voidPointerPulledFromAnStackContainingLightUserData_pullReturnsTrue);
 		CPPUNIT_TEST(pull_voidPointerPulledFromAnStackContainingLightUserData_pulledValueEqualsPushed);
 #if OOLUA_STORE_LAST_ERROR == 1
 		CPPUNIT_TEST(pull_voidPointerWhenStackContainsFullUserData_pullreturnsFalse);
-#elif OOLUA_USING_EXCEPTIONS == 1
-		CPPUNIT_TEST(pull_voidPointerWhenStackContainsFullUserData_throwsOoluaRuntimeError);
+#elif OOLUA_USE_EXCEPTIONS == 1
+		CPPUNIT_TEST(pull_voidPointerWhenStackContainsFullUserData_throwsOoluaTypeError);
 #endif
 		CPPUNIT_TEST(functionReturn_functionReturnsVoidPointer_callReturnsTrue);
 		CPPUNIT_TEST(functionReturn_functionReturnsVoidPointer_topOfStackIsLightUserData);
@@ -108,11 +108,11 @@ public:
 		void* p;
 		CPPUNIT_ASSERT_EQUAL(false, m_lua->pull(p));
 	}
-#elif OOLUA_USING_EXCEPTIONS == 1
-	void pull_voidPointerPulledFromAnEmptyStack_throwsOoluaRuntimeError()
+#elif OOLUA_USE_EXCEPTIONS == 1
+	void pull_voidPointerPulledFromAnEmptyStack_throwsOoluaTypeError()
 	{
 		void* p;
-		CPPUNIT_ASSERT_THROW(m_lua->pull(p), OOLUA::Runtime_error);
+		CPPUNIT_ASSERT_THROW(m_lua->pull(p), OOLUA::Type_error);
 	}
 
 #endif
@@ -144,14 +144,14 @@ public:
 		void* light_ud;
 		CPPUNIT_ASSERT_EQUAL(false, m_lua->pull(light_ud));
 	}
-#elif OOLUA_USING_EXCEPTIONS == 1
-	void pull_voidPointerWhenStackContainsFullUserData_throwsOoluaRuntimeError()
+#elif OOLUA_USE_EXCEPTIONS == 1
+	void pull_voidPointerWhenStackContainsFullUserData_throwsOoluaTypeError()
 	{
 		m_lua->register_class<Stub1>();
 		Stub1 full_ud;
 		m_lua->push(&full_ud);
 		void* light_ud;
-		CPPUNIT_ASSERT_THROW(m_lua->pull(light_ud), OOLUA::Runtime_error);
+		CPPUNIT_ASSERT_THROW(m_lua->pull(light_ud), OOLUA::Type_error);
 	}
 #endif
 

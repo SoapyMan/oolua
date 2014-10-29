@@ -34,7 +34,7 @@ OOLUA_EXPORT_FUNCTIONS_CONST(B)
 class UserData : public CPPUNIT_NS::TestFixture
 {
 	CPPUNIT_TEST_SUITE(UserData);
-#	if OOLUA_USING_EXCEPTIONS == 1
+#	if OOLUA_USE_EXCEPTIONS == 1
 		CPPUNIT_TEST(cppMethodCall_passTwoInstancesTwice_noException);
 #	endif
 	CPPUNIT_TEST_SUITE_END();
@@ -55,7 +55,7 @@ public:
 	{
 		delete m_lua;
 	}
-#	if OOLUA_USING_EXCEPTIONS == 1
+#	if OOLUA_USE_EXCEPTIONS == 1
 	void cppMethodCall_passTwoInstancesTwice_noException()
 	{
 		m_lua->run_chunk(\
