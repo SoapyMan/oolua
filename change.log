@@ -55,6 +55,7 @@ compatible with Lua 5.1 and 5.2
 - Bug fix. Incorrect handling of an error string which contained an embedded NULL. (Mauricio)
 - Silenced g++ warnings about local typedefs which are unused i.e. static asserts
 - Bug fix. Incorrectly attempting to handle proxy value types which are public members (Oscar Zhao) Bitbucket issue #8
+- Fix - Typo in include guard of oolua_dsl_export.h (Chris Schade) Bitbucket issues #15
 
 \section OOLuaChanges1-4-0 1.4.0
 - Added OOLUA_DEDUCE_FUNC(_CONST) for when there is no ambiguity for a function

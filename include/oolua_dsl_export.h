@@ -27,7 +27,7 @@ THE SOFTWARE.
 	using the DSL.
 */
 #ifndef OOLUA_DSL_EXPORT_H_
-#	define OOLUA_DS_EXPORT_H_
+#	define OOLUA_DSL_EXPORT_H_
 
 #	include "proxy_function_exports.h"
 #	include "oolua_stack.h"
