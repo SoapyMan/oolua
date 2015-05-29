@@ -79,7 +79,7 @@ seconds=$(printf %02d $(( $time_diff % 60 )))
 echo "Finished tests for multiple versions of Lua in $minutes:$seconds"
 
 #now reset Lua 5.2 as the default for this machine
-setup_headers_and_library lua52 liblua-5.2.2.a
+setup_headers_and_library lua52 liblua-5.2.a
 
 #remove all traces whilst we are still sudo
 sudo chmod -R 775 ../build_logs
