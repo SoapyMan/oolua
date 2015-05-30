@@ -25,7 +25,6 @@ THE SOFTWARE.
 #ifndef LVD_TYPE_TRAITS_H_
 #	define LVD_TYPE_TRAITS_H_
 
-
 /**
 	\file lvd_type_traits.h
 	\brief Template struct which report if the type has qualifiers and also
@@ -369,7 +368,11 @@ namespace LVD
 		static no test(Convertor);
 		static no test(float&);
 		static no test(double&);
+#ifdef _MSC_VER
+		static yes test(::size_t); // NOLINT
+#else
 		static yes test(int); // NOLINT
+#endif
 		static From& make_from();
 	public:
 		enum { value = sizeof test(make_from()) == sizeof(yes) ? 1 : 0 };
