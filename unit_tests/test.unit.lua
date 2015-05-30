@@ -50,8 +50,13 @@ configuration{"gmake"}
 configuration{"not gmake","not vs*"}
 	pchheader(root .. "unit_tests/test_classes/oolua_tests_pch.h")
 configuration{"vs*"}
-	pchheader(root .. "unit_tests/test_classes/oolua_tests_pch.h")
 	pchsource(root .. "unit_tests/test_classes/oolua_tests_pch.cpp")
 	buildoptions {"/FI oolua_tests_pch.h"}
+	if tonumber((_PREMAKE_VERSION):match("(%d%.%d)") or '0') < 4.4 then
+		pchheader(root .. "unit_tests/test_classes/oolua_tests_pch.h")
+	else
+		pchheader("oolua_tests_pch.h")
+	end
+
 
 unit_test_config(root,name)

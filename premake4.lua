@@ -10,6 +10,9 @@ end
 
 solution("oolua")
    configurations { "Debug", "Release" }
+   if os.is64bit() then
+      platforms{"x64"}
+   end
 
 
 dofile("./oolua4.lua")
