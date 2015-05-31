@@ -10,7 +10,7 @@ end
 
 solution("oolua")
    configurations { "Debug", "Release" }
-   if os.is64bit() and _ACTION:match("^vs") then 
+   if os.is64bit() and _ACTION and _ACTION:match("^vs") then 
  	platforms{"x64"}
    end
 

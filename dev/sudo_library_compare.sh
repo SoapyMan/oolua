@@ -100,15 +100,15 @@ function run_lua51()
 
 	setup_headers_and_library lua51 liblua-${lua_version}.a
 
-#	compile_profile_binary  "--LUABIND_COMPARE --LUABRIDGE_COMPARE"
-	compile_profile_binary  "--LUABRIDGE_COMPARE"
+	compile_profile_binary  "--LUABIND_COMPARE --LUABRIDGE_COMPARE"
+#	compile_profile_binary  "--LUABRIDGE_COMPARE"
 
 	prep_table "lua51Checks" "${point_version}" "Userdata checks"
 	run_comparison
 
 	export NO_USERDATA_CHECKS=1
-#	compile_profile_binary "--LUABIND_COMPARE --SWIG_COMPARE"
-	compile_profile_binary "--SWIG_COMPARE"
+	compile_profile_binary "--LUABIND_COMPARE --SWIG_COMPARE"
+#	compile_profile_binary "--SWIG_COMPARE"
 
 	prep_table "lua51NoChecks" "${point_version}" "No userdata checks"
 	run_comparison
@@ -124,16 +124,16 @@ function run_lua52()
 
 	setup_headers_and_library lua52 liblua-${lua_version}.a
 
-#	compile_profile_binary "--LUABIND_COMPARE --LUABRIDGE_COMPARE"
-	compile_profile_binary "--LUABRIDGE_COMPARE"
+	compile_profile_binary "--LUABIND_COMPARE --LUABRIDGE_COMPARE"
+#	compile_profile_binary "--LUABRIDGE_COMPARE"
 
 	prep_table "lua52Checks" "${point_version}" "Userdata checks"
 
 	run_comparison
 
 	export NO_USERDATA_CHECKS=1
-#	compile_profile_binary "--LUABIND_COMPARE --SWIG_COMPARE --SLB3_COMPARE"
-	compile_profile_binary "--SWIG_COMPARE --SLB3_COMPARE"
+	compile_profile_binary "--LUABIND_COMPARE --SWIG_COMPARE --SLB3_COMPARE"
+#	compile_profile_binary "--SWIG_COMPARE --SLB3_COMPARE"
 
 	prep_table "lua52NoChecks" "${point_version}" "No userdata checks"
 
@@ -150,16 +150,16 @@ function run_lua53()
 
 	setup_headers_and_library lua53 liblua-${lua_version}.a
 
-#	compile_profile_binary "--LUABIND_COMPARE --LUABRIDGE_COMPARE"
-	compile_profile_binary "--LUABRIDGE_COMPARE"
+	compile_profile_binary "--LUABIND_COMPARE --LUABRIDGE_COMPARE"
+#	compile_profile_binary "--LUABRIDGE_COMPARE"
 
 	prep_table "lua53Checks" "${point_version}" "Userdata checks"
 
 	run_comparison
 
 	export NO_USERDATA_CHECKS=1
-#	compile_profile_binary "--LUABIND_COMPARE --SWIG_COMPARE --SLB3_COMPARE"
-	compile_profile_binary "--SWIG_COMPARE --SLB3_COMPARE"
+	compile_profile_binary "--LUABIND_COMPARE --SWIG_COMPARE --SLB3_COMPARE"
+#	compile_profile_binary "--SWIG_COMPARE --SLB3_COMPARE"
 
 	prep_table "lua53NoChecks" "${point_version}" "No userdata checks"
 
@@ -197,8 +197,8 @@ function run_luajit2()
 
 #	setup_headers_and_library luajit-2.0 libluajit-${lua_version}.a
 
-#	compile_profile_binary "--JIT_REBASE --LUABIND_COMPARE --LUABRIDGE_COMPARE"
-	compile_profile_binary "--JIT_REBASE --LUABRIDGE_COMPARE"
+	compile_profile_binary "--JIT_REBASE --LUABIND_COMPARE --LUABRIDGE_COMPARE"
+#	compile_profile_binary "--JIT_REBASE --LUABRIDGE_COMPARE"
 	prep_table "luaJIT2Checks" "${point_version}" "Userdata checks"
 
 	run_comparison
@@ -215,11 +215,11 @@ function run_luajit2()
 test_info
 
 run_lua51
-#run_lua52
-#run_lua53
+run_lua52
+run_lua53
 
 #run_luajit1
-#run_luajit2
+run_luajit2
 
 echo "*/" >> ${test_ofile}
 
