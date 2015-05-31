@@ -215,11 +215,11 @@ function run_luajit2()
 test_info
 
 run_lua51
-run_lua52
-run_lua53
+#run_lua52
+#run_lua53
 
 #run_luajit1
-run_luajit2
+#run_luajit2
 
 echo "*/" >> ${test_ofile}
 
