@@ -28,20 +28,20 @@
 
 	\section OOLuaCompatibility Lua compatibility
 	This version of the library is compatible with the following Lua implementations
-		\li Rio Lua 5.1 and 5.2 http://www.lua.org
+		\li Rio Lua 5.1, 5.2 and 5.3 http://www.lua.org
 		\li LuaJIT 1.1.8 and 2.0 http://www.luajit.org/
 
 	\section OOLuaLinks Links
-		\li Project Home  http://oolua.org
-		\li Library documentation http://oolua.org/docs
-		\li Issue tracker http://oolua.org/issues
-		\li Mailing list http://oolua.org/mailinglist
+		\li Project Home  https://oolua.org
+		\li Library documentation https://docs.oolua.org/2.0.0
+		\li Issue tracker https://oolua.org/issues
+		\li Mailing list https://oolua.org/mailinglist
 
 	\section OOLuaLicence Licence
 	OOLua:
 	\copyright
 	The MIT License\n
-	Copyright (c) 2009 - 2014 Liam Devine\n
+	Copyright (c) 2009 - 2015 Liam Devine\n
 	Permission is hereby granted, free of charge, to any person obtaining a copy
 	of this software and associated documentation files (the "Software"), to deal
 	in the Software without restriction, including without limitation the rights
