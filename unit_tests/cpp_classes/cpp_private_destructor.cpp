@@ -1,5 +1,3 @@
-
 #include "cpp_private_destructor.h"
 
-EXPORT_OOLUA_NO_FUNCTIONS(PrivateDestructor)
-
+OOLUA_EXPORT_NO_FUNCTIONS(PrivateDestructor)

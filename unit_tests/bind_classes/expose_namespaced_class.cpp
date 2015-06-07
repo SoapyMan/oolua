@@ -1,5 +1,4 @@
 #include "expose_namespaced_class.h"
+#include "oolua_dsl_export.h"
 
-EXPORT_OOLUA_NO_FUNCTIONS(Namespaced)
-
-
+OOLUA_EXPORT_NO_FUNCTIONS(Namespaced)

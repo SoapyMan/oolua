@@ -1,0 +1,21 @@
+syntax: glob
+bin
+obj
+.DS_Store
+ipch
+build_logs
+
+Makefile
+*.make
+*.sln
+*.vcxproj
+*.vcxproj.filters
+*.vcxproj.user
+*.vcproj
+*.sdf
+*.opensdf
+*.suo
+*.xcodeproj
+*.cbp
+*.workspace
+

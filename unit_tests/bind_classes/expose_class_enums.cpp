@@ -1,3 +1,4 @@
 #include "expose_class_enums.h"
+#include "oolua_dsl_export.h"
 
-EXPORT_OOLUA_NO_FUNCTIONS(ClassWithEnums)
+OOLUA_EXPORT_NO_FUNCTIONS(ClassWithEnums)

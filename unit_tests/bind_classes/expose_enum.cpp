@@ -1,8 +1,9 @@
 #include "expose_enum.h"
+#include "oolua_dsl_export.h"
 
-EXPORT_OOLUA_FUNCTIONS_CONST(Enums)
-EXPORT_OOLUA_FUNCTIONS_NON_CONST(Enums
-								 ,set_enum
-								 ,get_enum
-								 )
-
+/*[ClassEnumExport]*/
+OOLUA_EXPORT_FUNCTIONS_CONST(Enums)
+OOLUA_EXPORT_FUNCTIONS(Enums
+						, set_enum
+						, get_enum)
+/*[ClassEnumExport]*/

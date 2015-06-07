@@ -1,4 +1,4 @@
-#!/bin/bash 
+#!/bin/bash
 function failed()
 {
     echo "Failed: $@" >&2
@@ -8,7 +8,7 @@ function failed()
 
 function failing_may_not_be_an_error()
 {
-	echo "Failed: $@. For details of the error and how to correct it, see the log file." >&1 
+	echo "Failed: $@. For details of the error and how to correct it, see the log file." >&1
 	echo build_logs/${1}_xcode_${2}.log
 }
 set -e
@@ -58,6 +58,21 @@ call_this_function_on_failure=failing_may_not_be_an_error
 run_test tests_may_fail Debug
 run_test tests_may_fail Release
 call_this_function_on_failure=failed
+#cd ../..
+cd ..
+
+
+cd shared
+root_dir="../../"
+call_this_function_on_failure=failed
+run_test shared Debug
+run_test shared Release
+cd ..
+
+cd shared_by_default
+run_test shared_by_default Debug
+run_test shared_by_default Release
+
 cd ../..
 
 timeEnd=$(date +%s)

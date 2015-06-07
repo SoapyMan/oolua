@@ -1,31 +1,14 @@
 #include "expose_max_params.h"
+#include "oolua_dsl_export.h"
 
+OOLUA_EXPORT_FUNCTIONS(VoidReturnIntParam
+						, one
+						, two
+						, three
+						, four
+						, five
+						, six
+						, seven
+						, eight)
 
-
-/*
-TEST_EXPORT_OOLUA_FUNCTIONS_NON_CONST(VoidReturnIntParam,
-								   one,
-								   two,
-								   three,
-								   four,
-								   five,
-								   six,
-								   seven,
-								   eight)
-
-
-*/
-
-EXPORT_OOLUA_FUNCTIONS_8_NON_CONST(VoidReturnIntParam,
-								   one,
-								   two,
-								   three,
-								   four,
-								   five,
-								   six,
-								   seven,
-								   eight)
-
-EXPORT_OOLUA_FUNCTIONS_0_CONST(VoidReturnIntParam)
-
-
+OOLUA_EXPORT_FUNCTIONS_CONST(VoidReturnIntParam)

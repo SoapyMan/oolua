@@ -1,20 +1,24 @@
 #ifndef EXPOSE_ENUM_PARAM_H_
 #	define EXPOSE_ENUM_PARAM_H_
 
-#include "oolua.h"
+#include "oolua_dsl.h"
 #include "cpp_enum.h"
 
-OOLUA_PROXY_CLASS(Enums)
-	OOLUA_TYPEDEFS Register_class_enums OOLUA_END_TYPES
-	OOLUA_CONSTRUCTORS_BEGIN
-		OOLUA_CONSTRUCTOR(Enums::COLOUR)
-	OOLUA_CONSTRUCTORS_END
-	OOLUA_ENUMS
-		OOLUA_ENUM_ENTRY(GREEN)
-		OOLUA_ENUM_ENTRY(INVALID)
-	OOLUA_ENUMS_END
-	OOLUA_MEM_FUNC(void,set_enum,Enums::COLOUR)
-	OOLUA_MEM_FUNC(Enums::COLOUR,get_enum)
-OOLUA_CLASS_END
+/*[ClassEnumExpose]*/
+OOLUA_PROXY(Enums)
+	OOLUA_TAGS(
+		Register_class_enums
+	)
+	OOLUA_CTORS(
+		OOLUA_CTOR(Enums::COLOUR)
+	)
+	OOLUA_ENUMS(
+		OOLUA_ENUM(GREEN)
+		OOLUA_ENUM(INVALID)
+	)
+	OOLUA_MFUNC(set_enum)
+	OOLUA_MFUNC(get_enum)
+OOLUA_PROXY_END
+/*[ClassEnumExpose]*/
 
 #endif

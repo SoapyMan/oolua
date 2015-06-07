@@ -1,35 +1,36 @@
 #ifndef CPP_INTEGRAL_FUNCTION_PARAMS_H_
 #	define CPP_INTEGRAL_FUNCTION_PARAMS_H_
 
-#	include "oolua_tests_pch.h"
-#	include "gmock/gmock.h"
+#	include "cpp_function_params.h"
 
-class Int_params
-{
-public:
-	virtual ~Int_params(){}
-	virtual void int_(int i) = 0;
-	virtual void int_ref(int &) = 0;
-	virtual void int_ptr(int *) = 0;
-	virtual void int_const(int const i) = 0;
-	virtual void int_const_ref(int const&) = 0;
-	virtual void int_const_ptr(int const* i) = 0;
-	virtual void int_const_ptr_const(int const * const) = 0;
-	virtual void bool_(bool b) = 0;
-};
+struct oolua_test_int_in_traits{};
+struct oolua_test_int_out_traits{};
+struct oolua_test_int_in_out_traits{};
 
-class MockInt : public Int_params 
-{
-public:
-	MOCK_METHOD1(int_,void (int) );
-	MOCK_METHOD1(int_ref,void (int&) );
-	MOCK_METHOD1(int_ptr,void (int*) );
-	MOCK_METHOD1(int_const,void (int const ) );
-	MOCK_METHOD1(int_const_ref,void (int const&) );
-	MOCK_METHOD1(int_const_ptr,void (int const*) );
-	MOCK_METHOD1(int_const_ptr_const,void (int const * const) );
-	MOCK_METHOD1(bool_,void (bool) );
-};
+typedef FunctionParamType<oolua_test_int_in_traits, int> IntegerFunctionInTraits;
+typedef MockFunctionParamType<oolua_test_int_in_traits, int> IntegerFunctionInTraitsMock;
 
+typedef FunctionParamType<oolua_test_int_out_traits, int> IntegerFunctionOutTraits;
+typedef MockFunctionParamType<oolua_test_int_out_traits, int> IntegerFunctionOutTraitsMock;
+
+typedef FunctionParamType<oolua_test_int_in_out_traits, int> IntegerFunctionInOutTraits;
+typedef MockFunctionParamType<oolua_test_int_in_out_traits, int> IntegerFunctionInOutTraitsMock;
+
+typedef FunctionParamType<oolua_test_int_in_out_traits, char> CharFunctionInTraits;
+typedef MockFunctionParamType<oolua_test_int_in_out_traits, char> CharFunctionInTraitsMock;
+
+
+typedef FunctionParamType<oolua_test_int_in_traits, float> FloatFunctionInTraits;
+typedef MockFunctionParamType<oolua_test_int_in_traits, float> FloatFunctionInTraitsMock;
+
+typedef FunctionParamType<oolua_test_int_in_traits, double> DoubleFunctionInTraits;
+typedef MockFunctionParamType<oolua_test_int_in_traits, double> DoubleFunctionInTraitsMock;
+
+typedef FunctionParamType<oolua_test_int_in_traits, bool> BoolInTraits;
+typedef MockFunctionParamType<oolua_test_int_in_traits, bool> BoolInTraitsMock;
+
+struct lua_State;
+typedef FunctionParamType<oolua_test_int_in_traits, int(*)(lua_State*)> CFunctionInTraits; // NOLINT
+typedef MockFunctionParamType<oolua_test_int_in_traits, int(*)(lua_State*)> CFunctionInTraitsMock; //NOLINT
 
 #endif
