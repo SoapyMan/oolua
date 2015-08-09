@@ -1,6 +1,6 @@
 /** \page OOLuaChangeLog Change Log
 
-\section OOLuaChanges2-0-0 2.0.1
+\section OOLuaChanges2-0-1 2.0.1
 - Updated detection to include mscv 14 (Josh Hayashida) Bitbucket issue #16
 
 \section OOLuaChanges2-0-0 2.0.0
