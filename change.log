@@ -1,5 +1,8 @@
 /** \page OOLuaChangeLog Change Log
 
+\section OOLuaChanges2-0-0 2.0.1
+- Updated detection to include mscv 14 (Josh Hayashida) Bitbucket issue #16
+
 \section OOLuaChanges2-0-0 2.0.0
 - Pretty much a new \ref OOLuaDSL "DSL" which is not backwards compatible
 - Calling static functions in Lua now requires the dot notation
