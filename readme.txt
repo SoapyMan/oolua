@@ -7,4 +7,4 @@ Please direct your browser to:
     docs/index.html
     or
     docs.html
-Online HTML Documentation is available at https://docs.oolua.org/2.0.0/
+Online HTML Documentation is available at https://docs.oolua.org/2.0.1/

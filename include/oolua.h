@@ -33,7 +33,7 @@
 
 	\section OOLuaLinks Links
 		\li Project Home  https://oolua.org
-		\li Library documentation https://docs.oolua.org/2.0.0
+		\li Library documentation https://docs.oolua.org/2.0.1
 		\li Issue tracker https://oolua.org/issues
 		\li Mailing list https://oolua.org/mailinglist
 
