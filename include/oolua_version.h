@@ -48,7 +48,7 @@ THE SOFTWARE.
 	\def OOLUA_VERSION_PATCH
 	\brief CPP patch version number
 */
-#	define OOLUA_VERSION_PATCH 1
+#	define OOLUA_VERSION_PATCH 2
 
 /**
 	\def OOLUA_VERSION
