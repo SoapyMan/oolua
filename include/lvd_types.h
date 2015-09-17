@@ -63,9 +63,9 @@ namespace LVD
 			typedef unsigned __int64	uint64;
 } // namespace LVD
 #		else
-#			error please inform me what compiler are you using and set the correct types
+#			error please inform me what compiler you are using and set the correct types
 #		endif
-#	elif(defined(UNIX_BUILD) || defined(MAC_BUILD))
+#	elif(defined(UNIX_BUILD) || defined(MAC_BUILD) || defined(DREAMCAST_BUILD))
 #		include <stdint.h>
 namespace LVD
 {
@@ -87,14 +87,13 @@ namespace LVD
 			typedef uint64_t			uint64;
 #		endif
 } // namespace LVD
-
+#	else
+#		error please inform me what platform you are using and set the correct types
 #	endif
 
 namespace LVD
 {
-	//typedef uint8 byte;
 	typedef unsigned char byte;
-	typedef uint32 size_t;
 
 	template<typename T>
 	struct is_integral_type

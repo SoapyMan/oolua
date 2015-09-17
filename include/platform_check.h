@@ -35,7 +35,6 @@ THE SOFTWARE.
 #	ifndef PLATFORM_CHECKED
 #		define PLATFORM_CHECKED
 #		if (defined(__CYGWIN__))
-//#			error Cygwin is currently not supported
 #			define UNIX_BUILD			1
 #		else
 			/// windows
@@ -50,6 +49,8 @@ THE SOFTWARE.
 				defined(linux) || defined(__linux))
 #				define UNIX_BUILD		1
 
+#			elif(defined(_arch_dreamcast))
+#				define DREAMCAST_BUILD	1
 #			endif///! CYGWIN
 #		endif///CYGWIN
 
