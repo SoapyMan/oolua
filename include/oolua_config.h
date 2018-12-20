@@ -98,7 +98,7 @@ THE SOFTWARE.
 		\param 0 Disabled
 		\param 1 Enabled
 	*/
-//#define OOLUA_RUNTIME_CHECKS_ENABLED 0
+#define OOLUA_RUNTIME_CHECKS_ENABLED 0
 #	ifndef OOLUA_RUNTIME_CHECKS_ENABLED
 #		define OOLUA_RUNTIME_CHECKS_ENABLED 1
 #	endif
@@ -160,6 +160,22 @@ THE SOFTWARE.
 #		define OOLUA_DEBUG_CHECKS 1
 #	else
 #		define OOLUA_DEBUG_CHECKS 0
+#	endif
+
+	/** \def OOLUA_DEBUG_STACKTRACE
+		\hideinitializer
+		\brief \b Default: Enabled when DEBUG or _DEBUG is defined
+		\details
+		Provides the following
+			\li adds a stack trace to errors reported by pcall
+
+		\param 0 Disabled
+		\param 1 Enabled
+	*/
+#	if defined DEBUG || defined _DEBUG || OOLUA_DEBUG_CHECKS == 1
+#		define OOLUA_DEBUG_STACKTRACE 1
+#	else
+#		define OOLUA_DEBUG_STACKTRACE 1
 #	endif
 
 	/** \def OOLUA_SANDBOX

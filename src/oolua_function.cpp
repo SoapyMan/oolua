@@ -132,7 +132,7 @@ namespace
 
 	int set_error_callback(lua_State* vm, lua_CFunction func)
 	{
-#if OOLUA_DEBUG_CHECKS == 1
+#if OOLUA_DEBUG_STACKTRACE == 1
 		lua_pushcfunction(vm, func);
 		return lua_gettop(vm);
 #else

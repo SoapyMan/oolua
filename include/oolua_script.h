@@ -77,6 +77,16 @@ namespace OOLUA
 				\li Sets the lua_State up so that it will work with OOLUA::Proxy_class.
 		*/
 		Script();
+
+		/**@{*/
+		/**
+			\brief Initialises the instance using existing lua_State.
+			\details
+				\li Binds the public member call with the lua_State
+				\li Sets the lua_State up so that it will work with OOLUA::Proxy_class.
+		*/
+		Script(lua_State* state);
+
 		/**
 			\brief Releases the bound lua_State if it is not NULL
 		*/

@@ -34,7 +34,16 @@ namespace OOLUA
 		:call(), m_lua(0)
 	{
 		m_lua = luaL_newstate();
+
 		luaL_openlibs(m_lua);
+
+		call.bind_script(m_lua);//bind the lua state to the function caller
+		setup_user_lua_state(m_lua);
+	}
+
+	Script::Script(lua_State* state)
+		:call(), m_lua(state)
+	{
 		call.bind_script(m_lua);//bind the lua state to the function caller
 		setup_user_lua_state(m_lua);
 	}
