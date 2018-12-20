@@ -11,7 +11,7 @@ end
 solution("oolua")
    configurations { "Debug", "Release" }
    if os.is64bit() and _ACTION and _ACTION:match("^vs") then 
- 	platforms{"x64"}
+ 	platforms{"x86", "x64"}
    end
 
 
