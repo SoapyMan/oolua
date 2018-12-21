@@ -1,4 +1,7 @@
-/** \page OOLuaChangeLog Change Log
+﻿/** \page OOLuaChangeLog Change Log
+
+\section OOLuaChanges2-0-3 2.0.3
+- Added complatibility with Lua 5.3 integer types
 
 \section OOLuaChanges2-0-2 2.0.2
 - Updated platform detection to include Dreamcast (Elysian Shadows)
