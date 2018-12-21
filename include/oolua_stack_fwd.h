@@ -65,6 +65,10 @@ namespace OOLUA
 	bool push(lua_State* const vm, bool const& value);
 	bool push(lua_State* const vm, char * const& value);
 	bool push(lua_State* const vm, char const * const& value);
+#if LUA_VERSION_NUM >= 503
+	bool push(lua_State* const vm, int const& value);
+	bool push(lua_State* const vm, long long const& value);
+#endif
 	bool push(lua_State* const vm, double const& value);
 	bool push(lua_State* const vm, float const&  value);
 	bool push(lua_State* const vm, oolua_CFunction const &  value);
@@ -96,6 +100,10 @@ namespace OOLUA
 	*/
 	bool pull(lua_State* const vm, void*& lightud);
 	bool pull(lua_State* const vm, bool& value);
+#if LUA_VERSION_NUM >= 503
+	bool pull(lua_State* const vm, int& value);
+	bool pull(lua_State* const vm, long long& value);
+#endif
 	bool pull(lua_State* const vm, double& value);
 	bool pull(lua_State* const vm, float& value);
 	bool pull(lua_State* const vm, oolua_CFunction& value);
@@ -126,6 +134,10 @@ namespace OOLUA
 			*/
 			void get(lua_State* const vm, int idx, void*& value);
 			void get(lua_State* const vm, int idx, bool& value);
+#if LUA_VERSION_NUM >= 503
+			void get(lua_State* const vm, int idx, int& value);
+			void get(lua_State* const vm, int idx, long long& value);
+#endif
 			void get(lua_State* const vm, int idx, char const*& value);
 			void get(lua_State* const vm, int idx, double& value);
 			void get(lua_State* const vm, int idx, float& value);

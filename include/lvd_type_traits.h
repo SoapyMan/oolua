@@ -369,9 +369,18 @@ namespace LVD
 		static no test(float&);
 		static no test(double&);
 #ifdef _MSC_VER
+#if LUA_VERSION_NUM >= 503
+		static yes test(long long);
+#else
 		static yes test(::size_t); // NOLINT
+#endif // LUA_VERSION >= 503
+		
+#else
+#if LUA_VERSION_NUM >= 503
+		static yes test(long long);
 #else
 		static yes test(int); // NOLINT
+#endif // LUA_VERSION >= 503
 #endif
 		static From& make_from();
 	public:

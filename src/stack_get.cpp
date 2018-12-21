@@ -65,6 +65,24 @@ namespace OOLUA
 				value = lua_toboolean(vm, idx) ? true : false;
 			}
 
+#if LUA_VERSION_NUM >= 503
+			void get(lua_State* const vm, int idx, int& value)
+			{
+#if OOLUA_RUNTIME_CHECKS_ENABLED  == 1
+				if( !lua_isnumber(vm, idx) ) get_error(vm, idx, "int");
+#endif
+				value = static_cast<int>(lua_tointeger(vm, idx));
+			}
+
+			void get(lua_State* const vm, int idx, long long& value)
+			{
+#if OOLUA_RUNTIME_CHECKS_ENABLED  == 1
+				if( !lua_isnumber(vm, idx) ) get_error(vm, idx, "int64");
+#endif
+				value = static_cast<long long>(lua_tointeger(vm, idx));
+			}
+#endif // LUA_VERSION_NUM
+
 			void get(lua_State* const vm, int idx, char const*& value)
 			{
 #if OOLUA_RUNTIME_CHECKS_ENABLED  == 1

@@ -137,9 +137,9 @@ THE SOFTWARE.
 
 
 //#if defined BROKEN_PREPROCESSOR
-#	if defined _MSC_VER && _MSC_VER >= 1400 && _MSC_VER <= 1916 && !defined __INTEL_COMPILER
+#	if defined _MSC_VER && _MSC_VER >= 1400 && _MSC_VER < 2000 && !defined __INTEL_COMPILER
 	/** \cond INTERNAL
-		vs8(2005) - vs14(2017) should all be fine with the work around of the __VA_ARGS__ bug
+		vs8(2005), vs9(2008), vs10(2010), vs11(2012), vs12(2013) and vs14(2015) should all be fine with the work around of the __VA_ARGS__ bug
 		which the compiler team will never admit to it being wrong. The fix was previously documented at the following
 		URL yet the page is no longer reachable.
 		https://connect.microsoft.com/VisualStudio/feedback/details/521844/variadic-macro-treating-va-args-as-a-single-parameter-for-other-macros#details

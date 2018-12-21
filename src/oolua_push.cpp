@@ -42,6 +42,22 @@ namespace OOLUA
 		return true;
 	}
 
+#if LUA_VERSION_NUM >= 503
+	bool push(lua_State* const vm, int const& value)
+	{
+		assert(vm); // LCOV_EXCL_LINE
+		lua_pushinteger(vm, value);
+		return true;
+	}
+
+	bool push(lua_State* const vm, long long const& value)
+	{
+		assert(vm); // LCOV_EXCL_LINE
+		lua_pushinteger(vm, value);
+		return true;
+	}
+#endif // LUA_VERSION_NUM
+
 	bool push(lua_State* const vm, char const * const& value)
 	{
 		assert(vm && value); // LCOV_EXCL_LINE

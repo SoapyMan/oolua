@@ -116,6 +116,24 @@ namespace OOLUA
 		return true;
 	}
 
+#if LUA_VERSION_NUM >= 503
+	bool pull(lua_State* const vm, int& value)
+	{
+		if( !INTERNAL::cpp_runtime_type_check_of_top(vm, LUA_TNUMBER, "int") ) return false;
+		value = static_cast<int>(lua_tointeger(vm, -1));
+		lua_pop(vm, 1);
+		return true;
+	}
+
+	bool pull(lua_State* const vm, long long& value)
+	{
+		if( !INTERNAL::cpp_runtime_type_check_of_top(vm, LUA_TNUMBER, "int64") ) return false;
+		value = static_cast<long long>(lua_tointeger(vm, -1));
+		lua_pop(vm, 1);
+		return true;
+	}
+#endif // LUA_VERSION_NUM
+
 	bool pull(lua_State* const vm, double& value)
 	{
 		if( !INTERNAL::cpp_runtime_type_check_of_top(vm, LUA_TNUMBER, "double") ) return false;
