@@ -112,7 +112,7 @@ namespace
 			if(ar.currentline > 0)
 				lua_pushfstring(vm, "%d:", ar.currentline);
 			if(*ar.namewhat != '\0')  /* is there a name? */
-				lua_pushfstring(vm, " in function " LUA_QS, ar.name);
+				lua_pushfstring(vm, " in function '%s'", ar.name);
 			else
 			{
 				if(*ar.what == 'm')  /* main? */
