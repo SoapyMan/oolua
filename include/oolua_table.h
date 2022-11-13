@@ -194,6 +194,8 @@ namespace OOLUA
 		*/
 		lua_State* state() const { return m_table_ref.m_lua; }
 
+		Lua_table_ref ref() const { return m_table_ref; }
+
 
 		/** \cond INTERNAL*/
 		bool push_on_stack(lua_State* vm)const;
