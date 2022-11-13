@@ -197,6 +197,11 @@ namespace OOLUA
 		*/
 		void set_ref(lua_State* const vm, int const& ref)OOLUA_DEFAULT;
 
+		/**
+			\brief
+			Releases reference.
+		*/
+		void release();
 
 		/** \cond INTERNAL*/
 		bool push(lua_State* const vm)const;
@@ -208,7 +213,6 @@ namespace OOLUA
 		/** \cond INTERNAL Yes I know this is bad \endcond*/
 		friend class Table;
 		bool pull_if_valid(lua_State* vm);
-		void release();
 		lua_State* m_lua;
 		int m_ref;
 	};
