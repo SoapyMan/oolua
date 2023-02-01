@@ -135,7 +135,8 @@ namespace OOLUA
 	{ \
 		OOLUA::INTERNAL::PushPublicMember::push(vm, &m_this->PublicInstance); \
 		return 1; \
-	}
+	} \
+	OOLUA_MEMBER_REGISTRATOR(const, GetterName)
 
 #define OOLUA_MGET_INTERNAL_1(PublicInstance) \
 	OOLUA_MGET_INTERNAL_2(PublicInstance, get_##PublicInstance)
@@ -146,7 +147,8 @@ namespace OOLUA
 	{ \
 		OOLUA::INTERNAL::GetPublicMember::get(vm, &m_this->PublicInstance); \
 		return 0; \
-	}
+	} \
+	OOLUA_MEMBER_REGISTRATOR( ,SetterName)
 
 #define OOLUA_MSET_INTERNAL_1(PublicInstance) \
 	OOLUA_MSET_INTERNAL_2(PublicInstance, set_##PublicInstance)

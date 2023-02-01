@@ -72,7 +72,6 @@
 
 #	include "lua_includes.h"
 #	include "oolua_dsl.h"
-#	include "proxy_function_exports.h"
 #	include "oolua_version.h"
 #	include "oolua_error.h"
 #	include "oolua_stack.h"

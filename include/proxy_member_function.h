@@ -42,6 +42,9 @@ THE SOFTWARE.
 #	pragma GCC system_header
 #endif
 
+#define OOLUA_MEMBER_REGISTRATOR(mod, func_name) \
+	inline static Reg_##mod##type r_##func_name { #func_name, &this_type::func_name };
+
 /** \cond INTERNAL*/
 
 /**
@@ -67,7 +70,8 @@ int func_name(lua_State* const vm) mod \
 	OOLUA_BACK_CONCAT(__VA_ARGS__) \
 	return INTERNAL::lua_return_count< Type_list<R OOLUA_RETURNS_CONCAT(__VA_ARGS__) > \
 		::type> ::out; \
-}
+} \
+OOLUA_MEMBER_REGISTRATOR(mod, func_name)
 
 /**
 	\def OOLUA_MEMBER_BODY_0
@@ -87,7 +91,8 @@ int func_name(lua_State* const vm) mod\
 	OOLUA::INTERNAL::Proxy_caller<R, class_, LVD::is_void< R::type >::value > \
 		::call< funcType>(vm, m_this, &class_::func); \
 	return INTERNAL::lua_return_count< Type_list<R >::type> ::out; \
-}
+} \
+OOLUA_MEMBER_REGISTRATOR(mod, func_name)
 //	OOLUA_MEM_FUNC_N and OOLUA_MEM_FUNC_0
 
 /**
@@ -214,7 +219,8 @@ int func_name(lua_State* const vm) mod\
 	int ProxyName(lua_State* vm) mod \
 	{ \
 		return OOLUA::INTERNAL::mod##proxy_member_function_with_default_traits(vm, m_this, &class_::FunctionName); \
-	}
+	} \
+	OOLUA_MEMBER_REGISTRATOR(mod, ProxyName)
 
 /**
 	@{

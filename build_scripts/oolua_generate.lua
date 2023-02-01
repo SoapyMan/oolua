@@ -53,21 +53,6 @@ THE SOFTWARE.
 		\anchor OOLuaConfigClassFunctions
 		\snippet oolua_generate.lua GenDefaultDetails
 
-		The most common change to these options is the number of functions which can be
-		registered for a proxy class, this limit applies individually to constant and none
-		constant functions, base class methods that are registered in a base class do not
-		decrease the count for a derived class.\n
-		Using the Lua interpreter to regenerate the OOLua files increasing this option
-		whilst using default values for the remaining options:
-		\code{.lua}lua -e "require'build_scripts.oolua_generate'.gen({class_functions=30},'include/')"\endcode
-		<p>
-		For convenience you do not need a version of Lua installed on a machine to run this
-		module, Premake the project file generator used in OOLua already contains a copy of
-		Lua 5.1 (it has some modifications to the core libraries).  To generate the files
-		with the same options as above :
-		\code{.lua}premake4 --class_functions=30 oolua-gen\endcode
-		<p>
-
 		The module returns a table with the following functions \n
 		\snippet oolua_generate.lua GenModuleReturn
 
@@ -122,11 +107,6 @@ local _default_details= function()
 		{
 			desc='Maximum amount of parameters for a constructor of a proxied type'
 			,value=5
-		}
-		,class_functions =
-		{
-			desc='Maximum amount of class functions that can be registered for each proxied type'
-			,value=15
 		}
 	}
 	--/**[GenDefaultDetails]*/
@@ -213,11 +193,7 @@ local gen_boilerplate = function(options,path)
 		f:write('\n')
 	end
 
-	local export = options.class_functions
-	options.class_functions = nil
 	f = file_create(options,path,'oolua_boilerplate.h')
-	options.class_functions = export
-	export = nil
 
 	f:write([[
 #	include "oolua_config.h"
@@ -359,79 +335,6 @@ parameters.
 	file_close(f,'/** \\endcond */')
 end
 
-
---[[
-
---]]
-
-local gen_exports = function(options,path)
-
-	local f = file_create({class_functions=options.class_functions},path,'proxy_function_exports.h')
-	f:write('#define LUA_MEMBER_FUNC_1(Class, func1) {#func1, &Class::func1},\n')
-	local previous = 'Class, func1'
-	for i = 2, options.class_functions do
-		local now = previous .. ', func' .. i
-		f:write('#define LUA_MEMBER_FUNC_'..i..'('..now..') LUA_MEMBER_FUNC_'..(i-1)..'('..previous ..')  LUA_MEMBER_FUNC_1(Class, func'..i..')\n')
-		previous = now
-	end
-	f:write('\n')
-	f:write([[
-/// @def end the assigning of functions to the array
-#define CLASS_LIST_MEMBERS_END {0, 0}};}
-
-/// @def define the constants in the class, which are the the class name and the member function array
-#define CLASS_LIST_MEMBERS_START_OOLUA_NON_CONST(Class)\
-namespace OOLUA { \
-char const OOLUA::Proxy_class< Class >::class_name[] = #Class;\
-OOLUA::Proxy_class< Class >::Reg_type OOLUA::Proxy_class< Class >::class_methods[]={
-// NOLINT
-
-#define CLASS_LIST_MEMBERS_START_OOLUA_CONST(Class)\
-namespace OOLUA { \
-char const OOLUA::Proxy_class< Class >::class_name_const[] = #Class "_const";\
-OOLUA::Proxy_class< Class >::Reg_type_const OOLUA::Proxy_class< Class >::class_methods_const[]={
-// NOLINT
-
-]])
-
-	local params = ''
-	for i = 0, options.class_functions do
-		f:write('#define EXPORT_OOLUA_FUNCTIONS_'..i ..'_(mod, Class' .. params ..')\\\n')
-		f:write('\tCLASS_LIST_MEMBERS_START_ ##mod(Class)\\\n')
-		if params ~= '' then f:write('\tLUA_MEMBER_FUNC_'..i..'(OOLUA::Proxy_class< Class > '.. params .. ')\\\n') end
-		f:write('\tCLASS_LIST_MEMBERS_END\n')
-		params = params .. ', p'..i
-	end
-	f:write('\n')
-
-	params = ''
-	for i = 0, options.class_functions do
-		f:write('#define EXPORT_OOLUA_FUNCTIONS_' ..i ..'_CONST(Class'..params ..') \\\n\tEXPORT_OOLUA_FUNCTIONS_'..i..'_(OOLUA_CONST, Class'..params ..')\n' )
-		f:write('#define EXPORT_OOLUA_FUNCTIONS_' ..i ..'_NON_CONST(Class'..params ..') \\\n\tEXPORT_OOLUA_FUNCTIONS_'..i..'_(OOLUA_NON_CONST, Class'..params ..')\n' )
-		params = params .. ', p'..i
-	end
-
-	f:write([[
-/** \endcond */
-
-/** \addtogroup OOLuaExporting
-@{
-	\def OOLUA_EXPORT_NO_FUNCTIONS
-	\hideinitializer
-	\brief Inform that there are no functions of interest
-	\param Class
-*/
-#define OOLUA_EXPORT_NO_FUNCTIONS(Class)\
-	EXPORT_OOLUA_FUNCTIONS_0_NON_CONST(Class)\
-	EXPORT_OOLUA_FUNCTIONS_0_CONST(Class)
-
-/**@}*/
-]])
-	file_close(f)
-end
-
-
-
 local gen = function(options,path)
 	if not options then options = defaults()
 	else
@@ -442,7 +345,6 @@ local gen = function(options,path)
 		options = _defaults
 	end
 	gen_boilerplate(options,path)
-	gen_exports(options,path)
 end
 
 

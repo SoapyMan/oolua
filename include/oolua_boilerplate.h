@@ -23,7 +23,7 @@ THE SOFTWARE.
 */
 /** 
 	\file oolua_boilerplate.h
-	\date Sat Dec 18 11:38:13 2021
+	\date Thu Feb  2 00:22:37 2023
 	\details 
 	Configurable values as set when generating this file
 	\li lua_params 10 - Maximum amount of parameters for a call to a Lua function	(Default 10)

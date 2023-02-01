@@ -138,10 +138,9 @@ namespace OOLUA
 			OOLUA_MEMBER_FUNCTION_TRY
 #endif
 				typename Proxy_type::class_ *obj = INTERNAL::check_index<typename Proxy_type::class_>(vm, 1);
-				OOLUA_SELF_CHECK(obj, "const", Reg_type_const, class_name_const)
+				OOLUA_SELF_CHECK(obj, "const", Reg_consttype, class_name_const)
 				//get member function from upvalue
-				typename Proxy_class<Base_type >::Reg_type_const* r =
-						static_cast<typename Proxy_class<Base_type >::Reg_type_const*>(lua_touserdata(vm, lua_upvalueindex(1)));
+				typename Proxy_class<Base_type >::Reg_consttype* r = static_cast<typename Proxy_class<Base_type >::Reg_consttype*>(lua_touserdata(vm, lua_upvalueindex(1)));
 				Proxy_type P(obj);
 				return (P.*(r->mfunc))(vm); //call member function
 #if	OOLUA_USE_EXCEPTIONS == 1

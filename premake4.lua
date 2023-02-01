@@ -57,12 +57,7 @@ newoption
 	,value = 'Number'
 	,description = 'oolua-gen option\n\t' .. gen_details.constructor_params.desc
 }
-newoption
-{
-	trigger = 'class_functions'
-	,value = 'Number Default ' ..gen_details.class_functions.value
-	,description = 'oolua-gen option\n\t' .. gen_details.class_functions.desc
-}
+
 gen_defaults=nil
 gen=nil
 
@@ -77,7 +72,6 @@ newaction
 			cpp_params = _OPTIONS.cpp_params and tonumber(_OPTIONS.cpp_params) or nil
 			,lua_params = _OPTIONS.lua_params and tonumber(_OPTIONS.lua_params) or nil
 			,constructor_params = _OPTIONS.constructor_params and tonumber(_OPTIONS.constructor_params) or nil
-			,class_functions = _OPTIONS.class_functions and tonumber(_OPTIONS.class_functions) or nil
 		}
 		gen.gen(gen_options,'include/')
    	end

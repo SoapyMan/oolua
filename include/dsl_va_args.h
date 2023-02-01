@@ -124,12 +124,12 @@ THE SOFTWARE.
 
 #	define OOLUA_PROXY_WITH_BASES_0(ClassType) \
 			OOLUA_CLASS(ClassType) \
-			OOLUA_BASIC \
+			OOLUA_BASIC(ClassType) \
 			OOLUA_NO_BASES
 
 #	define OOLUA_PROXY_WITH_BASES_N(ClassType, ...)\
 			OOLUA_CLASS(ClassType) : OOLUA_PUBLIC_INHERIT(__VA_ARGS__) \
-			OOLUA_BASIC \
+			OOLUA_BASIC(ClassType) \
 			OOLUA_BASES_START __VA_ARGS__ OOLUA_BASES_END
 
 /** \endcond */

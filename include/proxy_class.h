@@ -216,19 +216,25 @@ namespace OOLUA
 
 ///  \def  OOLUA_BASIC
 ///  C++ special member functions and lua binding details
-#define OOLUA_BASIC \
+#define OOLUA_BASIC(name___) \
 		{ \
 		public: \
 			typedef INTERNAL::Proxy_type<Proxy_class>::Type class_; \
 			typedef Proxy_class<class_> this_type; \
 			typedef int (Proxy_class::*mfp)(lua_State *  const  ); \
 			typedef int (Proxy_class::*mfp_const)(lua_State *  const  )const; \
-			struct Reg_type{ const char *name; mfp mfunc; }; \
-			struct Reg_type_const{ const char *name; mfp_const mfunc; }; \
-			static char const class_name[]; \
-			static char const class_name_const[]; \
-			static Reg_type class_methods[]; \
-			static Reg_type_const class_methods_const[]; \
+			struct Reg_type { \
+				Reg_type(const char *name, mfp mfunc) : name(name), mfunc(mfunc), prev(this_type::class_methods) { this_type::class_methods = this; } \
+				const char *name; mfp mfunc; Reg_type* prev; \
+			}; \
+			struct Reg_consttype { \
+				Reg_consttype(const char *name, mfp_const mfunc) : name(name), mfunc(mfunc), prev(this_type::class_methods_const) { this_type::class_methods_const = this; } \
+				const char *name; mfp_const mfunc; Reg_consttype* prev; \
+			}; \
+			inline static char const* class_name{#name___}; \
+			inline static char const* class_name_const{#name___}; \
+			inline static Reg_type* class_methods{nullptr}; \
+			inline static Reg_consttype* class_methods_const{nullptr}; \
 			class_ * m_this; \
 			Proxy_class():m_this(0){} \
 			Proxy_class(class_* p):m_this(p) \
@@ -260,7 +266,7 @@ namespace OOLUA
 		\hideinitializer
 		\brief Ends the generation of the proxy class
 	 */
-#		define OOLUA_PROXY_END };} /*end the class and namespace*/ /*NOLINT*/
+#define OOLUA_PROXY_END };}  /*end the class and namespace*/ /*NOLINT*/
 /**@}*/
 
 /** \cond INTERNAL */
