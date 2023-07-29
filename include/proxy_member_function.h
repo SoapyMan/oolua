@@ -215,10 +215,10 @@ OOLUA_MEMBER_REGISTRATOR(mod, func_name)
 	\param ProxyName Name that will be given to the proxy member function
 	\param FunctionName Name of the member function to be proxied
 */
-#define OOLUA_MFUNC_GENERIC(mod, ProxyName, FunctionName) \
+#define OOLUA_MFUNC_GENERIC(mod, ProxyName, FunctionName, FunctionSignature) \
 	int ProxyName(lua_State* vm) mod \
 	{ \
-		return OOLUA::INTERNAL::mod##proxy_member_function_with_default_traits(vm, m_this, &class_::FunctionName); \
+		return OOLUA::INTERNAL::mod##proxy_member_function_with_default_traits(vm, m_this, FunctionSignature &class_::FunctionName); \
 	} \
 	OOLUA_MEMBER_REGISTRATOR(mod, ProxyName)
 
@@ -229,10 +229,12 @@ OOLUA_MEMBER_REGISTRATOR(mod, func_name)
  	A member function defined using OOLUA_MFUNC*  (*=  |_CONST )
  	will translate into a corresponding macro below using and then to OOLUA_MFUNC_GENERIC
  */
-#define OOLUA_MFUNC_INTERNAL_2(FunctionName, ProxyName)		OOLUA_MFUNC_GENERIC( , ProxyName, FunctionName) /*NOLINT*/
+#define OOLUA_MFUNC_INTERNAL_3(FunctionName, ProxyName, FunctionSignature)		OOLUA_MFUNC_GENERIC( , ProxyName, FunctionName, (FunctionSignature)) /*NOLINT*/
+#define OOLUA_MFUNC_INTERNAL_2(FunctionName, ProxyName)		OOLUA_MFUNC_GENERIC( , ProxyName, FunctionName, ) /*NOLINT*/
 #define OOLUA_MFUNC_INTERNAL_1(FunctionName)				OOLUA_MFUNC_INTERNAL_2(FunctionName, FunctionName)
 
-#define OOLUA_MFUNC_CONST_INTERNAL_2(FunctionName, ProxyName)	OOLUA_MFUNC_GENERIC(const, ProxyName, FunctionName)
+#define OOLUA_MFUNC_CONST_INTERNAL_3(FunctionName, ProxyName, FunctionSignature)	OOLUA_MFUNC_GENERIC(const, ProxyName, FunctionName, (FunctionSignature))
+#define OOLUA_MFUNC_CONST_INTERNAL_2(FunctionName, ProxyName)	OOLUA_MFUNC_GENERIC(const, ProxyName, FunctionName, )
 #define OOLUA_MFUNC_CONST_INTERNAL_1(FunctionName)				OOLUA_MFUNC_CONST_INTERNAL_2(FunctionName, FunctionName)
 /**@}*/
 
