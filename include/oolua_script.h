@@ -142,6 +142,7 @@ namespace OOLUA
 		Script(Script const&);
 		Script& operator = (Script const&);
 		lua_State* m_lua;
+		bool m_ownsState;
 	};
 
 

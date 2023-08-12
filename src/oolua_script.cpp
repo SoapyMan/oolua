@@ -31,7 +31,7 @@ namespace OOLUA
 {
 
 	Script::Script()
-		:call(), m_lua(0)
+		:call(), m_lua(0), m_ownsState(true)
 	{
 		m_lua = luaL_newstate();
 
@@ -42,7 +42,7 @@ namespace OOLUA
 	}
 
 	Script::Script(lua_State* state)
-		:call(), m_lua(state)
+		:call(), m_lua(state), m_ownsState(false)
 	{
 		call.bind_script(m_lua);//bind the lua state to the function caller
 		setup_user_lua_state(m_lua);
@@ -60,11 +60,12 @@ namespace OOLUA
 
 	void Script::close_down()
 	{
-		if(m_lua)
+		if(m_lua && m_ownsState)
 		{
 			lua_gc(m_lua, LUA_GCCOLLECT, 0);
 			lua_close(m_lua);
 			m_lua = 0;
+			m_ownsState = false;
 		}
 	}
 
