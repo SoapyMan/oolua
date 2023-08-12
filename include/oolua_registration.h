@@ -223,7 +223,14 @@ namespace OOLUA
 					shared_delete(reinterpret_cast<OOLUA_SHARED_TYPE<T>* >(ud->shared_object));
 				else
 #endif
-					if( ud->flags & GC_FLAG )delete static_cast<T*>(ud->void_class_ptr);
+					if (ud->flags & GC_FLAG)
+					{
+						void* all_ud;
+						lua_Alloc allocf = lua_getallocf(vm, &all_ud);
+						T* obj = static_cast<T*>(ud->void_class_ptr);
+						obj->~T();
+						allocf(all_ud, ud->void_class_ptr, 0, 0);
+					}
 				return 0;
 			}
 			static int gc_no_destructor(lua_State * vm)

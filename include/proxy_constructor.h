@@ -103,7 +103,13 @@ namespace OOLUA
 			static int construct(lua_State * vm)
 			{
 				OOLUA_CONSTRUCTOR_TRY
-				typename new_pointer<Type>::type obj(new Type);
+
+				void* ud;
+				lua_Alloc allocf = lua_getallocf(vm, &ud);
+				Type* rawObj = static_cast<Type*>(allocf(ud, nullptr, 0, sizeof(Type)));
+				new(rawObj) Type;
+
+				typename new_pointer<Type>::type obj(rawObj);
 				add_ptr(vm, obj, false, Lua);
 				OOLUA_CONSTRUCTOR_CATCH(Type, 0)
 				return 1;
@@ -178,7 +184,11 @@ namespace OOLUA \
 				int index(1); \
 				OOLUA_CONSTRUCTOR_PARAM_##NUM \
 				OOLUA_CONSTRUCTOR_TRY \
-				typename new_pointer<Class>::type obj(new Class(OOLUA_CONVERTER_PARAMS_##NUM)); \
+				void* ud;\
+				lua_Alloc allocf = lua_getallocf(vm, &ud);\
+				Class* rawObj = static_cast<Class*>(allocf(ud, nullptr, 0, sizeof(Class)));\
+				new(rawObj) Class(OOLUA_CONVERTER_PARAMS_##NUM);\
+				typename new_pointer<Class>::type obj(rawObj); \
 				add_ptr(vm, obj, false, Lua); \
 				OOLUA_CONSTRUCTOR_CATCH(Class, NUM) \
 			} \
